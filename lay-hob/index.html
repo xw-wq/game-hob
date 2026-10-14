@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>一起来玩游戏呀</title>
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#ff7675">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="玩游戏">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" type="image/png" href="./icon-192.png">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden;overscroll-behavior:none}
+body{
+  font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+  background:linear-gradient(135deg,#ffeaa7 0%,#fdcb6e 25%,#ff7675 50%,#a29bfe 75%,#74b9ff 100%);
+  background-size:400% 400%;
+  animation:bgShift 15s ease infinite;
+  color:#2d3436;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px 16px calc(20px + env(safe-area-inset-bottom));
+  position:relative;overflow-y:auto;
+}
+@keyframes bgShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+.bubble{position:fixed;border-radius:50%;background:rgba(255,255,255,.25);pointer-events:none;animation:float 20s infinite ease-in-out}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-30px) scale(1.1)}}
+.b1{width:120px;height:120px;top:10%;left:5%;animation-delay:0s}
+.b2{width:80px;height:80px;top:70%;left:80%;animation-delay:-5s}
+.b3{width:60px;height:60px;top:20%;right:10%;animation-delay:-10s}
+.b4{width:100px;height:100px;bottom:10%;left:15%;animation-delay:-15s}
+.b5{width:70px;height:70px;top:50%;left:45%;animation-delay:-7s}
+
+.container{width:100%;max-width:520px;position:relative;z-index:1}
+
+.header{text-align:center;margin-bottom:30px;animation:fadeDown .8s ease}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.header-emoji{font-size:60px;display:inline-block;animation:bounce 2s ease-in-out infinite;filter:drop-shadow(0 8px 20px rgba(0,0,0,.15))}
+@keyframes bounce{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+.header h1{font-size:34px;font-weight:900;letter-spacing:3px;margin-top:10px;color:#fff;
+  text-shadow:3px 3px 0 #e17055,6px 6px 0 rgba(0,0,0,.1);line-height:1.2}
+.header p{margin-top:12px;color:#fff;font-size:13px;opacity:.9;letter-spacing:1px}
+
+.game-card{
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-radius:24px;padding:22px;margin-bottom:14px;
+  box-shadow:0 10px 40px rgba(0,0,0,.15),0 2px 8px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.8);
+  cursor:pointer;transition:all .3s cubic-bezier(.2,.7,.3,1);
+  display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;
+  animation:fadeUp .6s ease backwards;
+}
+.game-card:nth-child(1){animation-delay:.15s}
+.game-card:nth-child(2){animation-delay:.28s}
+.game-card:nth-child(3){animation-delay:.41s}
+.game-card:nth-child(4){animation-delay:.54s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.game-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c1),var(--c2));opacity:0;transition:opacity .3s;z-index:0}
+.game-card:hover::before,.game-card:active::before{opacity:.07}
+.game-card:active{transform:scale(.97)}
+.game-card>*{position:relative;z-index:1}
+
+.game-icon{
+  width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;
+  font-size:38px;flex-shrink:0;background:linear-gradient(135deg,var(--c1),var(--c2));
+  box-shadow:0 8px 20px rgba(0,0,0,.15);position:relative;
+}
+.game-icon::after{content:'';position:absolute;inset:0;border-radius:20px;
+  background:linear-gradient(135deg,rgba(255,255,255,.4),transparent 50%);pointer-events:none}
+
+.game-info{flex:1;min-width:0}
+.game-title{font-size:19px;font-weight:800;margin-bottom:5px;letter-spacing:1px;color:#2d3436}
+.game-desc{font-size:12.5px;color:#636e72;line-height:1.5}
+.game-tags{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap}
+.game-tag{font-size:10.5px;padding:3px 9px;border-radius:100px;background:rgba(0,0,0,.05);color:#636e72;font-weight:600}
+.game-arrow{font-size:22px;color:#b2bec3;flex-shrink:0;transition:transform .3s}
+.game-card:active .game-arrow{transform:translateX(4px)}
+
+.footer{text-align:center;margin-top:22px;color:rgba(255,255,255,.85);font-size:12px;
+  letter-spacing:1px;animation:fadeUp .8s ease backwards;animation-delay:.7s}
+.footer .heart{display:inline-block;animation:beat 1.5s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+.install-bar{
+  display:none;margin-top:16px;padding:14px 18px;border-radius:20px;
+  background:rgba(255,255,255,.95);box-shadow:0 8px 30px rgba(0,0,0,.15);
+  align-items:center;gap:12px;animation:fadeUp .5s ease;
+}
+.install-bar.show{display:flex}
+.install-bar .ib-icon{font-size:28px}
+.install-bar .ib-body{flex:1}
+.install-bar .ib-title{font-size:14px;font-weight:700;color:#2d3436}
+.install-bar .ib-sub{font-size:11.5px;color:#8b9aa8;margin-top:2px}
+.install-bar button{
+  border:none;background:linear-gradient(135deg,#ff7675,#e17055);color:#fff;
+  font-family:inherit;font-size:13px;font-weight:700;padding:9px 18px;
+  border-radius:100px;cursor:pointer;box-shadow:0 4px 14px rgba(255,118,117,.4)
+}
+
+@media (max-width:400px){
+  .header h1{font-size:28px}
+  .header-emoji{font-size:50px}
+  .game-icon{width:60px;height:60px;font-size:32px}
+  .game-title{font-size:16px}
+  .game-card{padding:16px;gap:14px}
+}
+</style>
+</head>
+<body>
+
+<div class="bubble b1"></div>
+<div class="bubble b2"></div>
+<div class="bubble b3"></div>
+<div class="bubble b4"></div>
+<div class="bubble b5"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="header-emoji">🎉</div>
+    <h1>一起来玩游戏呀</h1>
+    <p>选一个开始吧</p>
+  </div>
+
+  <div class="game-card" style="--c1:#e17055;--c2:#e74c3c" onclick="go('script-kill.html')">
+    <div class="game-icon">🎭</div>
+    <div class="game-info">
+      <div class="game-title">剧本杀</div>
+      <div class="game-desc">围坐传阅，一部手机轮流看<br>轻松推理，找出手中的秘密</div>
+      <div class="game-tags">
+        <span class="game-tag">👥 4-14人</span>
+        <span class="game-tag">📱 离线可玩</span>
+        <span class="game-tag">🎩 AI主持</span>
+      </div>
+    </div>
+    <div class="game-arrow">›</div>
+  </div>
+
+  <div class="game-card" style="--c1:#6c5ce7;--c2:#a29bfe" onclick="go('monopoly.html')">
+    <div class="game-icon">🎲</div>
+    <div class="game-info">
+      <div class="game-title">大富翁</div>
+      <div class="game-desc">买地、炒股、拍卖、用道具<br>把对手玩到破产你就赢了</div>
+      <div class="game-tags">
+        <span class="game-tag">👥 2-6人</span>
+        <span class="game-tag">📈 股票系统</span>
+        <span class="game-tag">🔨 拍卖玩法</span>
+      </div>
+    </div>
+    <div class="game-arrow">›</div>
+  </div>
+
+  <div class="game-card" style="--c1:#8B6B2E;--c2:#C9A961" onclick="go('brass-birmingham.html')">
+    <div class="game-icon">⚙️</div>
+    <div class="game-info">
+      <div class="game-title">工业革命 · 伯明翰</div>
+      <div class="game-desc">建矿厂、铺铁路、连城市<br>在工业时代积攒最多分数</div>
+      <div class="game-tags">
+        <span class="game-tag">👥 2-4人</span>
+        <span class="game-tag">🌐 可联机</span>
+        <span class="game-tag">🏭 经营策略</span>
+      </div>
+    </div>
+    <div class="game-arrow">›</div>
+  </div>
+
+  <div class="game-card" style="--c1:#8B7355;--c2:#C4A882" onclick="go('tarot.html')">
+    <div class="game-icon">🔮</div>
+    <div class="game-info">
+      <div class="game-title">塔罗牌阵</div>
+      <div class="game-desc">七十八张牌，七种经典牌阵<br>静下来，问一个你真的想知道的问题</div>
+      <div class="game-tags">
+        <span class="game-tag">🃏 78张牌</span>
+        <span class="game-tag">✨ 7种牌阵</span>
+        <span class="game-tag">📴 完全离线</span>
+      </div>
+    </div>
+    <div class="game-arrow">›</div>
+  </div>
+
+  <div class="install-bar" id="installBar">
+    <div class="ib-icon">📲</div>
+    <div class="ib-body">
+      <div class="ib-title">安装到桌面</div>
+      <div class="ib-sub">像 App 一样打开，离线也能玩</div>
+    </div>
+    <button id="installBtn">安装</button>
+  </div>
+
+  <div class="footer">
+    用 <span class="heart">❤️</span> 制作 · 祝你玩得开心
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   页面跳转（带淡出动画）
+   ═══════════════════════════════════════════════════════════ */
+function go(url){
+  document.body.style.transition = 'opacity .25s';
+  document.body.style.opacity = '0';
+  setTimeout(function(){ window.location.href = url; }, 220);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Service Worker 注册 + 自动更新
+   ═══════════════════════════════════════════════════════════ */
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+  window.addEventListener('load', function(){
+
+    var refreshing = false;
+
+    navigator.serviceWorker.register('./sw.js').then(function(reg){
+
+      // 每次打开页面主动检查是否有新版本
+      reg.update();
+
+      // 监听新版本安装完成
+      reg.addEventListener('updatefound', function(){
+        var newWorker = reg.installing;
+        if (!newWorker) return;
+
+        newWorker.addEventListener('statechange', function(){
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            if (!refreshing) {
+              refreshing = true;
+              console.log('[App] 检测到新版本，2 秒后自动刷新…');
+              setTimeout(function(){
+                window.location.reload();
+              }, 2000);
+            }
+          }
+        });
+      });
+
+    }).catch(function(e){
+      console.warn('[App] SW 注册失败:', e);
+    });
+
+    // 兜底：SW 控制权变化时刷新
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PWA 安装提示
+   ═══════════════════════════════════════════════════════════ */
+var deferredPrompt = null;
+var installBar = document.getElementById('installBar');
+var installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+  if (installBar) installBar.classList.add('show');
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', function(){
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(res){
+      if (res.outcome === 'accepted' && installBar) {
+        installBar.classList.remove('show');
+      }
+      deferredPrompt = null;
+    });
+  });
+}
+
+window.addEventListener('appinstalled', function(){
+  if (installBar) installBar.classList.remove('show');
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大富翁</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,'PingFang SC',sans-serif;
+  background:linear-gradient(160deg,#FFF5F7 0%,#F5F0FF 50%,#EFF9FF 100%);
+  background-attachment:fixed;
+  color:#6B7A8F;
+  font-size:14px;
+  line-height:1.6;
+  min-height:100vh;
+}
+#app{max-width:660px;margin:0 auto;padding:14px 12px 60px;min-height:100vh}
+
+/* 云朵装饰 */
+body::before,body::after{
+  content:'';
+  position:fixed;
+  border-radius:50%;
+  filter:blur(60px);
+  pointer-events:none;
+  z-index:0;
+}
+body::before{width:280px;height:280px;background:rgba(255,200,221,.4);top:-100px;left:-100px}
+body::after{width:320px;height:320px;background:rgba(200,220,255,.4);bottom:-120px;right:-120px}
+
+#app{position:relative;z-index:1}
+
+/* 文字 */
+h1{font-size:24px;font-weight:700;color:#8B7BA8;letter-spacing:1px}
+h2{font-size:18px;margin-bottom:12px;color:#8B7BA8;font-weight:700}
+h3{font-size:15px;color:#A89BC8;margin:14px 0 8px;font-weight:700}
+.hint{color:#B8C0CC;font-size:12px;margin-bottom:10px}
+.setup-label{font-size:13px;color:#A89BC8;margin-bottom:8px;font-weight:700}
+
+/* 按钮 - 棉花糖质感 */
+.btn{
+  display:block;width:100%;padding:14px;
+  border:none;border-radius:20px;
+  background:#FFFFFF;
+  color:#7B8AA0;
+  font-size:15px;font-weight:600;
+  cursor:pointer;font-family:inherit;
+  box-shadow:0 4px 16px rgba(180,190,220,.15),0 1px 3px rgba(180,190,220,.1);
+  margin-top:10px;
+  transition:all .25s cubic-bezier(.2,.8,.3,1);
+  position:relative;overflow:hidden;
+}
+.btn:active{transform:scale(.97);box-shadow:0 2px 8px rgba(180,190,220,.2)}
+.btn:disabled{opacity:.4}
+.btn.primary{
+  background:linear-gradient(135deg,#FFC9DD 0%,#E2C8FF 100%);
+  color:#FFFFFF;
+  box-shadow:0 6px 20px rgba(255,180,210,.4),0 2px 6px rgba(200,180,255,.2);
+}
+.btn.gold{
+  background:linear-gradient(135deg,#FFE4B5 0%,#FFD3A5 100%);
+  color:#FFFFFF;
+  box-shadow:0 6px 20px rgba(255,210,150,.4);
+}
+.btn.green{
+  background:linear-gradient(135deg,#C5E8D5 0%,#A8DDD0 100%);
+  color:#FFFFFF;
+  box-shadow:0 6px 20px rgba(170,220,200,.4);
+}
+.btn.red{
+  background:linear-gradient(135deg,#FFC4C4 0%,#FFAFAF 100%);
+  color:#FFFFFF;
+  box-shadow:0 6px 20px rgba(255,180,180,.4);
+}
+.btn.blue{
+  background:linear-gradient(135deg,#C8DEFF 0%,#B0CEFF 100%);
+  color:#FFFFFF;
+  box-shadow:0 6px 20px rgba(180,200,255,.4);
+}
+.btn.purple{
+  background:linear-gradient(135deg,#DCC9FF 0%,#C7B0FF 100%);
+  color:#FFFFFF;
+  box-shadow:0 6px 20px rgba(210,190,255,.4);
+}
+.btn.ghost{
+  background:rgba(255,255,255,.7);
+  border:2px solid #F0E8FF;
+  box-shadow:0 2px 8px rgba(180,190,220,.08);
+}
+.btn.sm{padding:8px 10px;font-size:13px;margin-top:4px;border-radius:14px}
+.btn-row{display:flex;gap:10px;margin-top:10px}
+.btn-row .btn{margin-top:0;flex:1}
+
+/* 输入框 */
+.input{
+  width:100%;background:#FFFFFF;
+  border:2px solid transparent;border-radius:16px;
+  padding:12px 16px;font-size:14px;font-family:inherit;
+  outline:none;margin-bottom:10px;color:#6B7A8F;
+  box-shadow:0 2px 12px rgba(180,190,220,.1);
+  transition:.2s;
+}
+.input:focus{border-color:#E2C8FF;box-shadow:0 4px 16px rgba(210,190,255,.2)}
+.input::placeholder{color:#C8D0DC}
+
+/* 英雄区 */
+.hero{text-align:center;padding:24px 0 18px}
+.hero-emoji{font-size:64px;display:inline-block;filter:drop-shadow(0 8px 20px rgba(255,180,210,.4))}
+
+/* 卡片 */
+.setup-section{
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-radius:24px;
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:0 8px 32px rgba(180,190,220,.15),inset 0 1px 0 rgba(255,255,255,.9);
+  border:1px solid rgba(255,255,255,.6);
+}
+
+/* 棋盘 */
+.board{
+  display:grid;gap:3px;aspect-ratio:1;
+  background:linear-gradient(135deg,#F8F4FF,#F0F8FF);
+  border-radius:24px;padding:6px;
+  margin-bottom:12px;position:relative;
+  background-size:cover;background-position:center;
+  box-shadow:0 8px 32px rgba(180,190,220,.2),inset 0 2px 8px rgba(255,255,255,.6);
+  border:2px solid rgba(255,255,255,.8);
+}
+.cell{
+  background:#FFFFFF;
+  border-radius:12px;padding:3px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;overflow:hidden;line-height:1.15;
+  background-size:cover;background-position:center;
+  box-shadow:0 2px 8px rgba(180,190,220,.12);
+  transition:.2s;
+}
+.cell::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.4),rgba(255,255,255,.15));
+  pointer-events:none;border-radius:inherit;
+}
+.cell.has-img::after{background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.05))}
+.cell.start{background-color:#E8F4FF}
+.cell.chance{background-color:#FFF7D6}
+.cell.fate{background-color:#FFE0EC;color:#B07090}
+.cell.jail{background-color:#FFE0D6;color:#B08070}
+.cell.free{background-color:#DCF5F0;color:#5A9B8E}
+.cell.tax{background-color:#FFDBDB;color:#B07070}
+.cell.stock{background-color:#E8E0FF;color:#8070B0}
+.cell-name{
+  font-weight:600;word-break:break-all;
+  position:relative;z-index:2;
+  background:rgba(255,255,255,.75);
+  border-radius:6px;padding:1px 4px;
+  display:inline-block;color:#6B7A8F;
+}
+.cell-price{
+  position:relative;z-index:2;
+  background:rgba(255,255,255,.75);
+  border-radius:6px;padding:1px 4px;
+  display:inline-block;font-size:.85em;
+  color:#8B9AAB;
+}
+.cell.tax .cell-name,.cell.tax .cell-price,
+.cell.fate .cell-name,.cell.fate .cell-price,
+.cell.stock .cell-name,.cell.stock .cell-price{
+  background:rgba(255,255,255,.7);color:#7B6A8F;
+}
+.lv-1{border-top:3px solid #FFE0A8}
+.lv-2{border-top:3px solid #FFC8A8}
+.lv-3{border-top:3px solid #FFAFB0}
+.lv-4{border-top:3px solid #D8B8FF}
+.lv-5{border-top:3px solid #B8B0D0}
+.cell-owner{
+  position:absolute;top:3px;right:3px;
+  width:8px;height:8px;border-radius:50%;
+  z-index:3;
+  box-shadow:0 0 0 2px rgba(255,255,255,.9),0 2px 4px rgba(0,0,0,.1);
+}
+.tokens{
+  position:absolute;bottom:2px;left:2px;
+  display:flex;gap:2px;flex-wrap:wrap;max-width:95%;
+  z-index:3;
+}
+.token{
+  width:1.4em;height:1.4em;border-radius:50%;
+  border:1.5px solid #FFFFFF;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75em;color:#FFFFFF;font-weight:700;
+}
+.center{
+  background:linear-gradient(135deg,rgba(255,245,250,.96),rgba(245,240,255,.96));
+  border-radius:18px;padding:10px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;overflow:hidden;position:relative;z-index:2;
+  box-shadow:inset 0 2px 12px rgba(255,255,255,.9),0 2px 8px rgba(200,180,220,.15);
+  border:1px solid rgba(255,255,255,.9);
+}
+.dice{
+  font-size:2.2em;margin:4px 0;font-weight:700;
+  color:#A89BC8;line-height:1;
+  filter:drop-shadow(0 4px 8px rgba(210,190,255,.3));
+}
+.dice.rolling{animation:shake .3s infinite}
+@keyframes shake{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}}
+
+/* 玩家列表 */
+.players{
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:22px;padding:10px;margin-bottom:12px;
+  box-shadow:0 6px 24px rgba(180,190,220,.15);
+  border:1px solid rgba(255,255,255,.6);
+}
+.player-row{
+  display:flex;align-items:center;
+  padding:8px 12px;border-radius:14px;
+  font-size:13px;gap:8px;transition:.2s;
+}
+.player-row.cur{background:linear-gradient(135deg,#FFF0F5,#F5F0FF)}
+.player-row.dead{opacity:.4;text-decoration:line-through}
+.player-row.jailed{background:#FFF0EC}
+.player-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+.player-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#6B7A8F;font-weight:500}
+.player-money{font-weight:700;color:#7BC9A8}
+.player-tag{font-size:10px;color:#B8C0CC}
+
+/* 弹窗 */
+.modal{
+  position:fixed;inset:0;background:rgba(180,190,220,.35);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;z-index:100;
+}
+.modal-box{
+  background:linear-gradient(160deg,#FFFFFF,#FDFAFF);
+  border-radius:28px;padding:24px;
+  max-width:440px;width:100%;max-height:90vh;overflow-y:auto;
+  animation:pop .25s cubic-bezier(.2,.9,.3,1.2);
+  box-shadow:0 20px 60px rgba(180,190,220,.3),inset 0 1px 0 rgba(255,255,255,.9);
+  border:1px solid rgba(255,255,255,.8);
+}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-box h3{font-size:17px;margin-bottom:10px;color:#8B7BA8}
+.modal-box p{margin-bottom:14px;color:#8B9AAB;font-size:14px;line-height:1.7}
+
+/* 玩家输入 */
+.player-input{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.emoji-btn{
+  width:46px;height:46px;border-radius:50%;
+  border:2px solid #F0E8FF;background:#FFFFFF;
+  font-size:22px;cursor:pointer;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(180,190,220,.1);
+  transition:.2s;
+}
+.emoji-btn:active{transform:scale(.95)}
+.player-input .input{margin-bottom:0;flex:1}
+.del-btn{
+  width:34px;height:34px;border-radius:50%;
+  border:none;background:#FFE8E8;color:#D89090;
+  font-weight:700;cursor:pointer;flex-shrink:0;
+  box-shadow:0 2px 6px rgba(255,180,180,.2);
+}
+
+/* 尺寸选择 */
+.size-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.size-btn{
+  padding:14px;border:2px solid #F0E8FF;
+  border-radius:18px;background:#FFFFFF;
+  font-size:15px;font-weight:700;cursor:pointer;
+  font-family:inherit;color:#8B9AAB;transition:.2s;
+  box-shadow:0 3px 12px rgba(180,190,220,.08);
+}
+.size-btn.active{
+  border-color:#E2C8FF;
+  background:linear-gradient(135deg,#FFF0F5,#F5F0FF);
+  color:#8B7BA8;
+  box-shadow:0 6px 20px rgba(210,190,255,.3);
+}
+
+/* 格子编辑行 */
+.cell-row{
+  display:flex;gap:8px;align-items:center;
+  padding:10px 0;border-bottom:1px solid #F5F0FF;
+  font-size:13px;
+}
+.cell-row:last-child{border-bottom:none}
+.cell-row .idx{
+  width:26px;font-size:11px;color:#C8D0DC;
+  text-align:center;flex-shrink:0;font-weight:600;
+}
+.cell-row input,.cell-row select{
+  border:1.5px solid #F0E8FF;border-radius:10px;
+  padding:6px 8px;font-size:12px;outline:none;
+  font-family:inherit;min-width:0;background:#FFFFFF;
+  color:#6B7A8F;transition:.2s;
+}
+.cell-row input:focus,.cell-row select:focus{border-color:#E2C8FF}
+.cell-row .name{flex:2}
+.cell-row .type{width:60px}
+.cell-row .price{width:55px}
+.cell-row .group{width:50px}
+.cell-thumb{
+  width:42px;height:42px;border-radius:12px;
+  background:#F8F4FF center/cover;
+  border:1.5px solid #F0E8FF;
+  flex-shrink:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:#C8B8D8;
+  position:relative;overflow:hidden;
+  transition:.2s;
+}
+.cell-thumb:active{transform:scale(.95)}
+.cell-thumb.has-img{color:transparent;border-color:#E2C8FF}
+.map-preview{
+  width:100%;aspect-ratio:1;border-radius:20px;
+  background:#F8F4FF center/cover;
+  border:2px dashed #E2C8FF;
+  display:flex;align-items:center;justify-content:center;
+  color:#C8B8D8;font-size:14px;cursor:pointer;
+  margin-bottom:10px;overflow:hidden;position:relative;
+  transition:.2s;
+}
+.map-preview.has-img{border-style:solid;border-color:#FFFFFF;box-shadow:0 4px 20px rgba(210,190,255,.2)}
+
+/* 股票 */
+.stock-row{
+  display:flex;align-items:center;
+  padding:10px 0;border-bottom:1px dashed #F5F0FF;
+  gap:8px;font-size:13px;
+}
+.stock-name{flex:1;font-weight:600;color:#6B7A8F}
+.stock-price{font-weight:700;color:#A89BC8;min-width:50px;text-align:right}
+.stock-change{min-width:50px;text-align:right;font-size:11px}
+.stock-up{color:#7BC9A8}.stock-down{color:#E89090}
+
+/* 道具 */
+.item-tag{
+  background:linear-gradient(135deg,#FFF0F5,#F5F0FF);
+  color:#A89BC8;font-size:12px;
+  padding:5px 12px;border-radius:12px;
+  cursor:pointer;border:1px solid #F0E8FF;
+  display:inline-block;margin:3px;
+  font-weight:600;transition:.2s;
+}
+.item-tag:active{transform:scale(.95)}
+
+/* Toast */
+.toast{
+  position:fixed;top:24px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#FFFFFF,#FDFAFF);
+  color:#8B7BA8;padding:12px 24px;
+  border-radius:100px;font-size:13px;font-weight:600;
+  z-index:1000;animation:tin .3s;
+  max-width:90%;text-align:center;
+  box-shadow:0 8px 32px rgba(180,190,220,.3);
+  border:1px solid rgba(255,255,255,.9);
+}
+@keyframes tin{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* 提示 */
+.tip{
+  background:linear-gradient(135deg,#FFF7E8,#FFF0F5);
+  border-left:4px solid #FFD8B8;
+  padding:10px 14px;font-size:13px;color:#A08868;
+  border-radius:14px;margin-bottom:10px;
+  box-shadow:0 2px 8px rgba(255,210,180,.15);
+}
+
+/* 日志 */
+.log-box{
+  background:linear-gradient(135deg,#F5F0FF,#F0F8FF);
+  color:#8B9AAB;font-family:monospace;font-size:11px;
+  padding:10px;border-radius:14px;
+  max-height:80px;overflow-y:auto;margin-bottom:10px;
+  border:1px solid #F0E8FF;
+}
+.log-line{padding:1px 0}
+
+/* 排行榜 */
+.lb-row{
+  display:flex;align-items:center;
+  padding:10px 14px;background:rgba(255,255,255,.9);
+  border-radius:16px;margin-bottom:8px;gap:10px;font-size:13px;
+  box-shadow:0 2px 10px rgba(180,190,220,.1);
+  border:1px solid rgba(255,255,255,.8);
+}
+.lb-rank{width:26px;font-weight:700;color:#FFB880;text-align:center;font-size:15px}
+
+/* AI 主持 */
+.ai-host{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(10px);
+  max-width:90%;z-index:900;pointer-events:none;
+  opacity:0;transition:opacity .3s,transform .3s;
+}
+.ai-host.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.ai-host-inner{
+  background:linear-gradient(135deg,rgba(255,240,250,.98),rgba(240,235,255,.98));
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  color:#8B7BA8;padding:14px 20px;border-radius:22px;
+  font-size:14px;line-height:1.5;
+  box-shadow:0 12px 40px rgba(200,180,220,.35),inset 0 1px 0 rgba(255,255,255,.9);
+  display:flex;gap:10px;align-items:flex-start;
+  position:relative;animation:aiPop .3s ease;
+  border:1px solid rgba(255,255,255,.8);
+  font-weight:500;
+}
+.ai-host-inner::before{
+  content:'🎩';font-size:20px;flex-shrink:0;
+  filter:drop-shadow(0 2px 4px rgba(200,180,220,.3));
+}
+.ai-host-inner::after{
+  content:'';position:absolute;bottom:-8px;left:50%;
+  transform:translateX(-50%);
+  width:0;height:0;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-top:10px solid rgba(240,235,255,.98);
+}
+@keyframes aiPop{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* 音乐按钮 */
+.music-btn{
+  position:fixed;top:16px;right:16px;
+  width:48px;height:48px;border-radius:50%;
+  background:linear-gradient(135deg,#FFFFFF,#FDFAFF);
+  border:1px solid rgba(255,255,255,.9);
+  font-size:22px;cursor:pointer;z-index:950;
+  display:flex;align-items:center;justify-content:center;
+  transition:.25s;
+  box-shadow:0 6px 24px rgba(180,190,220,.25),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.music-btn:active{transform:scale(.9)}
+.music-btn.playing{
+  background:linear-gradient(135deg,#FFC9DD,#E2C8FF);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 6px 24px rgba(255,180,210,.3)}
+  50%{box-shadow:0 6px 32px rgba(255,180,210,.7)}
+}
+
+.vol-slider{width:100%;margin:10px 0;-webkit-appearance:none;appearance:none;height:6px;border-radius:100px;background:#F0E8FF;outline:none}
+.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#FFC9DD,#E2C8FF);cursor:pointer;box-shadow:0 3px 10px rgba(210,190,255,.4);border:2px solid #FFFFFF}
+.vol-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#FFC9DD,#E2C8FF);cursor:pointer;border:2px solid #FFFFFF;box-shadow:0 3px 10px rgba(210,190,255,.4)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="ai-host" id="aiHost"><div class="ai-host-inner"><span id="aiText"></span></div></div>
+<button class="music-btn" id="musicBtn" onclick="toggleMusicPanel()" title="背景音乐">🎵</button>
+
+<script>
+
+/* ═══════════════════════════════════════════════
+   常量
+   ═══════════════════════════════════════════════ */
+var SIZES = [16, 20, 24, 28, 32, 36];
+var TYPES = {
+  start:    {name:'起点',   emoji:'🏁'},
+  property: {name:'房产',   emoji:'🏠'},
+  chance:   {name:'机会',   emoji:'🎁'},
+  fate:     {name:'命运',   emoji:'🎴'},
+  jail:     {name:'监狱',   emoji:'🚔'},
+  free:     {name:'停车场', emoji:'🅿️'},
+  tax:      {name:'缴税',   emoji:'💸'},
+  stock:    {name:'股市',   emoji:'📈'}
+};
+var GROUPS = {
+  blue:   {name:'蓝', color:'#A8CCFF'},
+  green:  {name:'绿', color:'#A8DDD0'},
+  red:    {name:'红', color:'#FFAFAF'},
+  purple: {name:'紫', color:'#C7B0FF'},
+  orange: {name:'橙', color:'#FFC8A8'},
+  yellow: {name:'黄', color:'#FFE4A8'},
+  pink:   {name:'粉', color:'#FFB8D0'},
+  teal:   {name:'青', color:'#A8E0E0'}
+};
+var EMOJIS = ['😀','😎','🤠','🐱','🐶','🐼','🦊','🐯','🦁','🐸','🐵','🐰'];
+var COLORS = ['#FFB8A8','#A8CCFF','#A8DDC8','#FFB8D0','#FFD8A8','#C7B0FF'];
+var CITIES = ['台北','高雄','台中','基隆','香港','澳门','新加坡','曼谷','东京','首尔','北京','上海','纽约','伦敦','巴黎','迪拜','悉尼','柏林','罗马','莫斯科','京都','威尼斯','布拉格','里斯本','雅典','伊斯坦布尔','巴塞罗那','阿姆斯特丹','维也纳','孟买','开罗','多伦多','迈阿密','拉斯维加斯','温哥华'];
+var STOCK_NAMES = ['科技股','能源股','金融股','医药股'];
+var ITEM_TYPES = {
+  'dice':    {name:'🎯 遥控骰子'},
+  'shield':  {name:'🛡 免租卡'},
+  'demolish':{name:'💣 拆迁卡'},
+  'taxcard': {name:'💰 征收卡'}
+};
+
+var AI_LINES = {
+  start:['各位准备好了吗？让我们开始这场财富游戏！','欢迎来到大富翁的世界，祝各位好运！','游戏开始，记得留点钱交过路费哦～'],
+  roll:['骰子已经掷出，命运之轮开始转动……','走一步看一步，落子无悔！','看看你今天的运气如何？'],
+  buy:['明智的投资！这块地以后会升值的。','恭喜成为新地主！','有眼光，这块地风水不错。'],
+  upgrade:['升级成功，你的资产又增值了！','不错不错，这里越来越有样了。','投资升级，收租翻倍！'],
+  rent:['哎呀，出血了……','付过路费是每个大富翁的必修课。','谁让你不早点买下这里呢？'],
+  chance:['机会来了，抓住它！','运气这事，说不准的～','看看今天的机会是什么？'],
+  fate:['命运弄人，接受现实吧……','风水轮流转，这次轮到你了。','命运之卡翻开，惊喜或惊吓？'],
+  jail:['你被关进监狱了，好好反省！','监狱是个好地方，可以静静心。','2 回合不能动，看别人赚钱吧。'],
+  bankrupt:['很遗憾，游戏到此结束……','破产了，来年再战！','商场如战场，胜败乃兵家常事。'],
+  win:['恭喜你成为最终赢家！','财富与智慧的胜利！','恭喜你笑到了最后！']
+};
+
+var S = {
+  screen:'menu', board:[], boardSize:20, boardBg:'',
+  players:[], stocks:[], cur:0, dice:[0,0], diceCount:0, _double:0,
+  phase:'roll', modal:null, log:[], round:0, rolling:false, msg:'',
+  auction:null, _setupPlayers:null, _editBoard:null, aiTimer:null
+};
+
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function toast(m){try{var e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(function(){e.remove();},2200);}catch(err){alert(m);}}
+function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function safeSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}}
+function log(msg){S.log.push('['+new Date().toLocaleTimeString().slice(0,5)+'] '+msg);if(S.log.length>80)S.log.shift();}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+function readImage(file, cb){
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      var max = 200;
+      var scale = Math.min(1, max/Math.max(img.width, img.height));
+      var canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      cb(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function readImageLarge(file, cb){
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      var max = 800;
+      var scale = Math.min(1, max/Math.max(img.width, img.height));
+      var canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      cb(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function aiSay(category){
+  var host = document.getElementById('aiHost');
+  var text = document.getElementById('aiText');
+  if(!host || !text) return;
+  var lines = AI_LINES[category];
+  if(!lines) return;
+  text.textContent = pick(lines);
+  host.classList.add('show');
+  if(S.aiTimer) clearTimeout(S.aiTimer);
+  S.aiTimer = setTimeout(function(){host.classList.remove('show');}, 3500);
+}
+
+function getGridPos(idx, total){
+  var perSide = (total - 4) / 4;
+  var G = perSide + 2;
+  if(idx === 0) return {r:1, c:1};
+  if(idx <= perSide) return {r:1, c:idx+1};
+  if(idx === perSide + 1) return {r:1, c:G};
+  if(idx <= 2*perSide + 1) return {r:idx - perSide, c:G};
+  if(idx === 2*perSide + 2) return {r:G, c:G};
+  if(idx <= 3*perSide + 2) return {r:G, c:G - (idx - 2*perSide - 2)};
+  if(idx === 3*perSide + 3) return {r:G, c:1};
+  return {r:G - (idx - 3*perSide - 3), c:1};
+}
+
+function makeMap(size){
+  var groups = ['blue','green','red','purple','orange','yellow','pink','teal'];
+  var map = []; var pIdx = 0;
+  for(var i=0;i<size;i++){
+    if(i === 0) map.push({type:'start', name:'起点', img:''});
+    else if(i === Math.floor(size/4)) map.push({type:'jail', name:'监狱', img:''});
+    else if(i === Math.floor(size/2)) map.push({type:'free', name:'停车场', img:''});
+    else if(i === Math.floor(size*3/4)) map.push({type:'stock', name:'股市', img:''});
+    else if(i % 7 === 3) map.push({type:'chance', name:'机会', img:''});
+    else if(i % 7 === 5) map.push({type:'fate', name:'命运', img:''});
+    else if(i % 9 === 8) map.push({type:'tax', name:'缴税', img:''});
+    else {
+      var g = groups[Math.floor(pIdx/3) % groups.length];
+      var price = 200 + pIdx * 30;
+      map.push({type:'property', name:CITIES[pIdx % CITIES.length], price:price, group:g, img:''});
+      pIdx++;
+    }
+  }
+  return map;
+}
+function loadMap(size){
+  var key = 'mono-map2-' + size;
+  var b = null, bg = '';
+  try{var s = safeGet(key); if(s){var d = JSON.parse(s); b = d.cells; bg = d.bg || '';}}catch(e){}
+  if(!b || !Array.isArray(b) || b.length !== size){ b = makeMap(size); bg = ''; }
+  b.forEach(function(c){ if(c.img === undefined) c.img = ''; });
+  S.boardBg = bg;
+  return b;
+}
+function saveMap(){
+  var key = 'mono-map2-' + S.boardSize;
+  var data = {cells:S.board, bg:S.boardBg};
+  if(!safeSet(key, JSON.stringify(data))) toast('图片太多，存储已满');
+}
+
+function startGame(names){
+  S.players = names.map(function(n,i){
+    return {name:n.name, emoji:n.emoji, color:COLORS[i%COLORS.length],
+      money:3000, pos:0, alive:true, jailed:0, items:[], stocks:[0,0,0,0], laps:0, totalRent:0, totalBuy:0};
+  });
+  S.stocks = [100,150,200,250].map(function(p){return {price:p, prev:p};});
+  S.cur = 0; S.round = 1; S.phase = 'roll'; S.log = [];
+  S.dice = [0,0]; S.diceCount = 0; S._double = 0; S.msg = '';
+  S.board.forEach(function(c){c.owner = -1; c.level = 0;});
+  log('🎮 游戏开始，共 '+S.players.length+' 人');
+  S.screen = 'playing';
+  aiSay('start');
+}
+
+function rollDice(forced){
+  if(S.rolling || S.phase !== 'roll') return;
+  var p = S.players[S.cur];
+  if(!p || !p.alive) return;
+  S.rolling = true; aiSay('roll');
+  var rolls = 0; var maxRolls = forced ? 1 : 12;
+  var iv = setInterval(function(){
+    S.dice = [Math.floor(Math.random()*6)+1, Math.floor(Math.random()*6)+1];
+    render(); rolls++;
+    if(rolls >= maxRolls){
+      clearInterval(iv); S.rolling = false;
+      if(forced) S.dice = forced;
+      var d1 = S.dice[0], d2 = S.dice[1]; var total = d1 + d2; var isDouble = (d1 === d2);
+      log('🎲 '+p.name+' 掷出 '+d1+'+'+d2+'='+total+(isDouble?' (双数)':''));
+      if(isDouble && S.diceCount < 1){ S.diceCount++; S.msg = p.name+' 掷出双数，可以再掷一次'; S.phase = 'roll'; render(); return; }
+      S.diceCount = 0; movePlayer(total);
+    }
+  }, 60);
+}
+
+function movePlayer(steps){
+  var p = S.players[S.cur]; var oldPos = p.pos; var newPos = (oldPos + steps) % S.board.length;
+  if(newPos < oldPos){ p.money += 200; p.laps++; S.msg = p.name+' 经过起点 +200'; log('🏁 '+p.name+' 经过起点 +200'); }
+  p.pos = newPos; render();
+  setTimeout(function(){handleCell(newPos);}, 350);
+}
+
+function handleCell(idx){
+  var cell = S.board[idx]; var p = S.players[S.cur];
+  if(cell.type === 'start'){ S.msg = p.name+' 停在起点'; endTurn(); return; }
+  if(cell.type === 'chance'){ doChance(); return; }
+  if(cell.type === 'fate'){ doFate(); return; }
+  if(cell.type === 'stock'){ openStock(); return; }
+  if(cell.type === 'jail'){ p.jailed = 2; S.msg = p.name+' 被关进监狱，2 回合不能动'; log('🚔 '+p.name+' 进监狱'); aiSay('jail'); endTurn(); return; }
+  if(cell.type === 'free'){ S.msg = p.name+' 在停车场休息'; endTurn(); return; }
+  if(cell.type === 'tax'){
+    var tax = Math.min(400, p.money); p.money -= tax;
+    S.msg = p.name+' 缴税 -'+tax; log('💸 '+p.name+' 缴税 -'+tax);
+    checkBankrupt(); endTurn(); return;
+  }
+  if(cell.type === 'property'){
+    if(cell.owner === -1){
+      if(p.money < cell.price){ S.msg = p.name+' 现金不足，无法购买 '+cell.name; endTurn(); return; }
+      S.modal = {type:'buy', title:'购买 '+cell.name, desc:'价格 '+cell.price+'\n你现有 💰'+p.money, actions:[
+        {label:'💰 购买',cls:'green',fn:function(){buyProperty(idx);}},
+        {label:'🔨 拍卖',cls:'gold',fn:function(){startAuction(idx);}},
+        {label:'跳过',cls:'ghost',fn:function(){S.modal=null;S.msg=p.name+' 放弃购买';endTurn();}}
+      ]};
+      render();
+    } else if(cell.owner === S.cur){
+      var upCost = Math.floor(cell.price*0.5);
+      if(cell.level >= 5){ S.msg = p.name+' 的 '+cell.name+' 已满级'; endTurn(); return; }
+      if(p.money < upCost){ S.msg = p.name+' 现金不足，无法升级'; endTurn(); return; }
+      S.modal = {type:'upgrade', title:'升级 '+cell.name, desc:'当前等级 Lv'+cell.level+'\n升级费用 '+upCost, actions:[
+        {label:'⬆ 升级到 Lv'+(cell.level+1),cls:'gold',fn:function(){upgradeProperty(idx);}},
+        {label:'跳过',cls:'ghost',fn:function(){S.modal=null;S.msg=p.name+' 不升级';endTurn();}}
+      ]};
+      render();
+    } else {
+      var owner = S.players[cell.owner];
+      if(!owner.alive){ cell.owner=-1; cell.level=0; endTurn(); return; }
+      var rent = Math.floor(cell.price * 0.15 * cell.level);
+      if(p.items.indexOf('shield') >= 0){
+        p.items.splice(p.items.indexOf('shield'),1);
+        S.msg = p.name+' 使用免租卡，免去租金！'; log('🛡 '+p.name+' 免租'); endTurn(); return;
+      }
+      var groupCount = 0;
+      S.board.forEach(function(c){ if(c.group === cell.group && c.owner === cell.owner) groupCount++; });
+      if(groupCount >= 2) rent = Math.floor(rent * 1.5);
+      p.money -= rent; owner.money += rent; owner.totalRent += rent;
+      S.msg = p.name+' 付 '+owner.name+' 租金 -'+rent;
+      log('💵 '+p.name+' 付 '+owner.name+' 租金 '+rent+(groupCount>=2?' (同色组加成)':''));
+      aiSay('rent'); checkBankrupt(); endTurn();
+    }
+  }
+}
+
+function buyProperty(idx){
+  var cell = S.board[idx]; var p = S.players[S.cur];
+  if(p.money < cell.price){ toast('现金不足'); return; }
+  p.money -= cell.price; cell.owner = S.cur; cell.level = 1; p.totalBuy += cell.price;
+  S.msg = p.name+' 买下 '+cell.name+' (-'+cell.price+')'; log('🏠 '+p.name+' 买下 '+cell.name);
+  aiSay('buy'); S.modal = null; saveMap(); endTurn();
+}
+function upgradeProperty(idx){
+  var cell = S.board[idx]; var p = S.players[S.cur];
+  var cost = Math.floor(cell.price*0.5);
+  if(p.money < cost){ toast('现金不足'); return; }
+  p.money -= cost; cell.level++;
+  S.msg = p.name+' 升级 '+cell.name+' 到 Lv'+cell.level; log('⬆ '+p.name+' 升级 '+cell.name);
+  aiSay('upgrade'); S.modal = null; saveMap(); endTurn();
+}
+
+function doChance(){
+  var p = S.players[S.cur];
+  var pool = [
+    {t:'股票分红 +400', fn:function(){p.money+=400;}},
+    {t:'银行利息 +200', fn:function(){p.money+=200;}},
+    {t:'中彩票 +800', fn:function(){p.money+=800;}},
+    {t:'获得一张【免租卡】', fn:function(){p.items.push('shield');}},
+    {t:'获得一张【遥控骰子】', fn:function(){p.items.push('dice');}},
+    {t:'所有对手付你100', fn:function(){S.players.forEach(function(x){if(x!==p&&x.alive){x.money-=100;p.money+=100;}});}},
+    {t:'医疗费 -300', fn:function(){p.money-=300;}},
+    {t:'交通罚单 -200', fn:function(){p.money-=200;}}
+  ];
+  var ev = pool[Math.floor(Math.random()*pool.length)]; ev.fn();
+  S.msg = p.name+' 机会：'+ev.t; log('🎁 '+p.name+' 机会：'+ev.t);
+  aiSay('chance'); checkBankrupt(); endTurn();
+}
+
+function doFate(){
+  var p = S.players[S.cur];
+  var pool = [
+    {t:'股市暴涨，股票+50%', fn:function(){var t=0;p.stocks.forEach(function(c,i){if(c>0)t+=Math.floor(S.stocks[i].price*0.5*c);});if(t>0){p.money+=t;}S.msg=p.name+' 命运：+'+t;}},
+    {t:'缴纳房产税 -100/块', fn:function(){var lands=0;S.board.forEach(function(c){if(c.owner===S.players.indexOf(p))lands++;});p.money-=lands*100;S.msg=p.name+' 命运：-'+(lands*100);}},
+    {t:'被送进监狱', fn:function(){p.jailed=2;S.msg=p.name+' 命运：进监狱';}},
+    {t:'获得【拆迁卡】', fn:function(){p.items.push('demolish');S.msg=p.name+' 获得拆迁卡';}},
+    {t:'获得【征收卡】', fn:function(){p.items.push('taxcard');S.msg=p.name+' 获得征收卡';}},
+    {t:'继承遗产 +1500', fn:function(){p.money+=1500;S.msg=p.name+' 命运：+1500';}},
+    {t:'被抢劫 -500', fn:function(){p.money-=500;S.msg=p.name+' 命运：-500';}},
+    {t:'传送到最近的空地', fn:function(){for(var i=1;i<=S.board.length;i++){var ni=(p.pos+i)%S.board.length;if(S.board[ni].type==='property'&&S.board[ni].owner===-1){p.pos=ni;S.msg=p.name+' 命运：传送到 '+S.board[ni].name;break;}}}}
+  ];
+  var ev = pool[Math.floor(Math.random()*pool.length)]; ev.fn();
+  log('🎴 '+p.name+' 命运：'+ev.t); aiSay('fate'); checkBankrupt(); endTurn();
+}
+
+function openStock(){ S.modal = {type:'stock', title:'📈 股票市场', actions:[]}; render(); }
+function stockUpdate(){
+  S.stocks.forEach(function(s){ s.prev = s.price; var change = (Math.random()-0.5)*0.4; s.price = Math.max(20, Math.floor(s.price*(1+change))); });
+  log('📈 股市波动');
+}
+function buyStock(i, amount){
+  var p = S.players[S.cur]; var cost = S.stocks[i].price * amount;
+  if(p.money < cost){ toast('现金不足'); return; }
+  p.money -= cost; p.stocks[i] += amount;
+  log('📈 '+p.name+' 买入 '+STOCK_NAMES[i]+'×'+amount); render();
+}
+function sellStock(i, amount){
+  var p = S.players[S.cur];
+  if(p.stocks[i] < amount){ toast('持有不足'); return; }
+  var gain = S.stocks[i].price * amount;
+  p.money += gain; p.stocks[i] -= amount;
+  log('📉 '+p.name+' 卖出 '+STOCK_NAMES[i]+'×'+amount); render();
+}
+
+function startAuction(idx){
+  S.modal = null;
+  var cell = S.board[idx];
+  var bidders = S.players.filter(function(p,i){return i!==S.cur && p.alive;});
+  if(bidders.length === 0){ S.msg = '无人参与拍卖，'+cell.name+' 流拍'; endTurn(); return; }
+  S.auction = {idx:idx, price:Math.floor(cell.price*0.5), highest:-1, current:0, bidders:bidders, passed:{}};
+  renderAuction();
+}
+function renderAuction(){
+  var a = S.auction; var cell = S.board[a.idx]; var cur = a.bidders[a.current];
+  S.modal = {type:'auction', title:'🔨 拍卖：'+cell.name,
+    desc:'当前价格：💰'+a.price+'\n最高出价者：'+(a.highest>=0?S.players[a.highest].name:'无')+'\n\n轮到 '+cur.name+'（现金 '+cur.money+'）',
+    actions:[
+      {label:'出价 '+(a.price+100),cls:'green',fn:function(){auctionBid(a.price+100);}},
+      {label:'出价 '+(a.price+200),cls:'green',fn:function(){auctionBid(a.price+200);}},
+      {label:'放弃',cls:'ghost',fn:function(){auctionPass();}}
+    ]};
+  render();
+}
+function auctionBid(newPrice){
+  var a = S.auction; var cur = a.bidders[a.current];
+  if(cur.money < newPrice){ toast('现金不足'); return; }
+  a.price = newPrice; a.highest = S.players.indexOf(cur);
+  log('🔨 '+cur.name+' 出价 '+newPrice);
+  a.current = (a.current+1) % a.bidders.length;
+  var active = a.bidders.filter(function(b){return !a.passed[S.players.indexOf(b)];});
+  if(active.length <= 1){ auctionFinish(); return; }
+  var guard = 0;
+  while(S.players.indexOf(a.bidders[a.current]) === a.highest && guard < 10){ a.current = (a.current+1) % a.bidders.length; guard++; }
+  renderAuction();
+}
+function auctionPass(){
+  var a = S.auction; var cur = a.bidders[a.current];
+  a.passed[S.players.indexOf(cur)] = true;
+  log('🔨 '+cur.name+' 放弃出价');
+  var active = a.bidders.filter(function(b){return !a.passed[S.players.indexOf(b)];});
+  if(active.length <= 1){ auctionFinish(); return; }
+  a.current = (a.current+1) % a.bidders.length;
+  var guard = 0;
+  while(a.passed[S.players.indexOf(a.bidders[a.current])] && guard < 20){ a.current = (a.current+1) % a.bidders.length; guard++; }
+  renderAuction();
+}
+function auctionFinish(){
+  var a = S.auction; var cell = S.board[a.idx];
+  if(a.highest < 0){ S.msg = '拍卖流拍：'+cell.name; S.modal = null; S.auction = null; endTurn(); return; }
+  var winner = S.players[a.highest];
+  winner.money -= a.price; cell.owner = a.highest; cell.level = 1; winner.totalBuy += a.price;
+  S.msg = winner.name+' 拍下 '+cell.name+' ('+a.price+')'; log('🔨 '+winner.name+' 拍下 '+cell.name);
+  S.modal = null; S.auction = null; saveMap(); endTurn();
+}
+
+function useItem(itemType){
+  var p = S.players[S.cur];
+  if(p.items.indexOf(itemType) < 0){ toast('没有该道具'); return; }
+  if(itemType === 'dice'){
+    S.modal = {type:'useDice', title:'🎯 遥控骰子', desc:'选择下一次掷出的点数', actions:[1,2,3,4,5,6].map(function(n){
+      return {label:'点数 '+n,cls:'primary',fn:function(){p.items.splice(p.items.indexOf('dice'),1);S.modal = null;setTimeout(function(){rollDice([n,0]);},200);}};
+    })};
+    render(); return;
+  }
+  if(itemType === 'shield'){ toast('免租卡被收租时自动使用'); return; }
+  if(itemType === 'demolish'){
+    var targets = [];
+    S.board.forEach(function(c,i){ if(c.owner >= 0 && c.owner !== S.players.indexOf(p) && c.level > 1){ targets.push({idx:i, owner:S.players[c.owner].name, cell:c}); } });
+    if(targets.length === 0){ toast('没有可拆的地产'); return; }
+    S.modal = {type:'demolish', title:'💣 拆迁卡', desc:'选择要拆的地产（降 1 级）', actions:targets.map(function(o){
+      return {label:o.owner+' 的 '+o.cell.name+' (Lv'+o.cell.level+')',cls:'red',fn:function(){p.items.splice(p.items.indexOf('demolish'),1);o.cell.level--;log('💣 '+p.name+' 拆了 '+o.owner);S.modal = null; render();}};
+    }).concat([{label:'取消',cls:'ghost',fn:function(){S.modal=null;render();}}])};
+    render(); return;
+  }
+  if(itemType === 'taxcard'){
+    var targets = S.players.filter(function(x,i){return i !== S.players.indexOf(p) && x.alive;});
+    S.modal = {type:'taxcard', title:'💰 征收卡', desc:'选择要征收的玩家', actions:targets.map(function(t){
+      return {label:t.emoji+' '+t.name,cls:'gold',fn:function(){p.items.splice(p.items.indexOf('taxcard'),1);var amt = Math.min(200, t.money);t.money -= amt; p.money += amt;log('💰 '+p.name+' 向 '+t.name+' 征收 '+amt);S.modal = null; render();}};
+    }).concat([{label:'取消',cls:'ghost',fn:function(){S.modal=null;render();}}])};
+    render(); return;
+  }
+}
+
+function checkBankrupt(){
+  var p = S.players[S.cur];
+  if(p.money < 0){
+    var total = 0; p.stocks.forEach(function(c,i){ total += S.stocks[i].price * c; });
+    if(total > 0 && p.money < 0){
+      var need = -p.money;
+      for(var i=0;i<p.stocks.length && need>0;i++){ while(p.stocks[i] > 0 && need > 0){ p.stocks[i]--; var gain = S.stocks[i].price; p.money += gain; need -= gain; } }
+      log('📉 '+p.name+' 自动卖股票救急');
+    }
+    if(p.money < 0){
+      p.money = 0; p.alive = false; S.msg = p.name+' 破产出局！';
+      log('💀 '+p.name+' 破产出局'); aiSay('bankrupt');
+      S.board.forEach(function(c){ if(c.owner === S.players.indexOf(p)){ c.owner = -1; c.level = 0; } });
+    }
+  }
+}
+
+function endTurn(){
+  render();
+  setTimeout(function(){
+    if(S.round > 0 && (S.cur+1) % S.players.length === 0) stockUpdate();
+    var alive = S.players.filter(function(p){return p.alive;});
+    if(alive.length <= 1){ S.screen = 'result'; render(); aiSay('win'); return; }
+    do{ S.cur = (S.cur+1) % S.players.length; if(S.cur === 0) S.round++; } while(!S.players[S.cur].alive);
+    var p = S.players[S.cur];
+    if(p.jailed > 0){ p.jailed--; S.msg = p.name+' 在监狱中，跳过（剩 '+p.jailed+' 回合）'; }
+    S.phase = 'roll'; S.diceCount = 0; render();
+  }, 700);
+}
+
+var MUSIC = {el:null, url:'', playing:false, volume:0.5};
+function initMusic(){
+  if(MUSIC.el) return;
+  MUSIC.el = new Audio(); MUSIC.el.loop = true; MUSIC.el.volume = MUSIC.volume;
+  var saved = safeGet('mono-music-url'); if(saved){ MUSIC.url = saved; MUSIC.el.src = saved; }
+}
+function toggleMusicPanel(){ initMusic(); S.modal = {type:'music', title:'🎵 背景音乐', desc:'支持本地上传或粘贴链接。', actions:[]}; render(); }
+function toggleMusic(){
+  initMusic();
+  if(!MUSIC.url){ toast('请先添加音乐'); return; }
+  if(MUSIC.playing){ MUSIC.el.pause(); MUSIC.playing = false; }
+  else { MUSIC.el.play().catch(function(){ toast('播放失败，请点击页面后重试'); }); MUSIC.playing = true; }
+  updateMusicBtn();
+}
+function updateMusicBtn(){
+  var btn = document.getElementById('musicBtn'); if(!btn) return;
+  if(MUSIC.playing){ btn.classList.add('playing'); } else { btn.classList.remove('playing'); }
+}
+function setMusicFile(file){
+  var reader = new FileReader();
+  reader.onload = function(e){
+    MUSIC.url = e.target.result; initMusic(); MUSIC.el.src = MUSIC.url;
+    if(!safeSet('mono-music-url', MUSIC.url)){ toast('文件太大，本次有效'); } else { toast('✓ 已设置'); }
+    MUSIC.el.play().then(function(){ MUSIC.playing = true; updateMusicBtn(); }).catch(function(){});
+  };
+  reader.readAsDataURL(file);
+}
+function setMusicUrl(url){
+  if(!url){ toast('请输入链接'); return; }
+  MUSIC.url = url; initMusic(); MUSIC.el.src = url; safeSet('mono-music-url', url);
+  toast('✓ 已保存');
+  MUSIC.el.play().then(function(){ MUSIC.playing = true; updateMusicBtn(); }).catch(function(){});
+}
+function setMusicVolume(v){ MUSIC.volume = v; if(MUSIC.el) MUSIC.el.volume = v; }
+
+function render(){
+  var app = document.getElementById('app'); var h = '';
+  if(S.screen === 'menu') h = rMenu();
+  else if(S.screen === 'setup') h = rSetup();
+  else if(S.screen === 'mapSize') h = rMapSize();
+  else if(S.screen === 'mapEdit') h = rMapEdit();
+  else if(S.screen === 'playing') h = rPlaying();
+  else if(S.screen === 'result') h = rResult();
+  if(S.modal) h += rModal();
+  app.innerHTML = h;
+  if(S.screen === 'setup') bindSetup();
+  if(S.screen === 'mapEdit') bindEdit();
+  updateMusicBtn();
+}
+
+function rMenu(){
+  return '<div class="screen">'+
+    '<div class="hero"><div class="hero-emoji">🎲</div>'+
+    '<h1>大富翁</h1>'+
+    '<p style="color:#B8C0CC;font-size:13px;margin-top:6px">买地 · 炒股 · 用道具</p></div>'+
+    '<div class="setup-section">'+
+    '<div class="setup-label">✨ 功能</div>'+
+    '<div style="font-size:12px;color:#8B9AAB;line-height:1.8">'+
+    '🖼 图片格子 · 🗺 地图背景<br>'+
+    '🎩 AI 主持 · 🎵 背景音乐<br>'+
+    '🎨 16-36 格自定义 · 📈 股票拍卖'+
+    '</div></div>'+
+    '<button class="btn primary" data-a="setup">🎮 开始游戏</button>'+
+    '<button class="btn gold" data-a="mapSize" style="margin-top:8px">✏️ 自定义地图</button>'+
+    '<button class="btn blue" data-a="music" style="margin-top:8px">🎵 背景音乐设置</button>'+
+    '</div>';
+}
+
+function rSetup(){
+  return '<div class="screen"><h2>👥 设置玩家</h2>'+
+    '<p class="hint">2-6 人，每人选一个头像</p>'+
+    '<div id="playerList"></div>'+
+    '<button class="btn ghost" data-a="addPlayer" id="addBtn">➕ 添加玩家</button>'+
+    '<button class="btn primary" data-a="startPlay" style="margin-top:12px">🎲 开始游戏</button>'+
+    '<button class="btn ghost" data-a="backMenu" style="margin-top:8px">返回</button></div>';
+}
+
+function bindSetup(){
+  if(!S._setupPlayers){
+    S._setupPlayers = [
+      {name:'玩家1', emoji:'😀'},
+      {name:'玩家2', emoji:'😎'},
+      {name:'玩家3', emoji:'🤠'}
+    ];
+  }
+  var el = document.getElementById('playerList'); if(!el) return;
+  var h = '';
+  S._setupPlayers.forEach(function(p,i){
+    h += '<div class="player-input">'+
+      '<button class="emoji-btn" data-a="changeEmoji" data-i="'+i+'">'+p.emoji+'</button>'+
+      '<input class="input" data-a="changeName" data-i="'+i+'" value="'+esc(p.name)+'" maxlength="10">'+
+      (S._setupPlayers.length > 2 ? '<button class="del-btn" data-a="delPlayer" data-i="'+i+'">×</button>' : '')+
+      '</div>';
+  });
+  el.innerHTML = h;
+  var addBtn = document.getElementById('addBtn');
+  if(addBtn) addBtn.style.display = S._setupPlayers.length >= 6 ? 'none' : 'block';
+}
+
+function rMapSize(){
+  var h = '<div class="screen"><h2>✏️ 选择地图大小</h2><div class="size-grid">';
+  SIZES.forEach(function(sz){
+    h += '<button class="size-btn '+(S.boardSize===sz?'active':'')+'" data-a="pickSize" data-sz="'+sz+'">'+sz+' 格</button>';
+  });
+  h += '</div>'+
+    '<div class="setup-section"><div class="setup-label">当前地图</div>'+
+    '<p style="font-size:13px;color:#8B9AAB">'+S.boardSize+' 格 · 每边约 '+((S.boardSize-4)/4+2)+' 个位置</p></div>'+
+    '<button class="btn primary" data-a="editMap">✏️ 编辑地图</button>'+
+    '<button class="btn green" data-a="resetMap" style="margin-top:8px">🔄 恢复默认地图</button>'+
+    '<button class="btn ghost" data-a="backMenu" style="margin-top:8px">返回</button></div>';
+  return h;
+}
+
+function rMapEdit(){
+  if(!S._editBoard) S._editBoard = JSON.parse(JSON.stringify(S.board));
+  var bgPreview = S.boardBg
+    ? '<div class="map-preview has-img" style="background-image:url('+S.boardBg+')" data-a="uploadBg"></div>'
+    : '<div class="map-preview" data-a="uploadBg">🖼 点击上传地图背景图</div>';
+  var h = '<div class="screen"><h2>🗺 编辑地图（'+S.boardSize+' 格）</h2>'+
+    '<h3>🖼 地图背景</h3>'+bgPreview+
+    (S.boardBg ? '<button class="btn ghost" data-a="clearBg">🗑 清除背景</button>' : '')+
+    '<h3>🏠 每个格子</h3>'+
+    '<p class="hint">点击缩略图上传图片</p>'+
+    '<div class="setup-section" style="max-height:55vh;overflow-y:auto" id="editList"></div>'+
+    '<button class="btn primary" data-a="saveEdit">💾 保存地图</button>'+
+    '<button class="btn ghost" data-a="backMapSize" style="margin-top:8px">返回</button></div>';
+  return h;
+}
+
+function bindEdit(){
+  var el = document.getElementById('editList'); if(!el) return;
+  var h = '';
+  S._editBoard.forEach(function(c, i){
+    var typeOpts = Object.keys(TYPES).map(function(t){
+      return '<option value="'+t+'" '+(c.type===t?'selected':'')+'>'+TYPES[t].emoji+'</option>';
+    }).join('');
+    var groupOpts = Object.keys(GROUPS).map(function(g){
+      return '<option value="'+g+'" '+(c.group===g?'selected':'')+'>'+GROUPS[g].name+'</option>';
+    }).join('');
+    var thumb = c.img
+      ? '<div class="cell-thumb has-img" style="background-image:url('+c.img+')" data-a="uploadCellImg" data-i="'+i+'"></div>'
+      : '<div class="cell-thumb" data-a="uploadCellImg" data-i="'+i+'">🖼</div>';
+    h += '<div class="cell-row">'+thumb+
+      '<div class="idx">'+i+'</div>'+
+      '<input class="name" data-a="editName" data-i="'+i+'" value="'+esc(c.name)+'" maxlength="8" placeholder="名称">'+
+      '<select class="type" data-a="editType" data-i="'+i+'">'+typeOpts+'</select>';
+    if(c.type === 'property'){
+      h += '<input class="price" type="number" data-a="editPrice" data-i="'+i+'" value="'+(c.price||200)+'" placeholder="价">'+
+        '<select class="group" data-a="editGroup" data-i="'+i+'">'+groupOpts+'</select>';
+    }
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function rPlaying(){
+  var cur = S.players[S.cur];
+  var total = S.board.length;
+  var perSide = (total-4)/4; var G = perSide + 2;
+  var fontSize = Math.max(6, Math.round(60/G));
+  var boardStyle = 'grid-template-columns:repeat('+G+',1fr);grid-template-rows:repeat('+G+',1fr);font-size:'+fontSize+'px;';
+  if(S.boardBg) boardStyle += 'background-image:url('+S.boardBg+');background-size:cover;background-position:center;';
+  var boardHtml = '<div class="board" style="'+boardStyle+'">';
+  S.board.forEach(function(cell, i){
+    var cls = 'cell';
+    if(cell.img) cls += ' has-img';
+    if(cell.type === 'start') cls += ' start';
+    else if(cell.type === 'chance') cls += ' chance';
+    else if(cell.type === 'fate') cls += ' fate';
+    else if(cell.type === 'jail') cls += ' jail';
+    else if(cell.type === 'free') cls += ' free';
+    else if(cell.type === 'tax') cls += ' tax';
+    else if(cell.type === 'stock') cls += ' stock';
+    if(cell.owner >= 0) cls += ' lv-' + cell.level;
+    var pos = getGridPos(i, total);
+    var tokens = '';
+    S.players.forEach(function(p){ if(p.alive && p.pos === i){ tokens += '<div class="token" style="background:'+p.color+'">'+esc(p.emoji)+'</div>'; } });
+    var ownerDot = ''; if(cell.owner >= 0){ ownerDot = '<div class="cell-owner" style="background:'+S.players[cell.owner].color+'"></div>'; }
+    var imgStyle = '';
+    if(cell.img) imgStyle = 'background-image:url('+cell.img+');';
+    else if(cell.type === 'property' && cell.group && GROUPS[cell.group]){ imgStyle = 'border-bottom:3px solid '+GROUPS[cell.group].color+';'; }
+    boardHtml += '<div class="'+cls+'" style="grid-row:'+pos.r+';grid-column:'+pos.c+';'+imgStyle+'">'+
+      '<div><div class="cell-name">'+esc(cell.name)+'</div>'+
+      (cell.type === 'property' ? '<div class="cell-price">'+cell.price+(cell.owner>=0?' Lv'+cell.level:'')+'</div>' : '')+
+      '</div>'+ownerDot+tokens+'</div>';
+  });
+  boardHtml += '<div class="center" style="grid-row:2/'+(G-1)+';grid-column:2/'+(G-1)+'">'+
+    '<div style="font-size:1.4em;font-weight:700">'+esc(cur.emoji)+' '+esc(cur.name)+'</div>'+
+    '<div style="font-size:1.1em;color:#8B9AAB">💰 '+cur.money+'</div>'+
+    '<div class="dice '+(S.rolling?'rolling':'')+'">'+(S.dice[0]||'🎲')+'</div>'+
+    (S.dice[1]?'<div style="font-size:.8em;color:#C8D0DC">+'+S.dice[1]+'</div>':'')+
+    '<div style="font-size:.8em;color:#C8D0DC">第 '+S.round+' 轮</div>'+
+    (S.diceCount>0?'<div style="font-size:.75em;color:#E8A0B8">双数！再掷</div>':'')+
+    '</div>';
+  boardHtml += '</div>';
+
+  var h = '<div class="screen">' + boardHtml;
+  h += '<div class="players">';
+  S.players.forEach(function(p,i){
+    var posName = p.pos < S.board.length ? S.board[p.pos].name : '?';
+    var cls = 'player-row';
+    if(i === S.cur) cls += ' cur';
+    if(!p.alive) cls += ' dead';
+    if(p.jailed > 0 && p.alive) cls += ' jailed';
+    var tags = []; if(p.jailed > 0) tags.push('🚔'+p.jailed); if(p.items.length > 0) tags.push('🛠'+p.items.length);
+    var stockVal = 0; p.stocks.forEach(function(c,si){ stockVal += c*S.stocks[si].price; });
+    h += '<div class="'+cls+'">'+
+      '<div class="player-dot" style="background:'+p.color+'"></div>'+
+      '<div class="player-name">'+esc(p.emoji)+' '+esc(p.name)+(tags.length?' <span class="player-tag">'+tags.join(' ')+'</span>':'')+'</div>'+
+      '<div class="player-tag">'+esc(posName)+'</div>'+
+      '<div class="player-money">'+p.money+(stockVal>0?'<span style="color:#A89BC8;font-size:.85em"> +📈'+stockVal+'</span>':'')+'</div>'+
+      '</div>';
+  });
+  h += '</div>';
+
+  if(cur.items.length > 0){
+    h += '<div class="setup-section" style="padding:12px 14px">'+
+      '<div style="font-size:12px;color:#8B9AAB;margin-bottom:6px">我的道具：</div>';
+    cur.items.forEach(function(it){ h += '<span class="item-tag" data-a="useItem" data-it="'+it+'">'+ITEM_TYPES[it].name+'</span>'; });
+    h += '</div>';
+  }
+
+  if(S.msg) h += '<div class="tip">'+esc(S.msg)+'</div>';
+  if(S.log.length > 0){ h += '<div class="log-box">'+S.log.slice(-5).map(function(l){return '<div class="log-line">'+esc(l)+'</div>';}).join('')+'</div>'; }
+
+  if(S.phase === 'roll' && cur.alive && cur.jailed === 0){
+    h += '<button class="btn primary" data-a="roll" '+(S.rolling?'disabled':'')+'>🎲 掷骰子</button>';
+  } else if(cur.jailed > 0){
+    h += '<button class="btn ghost" data-a="skipTurn">🚔 跳过（监狱剩 '+cur.jailed+' 回合）</button>';
+  }
+  h += '<button class="btn ghost" data-a="quit" style="margin-top:8px">结束游戏</button>';
+  h += '</div>';
+  return h;
+}
+
+function rResult(){
+  var alive = S.players.filter(function(p){return p.alive;});
+  var winner = alive[0];
+  var ranking = S.players.slice().sort(function(a,b){
+    var av = a.money + a.stocks.reduce(function(s,c,i){return s+c*S.stocks[i].price;},0);
+    var bv = b.money + b.stocks.reduce(function(s,c,i){return s+c*S.stocks[i].price;},0);
+    return bv - av;
+  });
+  var h = '<div class="screen"><div class="hero"><div class="hero-emoji">🏆</div><h1>游戏结束</h1></div>';
+  if(winner){
+    var stockVal = winner.stocks.reduce(function(s,c,i){return s+c*S.stocks[i].price;},0);
+    h += '<div class="setup-section" style="text-align:center">'+
+      '<div style="font-size:48px">'+winner.emoji+'</div>'+
+      '<h2 style="color:#A89BC8">'+esc(winner.name)+' 获胜！</h2>'+
+      '<p style="color:#8B9AAB;margin-top:8px">最终资产：💰 '+(winner.money+stockVal)+'</p></div>';
+  }
+  h += '<h3>🏅 排行榜</h3>';
+  ranking.forEach(function(p, i){
+    var stockVal = p.stocks.reduce(function(s,c,si){return s+c*S.stocks[si].price;},0);
+    var total = p.money + stockVal;
+    h += '<div class="lb-row"><div class="lb-rank">#'+(i+1)+'</div>'+
+      '<div class="player-dot" style="background:'+p.color+'"></div>'+
+      '<div style="flex:1">'+esc(p.emoji)+' '+esc(p.name)+(p.alive?'':' 💀')+'</div>'+
+      '<div style="font-weight:700;color:#7BC9A8">💰'+total+'</div></div>';
+  });
+  h += '<button class="btn primary" data-a="playAgain" style="margin-top:12px">🔄 再玩一局</button>';
+  h += '<button class="btn ghost" data-a="backMenu" style="margin-top:8px">返回主菜单</button></div>';
+  return h;
+}
+
+function rModal(){
+  var m = S.modal;
+  if(m.type === 'stock') return rStockModal();
+  if(m.type === 'music') return rMusicModal();
+  var h = '<div class="modal"><div class="modal-box">'+
+    '<h3>'+esc(m.title)+'</h3>'+
+    '<p>'+esc(m.desc).replace(/\n/g,'<br>')+'</p>';
+  m.actions.forEach(function(a,i){
+    h += '<button class="btn '+a.cls+'" data-a="modalAct" data-i="'+i+'">'+esc(a.label)+'</button>';
+  });
+  h += '</div></div>';
+  return h;
+}
+
+function rStockModal(){
+  var p = S.players[S.cur];
+  var h = '<div class="modal"><div class="modal-box"><h3>📈 股票市场</h3>'+
+    '<p style="font-size:12px;color:#B8C0CC">每轮波动一次，低买高卖。</p>';
+  S.stocks.forEach(function(s,i){
+    var change = s.price - s.prev;
+    var arrow = change > 0 ? '▲' : (change < 0 ? '▼' : '—');
+    var cls = change > 0 ? 'stock-up' : (change < 0 ? 'stock-down' : '');
+    h += '<div class="stock-row"><div class="stock-name">'+STOCK_NAMES[i]+'</div>'+
+      '<div class="stock-change '+cls+'">'+arrow+Math.abs(change)+'</div>'+
+      '<div class="stock-price">'+s.price+'</div>'+
+      '<div style="font-size:11px;color:#B8C0CC">持'+p.stocks[i]+'</div></div>';
+    h += '<div style="display:flex;gap:4px;margin-bottom:6px">'+
+      '<button class="btn sm primary" data-a="buyStock" data-i="'+i+'" data-n="1" style="flex:1">买1</button>'+
+      '<button class="btn sm primary" data-a="buyStock" data-i="'+i+'" data-n="5" style="flex:1">买5</button>'+
+      '<button class="btn sm red" data-a="sellStock" data-i="'+i+'" data-n="1" style="flex:1">卖1</button>'+
+      '<button class="btn sm red" data-a="sellStock" data-i="'+i+'" data-n="5" style="flex:1">卖5</button></div>';
+  });
+  h += '<button class="btn ghost" data-a="closeStock" style="margin-top:8px">离开股市</button></div></div>';
+  return h;
+}
+
+function rMusicModal(){
+  var h = '<div class="modal"><div class="modal-box"><h3>🎵 背景音乐</h3>'+
+    '<p style="font-size:13px">上传本地音频或粘贴网络链接。</p>';
+  h += '<div class="setup-section" style="padding:12px"><div class="setup-label">📁 上传文件</div>'+
+    '<input type="file" id="musicFile" accept="audio/*" style="display:none">'+
+    '<button class="btn primary sm" onclick="document.getElementById(\'musicFile\').click()">选择音乐</button></div>';
+  h += '<div class="setup-section" style="padding:12px"><div class="setup-label">🔗 音乐链接</div>'+
+    '<input class="input" id="musicUrlInput" placeholder="https://...mp3" value="'+esc(MUSIC.url.startsWith('data:')?'':MUSIC.url)+'">'+
+    '<button class="btn green sm" data-a="setMusicUrl">使用链接</button></div>';
+  h += '<div class="setup-section" style="padding:12px"><div class="setup-label">🔊 音量</div>'+
+    '<input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="'+(MUSIC.volume*100)+'"></div>';
+  h += '<div class="btn-row"><button class="btn '+(MUSIC.playing?'red':'green')+'" data-a="toggleMusicPlay">'+(MUSIC.playing?'⏸ 暂停':'▶ 播放')+'</button></div>';
+  h += '<button class="btn ghost" data-a="closeMusic" style="margin-top:8px">关闭</button></div></div>';
+  return h;
+}
+
+document.addEventListener('click', function(e){
+  try{
+    var el = e.target.closest('[data-a]'); if(!el) return;
+    var a = el.dataset.a;
+    var i = el.dataset.i !== undefined ? parseInt(el.dataset.i) : null;
+    var n = el.dataset.n !== undefined ? parseInt(el.dataset.n) : null;
+    var sz = el.dataset.sz ? parseInt(el.dataset.sz) : null;
+
+    if(a === 'setup'){ S.screen = 'setup'; S._setupPlayers = null; render(); }
+    else if(a === 'backMenu'){ S.screen = 'menu'; S.modal = null; render(); }
+    else if(a === 'mapSize'){ S.screen = 'mapSize'; render(); }
+    else if(a === 'music'){ toggleMusicPanel(); }
+    else if(a === 'pickSize'){ S.boardSize = sz; S.board = loadMap(sz); render(); }
+    else if(a === 'editMap'){ S.board = loadMap(S.boardSize); S._editBoard = JSON.parse(JSON.stringify(S.board)); S.screen = 'mapEdit'; render(); }
+    else if(a === 'resetMap'){
+      if(!confirm('恢复默认地图？')) return;
+      try{ localStorage.removeItem('mono-map2-' + S.boardSize); }catch(e){}
+      S.board = makeMap(S.boardSize); S.boardBg = ''; saveMap(); toast('已恢复'); render();
+    }
+    else if(a === 'backMapSize'){ S.screen = 'mapSize'; S._editBoard = null; render(); }
+    else if(a === 'uploadBg'){
+      var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+      inp.onchange = function(){ var f = inp.files[0]; if(!f) return;
+        readImageLarge(f, function(b64){ S.boardBg = b64; S.modal = null; render(); toast('✓ 背景已设置，记得保存'); }); };
+      inp.click();
+    }
+    else if(a === 'clearBg'){ S.boardBg = ''; render(); }
+    else if(a === 'uploadCellImg'){
+      var inp2 = document.createElement('input'); inp2.type = 'file'; inp2.accept = 'image/*';
+      inp2.onchange = function(){ var f = inp2.files[0]; if(!f) return;
+        readImage(f, function(b64){ S._editBoard[i].img = b64; bindEdit(); toast('✓ 图片已添加'); }); };
+      inp2.click();
+    }
+    else if(a === 'saveEdit'){
+      document.querySelectorAll('[data-a="editName"]').forEach(function(inp){ var idx = parseInt(inp.dataset.i); S._editBoard[idx].name = inp.value.trim() || S._editBoard[idx].name; });
+      document.querySelectorAll('[data-a="editType"]').forEach(function(sel){ var idx = parseInt(sel.dataset.i); S._editBoard[idx].type = sel.value; });
+      document.querySelectorAll('[data-a="editPrice"]').forEach(function(inp){ var idx = parseInt(inp.dataset.i); var v = parseInt(inp.value); if(v > 0) S._editBoard[idx].price = v; });
+      document.querySelectorAll('[data-a="editGroup"]').forEach(function(sel){ var idx = parseInt(sel.dataset.i); S._editBoard[idx].group = sel.value; });
+      S.board = JSON.parse(JSON.stringify(S._editBoard));
+      saveMap(); toast('✓ 已保存'); S.screen = 'menu'; render();
+    }
+    else if(a === 'changeEmoji'){
+      var curEmoji = S._setupPlayers[i].emoji; var ci = EMOJIS.indexOf(curEmoji);
+      S._setupPlayers[i].emoji = EMOJIS[(ci+1) % EMOJIS.length]; bindSetup();
+    }
+    else if(a === 'delPlayer'){ if(S._setupPlayers.length <= 2) return; S._setupPlayers.splice(i,1); bindSetup(); }
+    else if(a === 'addPlayer'){
+      if(S._setupPlayers.length >= 6) return;
+      var used = S._setupPlayers.map(function(p){return p.emoji;});
+      var avail = EMOJIS.filter(function(e){return used.indexOf(e)<0;});
+      S._setupPlayers.push({name:'玩家'+(S._setupPlayers.length+1), emoji:avail[0]||EMOJIS[0]}); bindSetup();
+    }
+    else if(a === 'startPlay'){
+      document.querySelectorAll('[data-a="changeName"]').forEach(function(inp){ var idx = parseInt(inp.dataset.i); var v = inp.value.trim(); if(v) S._setupPlayers[idx].name = v; });
+      S.board = loadMap(S.boardSize); startGame(S._setupPlayers); render();
+    }
+    else if(a === 'roll'){ rollDice(); }
+    else if(a === 'skipTurn'){ var p = S.players[S.cur]; if(p.jailed > 0) p.jailed--; S.msg = p.name+' 跳过回合'; endTurn(); }
+    else if(a === 'quit'){ if(confirm('结束当前游戏？')){ S.screen='menu'; S.modal=null; render(); } }
+    else if(a === 'playAgain'){ if(S._setupPlayers){ startGame(S._setupPlayers); render(); } }
+    else if(a === 'modalAct'){ var act = S.modal.actions[i]; if(act && act.fn) act.fn(); }
+    else if(a === 'useItem'){ useItem(el.dataset.it); }
+    else if(a === 'buyStock'){ buyStock(i, n); }
+    else if(a === 'sellStock'){ sellStock(i, n); }
+    else if(a === 'closeStock'){ S.modal = null; render(); endTurn(); }
+    else if(a === 'setMusicUrl'){ var inp3 = document.getElementById('musicUrlInput'); if(inp3) setMusicUrl(inp3.value.trim()); }
+    else if(a === 'toggleMusicPlay'){ toggleMusic(); S.modal = null; render(); }
+    else if(a === 'closeMusic'){ S.modal = null; render(); }
+  }catch(err){ console.error(err); toast('出错了：'+err.message); }
+});
+
+document.addEventListener('input', function(e){
+  var el = e.target.closest('[data-a="changeName"]');
+  if(el){ var i = parseInt(el.dataset.i); if(S._setupPlayers) S._setupPlayers[i].name = el.value; }
+  var el2 = e.target.closest('[data-a="editName"]');
+  if(el2){ var i2 = parseInt(el2.dataset.i); if(S._editBoard) S._editBoard[i2].name = el2.value; }
+  var el3 = e.target.closest('[data-a="editPrice"]');
+  if(el3){ var i3 = parseInt(el3.dataset.i); var v = parseInt(el3.value); if(S._editBoard && v > 0) S._editBoard[i3].price = v; }
+  var el4 = e.target.closest('#volSlider');
+  if(el4){ setMusicVolume(el4.value / 100); }
+});
+
+document.addEventListener('change', function(e){
+  var el = e.target.closest('[data-a="editType"]');
+  if(el){ var i = parseInt(el.dataset.i);
+    if(S._editBoard){ S._editBoard[i].type = el.value;
+      if(el.value === 'property' && !S._editBoard[i].price) S._editBoard[i].price = 200;
+      if(el.value === 'property' && !S._editBoard[i].group) S._editBoard[i].group = 'blue';
+      bindEdit(); } }
+  var el2 = e.target.closest('[data-a="editGroup"]');
+  if(el2){ var i2 = parseInt(el2.dataset.i); if(S._editBoard) S._editBoard[i2].group = el2.value; }
+  var el3 = e.target.closest('#musicFile');
+  if(el3 && el3.files && el3.files[0]){ setMusicFile(el3.files[0]); S.modal = null; render(); }
+});
+
+try{
+  S.boardSize = 20; S.board = loadMap(20); initMusic(); render();
+}catch(e){
+  document.getElementById('app').innerHTML = '<div style="padding:40px;text-align:center;color:#D89090"><h2>加载失败</h2><p>'+e.message+'</p></div>';
+}
+</script>
+</body>
+</html>
+<!-- ✅ 文件末尾标记 -->

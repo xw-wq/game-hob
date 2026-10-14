@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>塔罗 · 牌阵</title>
+<style>
+:root{
+  --paper:#FAF6EE;--paper2:#F2ECE0;--paper3:#EDE7DA;
+  --ink:#4A443C;--ink2:#8A8177;--ink3:#B4ACA1;
+  --line:rgba(74,68,60,.13);--line2:rgba(74,68,60,.22);
+  --accent:#8B7355;--accent2:#C4A882;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;overflow-x:hidden}
+body{
+  font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 8%,rgba(200,180,150,.16),transparent 42%),
+    radial-gradient(circle at 85% 85%,rgba(170,160,200,.13),transparent 45%),
+    radial-gradient(circle at 60% 30%,rgba(190,205,180,.10),transparent 40%),
+    #F5F0E6;
+  background-attachment:fixed;
+  font-size:14px;line-height:1.7;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+#app{max-width:620px;margin:0 auto;padding:20px 16px 80px;position:relative;z-index:1}
+h1{font-size:26px;font-weight:600;letter-spacing:2px;font-family:Georgia,'Songti SC',serif}
+h2{font-size:19px;font-weight:600;letter-spacing:1px;font-family:Georgia,'Songti SC',serif;margin-bottom:6px}
+h3{font-size:14px;font-weight:600;color:var(--accent);letter-spacing:2px;margin:22px 0 10px;text-transform:uppercase;opacity:.85}
+.hint{color:var(--ink2);font-size:12.5px;line-height:1.8}
+.mono{font-family:'SF Mono',Menlo,Consolas,monospace}
+
+.hero{text-align:center;padding:34px 0 26px}
+.hero-glyph{font-size:52px;line-height:1;opacity:.9}
+.hero h1{margin-top:14px;color:var(--ink)}
+.hero-sub{margin-top:10px;color:var(--ink2);font-size:12px;letter-spacing:4px;text-transform:uppercase}
+.hero-rule{width:44px;height:1px;background:var(--line2);margin:20px auto}
+
+.btn{
+  display:block;width:100%;padding:15px 18px;
+  border:1px solid var(--line2);border-radius:10px;
+  background:rgba(255,255,255,.55);color:var(--ink);
+  font-size:15px;font-weight:500;font-family:inherit;letter-spacing:1px;
+  cursor:pointer;margin-top:11px;transition:.2s ease;text-align:center;
+}
+.btn:active{transform:scale(.985);background:rgba(255,255,255,.85)}
+.btn.primary{background:var(--ink);color:#FBF7EF;border-color:var(--ink)}
+.btn.primary:active{background:#5C554B}
+.btn.ghost{background:transparent;border-color:var(--line)}
+.btn.sm{padding:10px 14px;font-size:13px;margin-top:8px}
+.btn.danger{color:#A86868;border-color:rgba(168,104,104,.3)}
+.btn-row{display:flex;gap:10px;margin-top:10px}
+.btn-row .btn{margin-top:0;flex:1}
+
+.card{
+  background:rgba(255,255,255,.55);border:1px solid var(--line);
+  border-radius:14px;padding:16px 18px;margin-bottom:12px;
+}
+.input{
+  width:100%;background:rgba(255,255,255,.7);
+  border:1px solid var(--line2);border-radius:10px;
+  padding:13px 15px;font-size:15px;font-family:inherit;color:var(--ink);
+  outline:none;margin-bottom:10px;transition:.2s;
+}
+.input:focus{border-color:var(--accent2);background:#fff}
+.input::placeholder{color:var(--ink3)}
+textarea.input{min-height:80px;resize:vertical;line-height:1.7}
+label.fl{display:block;font-size:12px;color:var(--ink2);letter-spacing:1px;margin:14px 0 6px}
+
+.spread-item{
+  display:flex;align-items:center;gap:16px;padding:16px 18px;margin-bottom:11px;
+  background:rgba(255,255,255,.55);border:1px solid var(--line);border-radius:14px;
+  cursor:pointer;transition:.2s;
+}
+.spread-item:active{transform:scale(.985);background:rgba(255,255,255,.85)}
+.si-glyph{
+  width:52px;height:52px;flex-shrink:0;border-radius:10px;
+  background:var(--paper2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:var(--accent);
+}
+.si-body{flex:1;min-width:0}
+.si-name{font-size:15.5px;font-weight:600;letter-spacing:.5px}
+.si-desc{font-size:12px;color:var(--ink2);margin-top:3px;line-height:1.6}
+.si-count{font-size:11px;color:var(--ink3);letter-spacing:1px;margin-top:5px;font-family:'SF Mono',monospace}
+.si-arrow{color:var(--ink3);font-size:18px;flex-shrink:0}
+
+.mini-stage{
+  position:relative;width:100%;aspect-ratio:1/.75;
+  background:rgba(255,255,255,.4);border:1px solid var(--line);
+  border-radius:14px;margin:14px 0 18px;overflow:hidden;
+}
+.mini-card{
+  position:absolute;transform:translate(-50%,-50%);
+  width:13%;aspect-ratio:100/160;background:var(--paper);
+  border:1px solid var(--line2);border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--accent);font-family:Georgia,serif;
+}
+.pos-row{display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.pos-row:last-child{border-bottom:none}
+.pos-num{
+  width:24px;height:24px;flex-shrink:0;border-radius:50%;
+  background:var(--paper2);border:1px solid var(--line2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--accent);font-family:Georgia,serif;margin-top:1px;
+}
+.pos-body{flex:1}
+.pos-name{font-size:14px;font-weight:600;letter-spacing:.5px}
+.pos-mean{font-size:12.5px;color:var(--ink2);margin-top:2px;line-height:1.65}
+
+.drawing{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.shuffle-stack{position:relative;width:120px;height:190px;margin-bottom:34px}
+.shuffle-stack .sc{
+  position:absolute;inset:0;border-radius:6px;background:var(--paper);
+  border:1px solid var(--line2);animation:shuf 1.3s ease-in-out infinite;
+}
+.shuffle-stack .sc:nth-child(2){animation-delay:.12s}
+.shuffle-stack .sc:nth-child(3){animation-delay:.24s}
+.shuffle-stack .sc:nth-child(4){animation-delay:.36s}
+@keyframes shuf{0%,100%{transform:rotate(-6deg) translateY(0);opacity:.5}50%{transform:rotate(6deg) translateY(-8px);opacity:1}}
+.draw-text{color:var(--ink2);font-size:13px;letter-spacing:3px}
+
+.stage{position:relative;width:100%;margin:6px 0 24px}
+.slot-wrap{position:absolute;transform:translate(-50%,-50%);aspect-ratio:100/160}
+.slot-rot{width:100%;height:100%;transition:transform .5s}
+.slot-anim{width:100%;height:100%;animation:cardIn .6s cubic-bezier(.2,.8,.3,1) backwards;cursor:pointer}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+.slot-anim svg,.slot-anim img{
+  display:block;width:100%;height:100%;
+  filter:drop-shadow(0 3px 12px rgba(74,68,60,.16));
+  border-radius:4px;
+}
+.slot-badge{
+  position:absolute;top:-7px;left:-7px;width:18px;height:18px;border-radius:50%;
+  background:var(--ink);color:#FBF7EF;font-size:10px;font-family:Georgia,serif;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 4px rgba(0,0,0,.15);z-index:3;
+}
+
+.reading{
+  background:rgba(255,255,255,.62);border:1px solid var(--line);
+  border-radius:16px;padding:20px 20px 22px;margin-top:8px;
+}
+.reading-h{font-size:11px;letter-spacing:3px;color:var(--accent);margin:0 0 12px;text-transform:uppercase;font-weight:600}
+.reading-h:not(:first-child){margin-top:26px}
+.reading-p{font-size:14px;line-height:1.95;color:var(--ink);margin-bottom:12px}
+.reading-p:last-child{margin-bottom:0}
+.reading-p .em{color:var(--accent);font-weight:600}
+
+.rc{padding:14px 0;border-bottom:1px dashed var(--line)}
+.rc:last-child{border-bottom:none;padding-bottom:0}
+.rc-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.rc-idx{
+  width:19px;height:19px;border-radius:50%;background:var(--paper2);
+  border:1px solid var(--line2);font-size:10px;font-family:Georgia,serif;
+  color:var(--accent);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;top:1px;
+}
+.rc-pos{font-size:13px;font-weight:600;letter-spacing:.5px}
+.rc-name{font-size:12px;color:var(--accent);font-family:Georgia,'Songti SC',serif}
+.rc-mean{font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:5px}
+.rc-text{font-size:13.5px;line-height:1.85;color:var(--ink)}
+
+.ed-sec{background:rgba(255,255,255,.55);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:11px}
+.ed-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.ed-title{font-size:12px;color:var(--accent);letter-spacing:2px;font-weight:600}
+.ed-del{background:none;border:none;color:#A86868;font-size:12px;font-family:inherit;cursor:pointer;padding:2px 6px}
+
+.lib-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px}
+.lib-card{cursor:pointer;transition:.2s}
+.lib-card:active{transform:scale(.95)}
+.lib-card svg,.lib-card img{display:block;width:100%;border-radius:4px;filter:drop-shadow(0 2px 6px rgba(74,68,60,.10))}
+.lib-name{font-size:9.5px;text-align:center;margin-top:5px;color:var(--ink2);line-height:1.3;letter-spacing:.2px}
+
+.modal{
+  position:fixed;inset:0;z-index:200;background:rgba(60,54,46,.45);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.modal-box{
+  background:#FBF7EF;border-radius:18px;max-width:420px;width:100%;
+  max-height:88vh;overflow-y:auto;padding:24px 22px;
+  box-shadow:0 24px 60px rgba(60,54,46,.35);
+  animation:pop .25s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-box .m-name{font-size:20px;font-family:Georgia,'Songti SC',serif;letter-spacing:1px;text-align:center}
+.modal-box .m-sub{font-size:11px;color:var(--ink3);letter-spacing:2px;margin-top:5px;text-transform:uppercase;text-align:center}
+.modal-box .m-body{font-size:13.5px;line-height:1.9;margin-top:14px;color:var(--ink)}
+.m-section{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.m-section:first-child{border-top:none;margin-top:0;padding-top:0}
+.m-label{font-size:10.5px;letter-spacing:2px;color:var(--accent);font-weight:600;margin-bottom:5px;text-transform:uppercase}
+.m-text{font-size:13px;line-height:1.85;color:var(--ink)}
+.m-text.dim{color:var(--ink3)}
+.m-pos-name{font-size:14px;font-weight:600}
+.m-pos-mean{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.m-hl{background:rgba(196,168,130,.12);border-left:2px solid var(--accent2);padding:8px 12px;border-radius:0 8px 8px 0}
+
+.toast{
+  position:fixed;top:22px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#FBF7EF;padding:11px 22px;border-radius:100px;
+  font-size:13px;z-index:999;max-width:88%;text-align:center;
+  animation:tin .3s;box-shadow:0 8px 24px rgba(60,54,46,.25);
+}
+@keyframes tin{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
+
+.footer{text-align:center;color:var(--ink3);font-size:11px;letter-spacing:2px;margin-top:34px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+/* ═══════════════════════════════════════════════
+   工具
+   ═══════════════════════════════════════════════ */
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function toast(m){var e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(function(){e.remove();},2200);}
+function shuffle(a){var r=a.slice();for(var i=r.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=r[i];r[i]=r[j];r[j]=t;}return r;}
+function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function safeSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}}
+
+/* ═══════════════════════════════════════════════
+   卡牌图片挂载点（可被用户替换为真实韦特图）
+   ═══════════════════════════════════════════════ */
+var CARD_IMAGES = {};
+function loadCardImages(){
+  try{
+    var s = safeGet('tarot-card-images-v1');
+    if(s) CARD_IMAGES = JSON.parse(s) || {};
+  }catch(e){ CARD_IMAGES = {}; }
+}
+function saveCardImages(){
+  try{
+    localStorage.setItem('tarot-card-images-v1', JSON.stringify(CARD_IMAGES));
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ═══════════════════════════════════════════════
+   大阿卡纳 · 手绘韦特风格 SVG（默认回退）
+   ═══════════════════════════════════════════════ */
+var MAJOR_ART = {
+fool:
+  '<rect width="100" height="132" fill="#F7DC6F"/>'+
+  '<circle cx="76" cy="24" r="9" fill="#FCF3CF" stroke="#D4AC0D" stroke-width="0.6"/>'+
+  '<path d="M0 104 L26 104 L100 104 L100 132 L0 132 Z" fill="#7FB069"/>'+
+  '<path d="M10 104 L10 78 L14 70 L22 74 L24 104 Z" fill="#B9770E"/>'+
+  '<path d="M26 104 L26 86 L42 86 L42 104 Z" fill="#935116"/>'+
+  '<circle cx="52" cy="38" r="6" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M44 34 Q52 24 60 34 L60 37 L44 37 Z" fill="#C0392B"/>'+
+  '<path d="M48 44 L41 74 L59 74 L54 44 Z" fill="#2E86AB"/>'+
+  '<path d="M46 74 L44 94 M54 74 L57 90" stroke="#4A443C" stroke-width="1.7" stroke-linecap="round"/>'+
+  '<path d="M44 94 L40 98 L46 98 Z" fill="#C0392B"/>'+
+  '<path d="M57 90 L54 98 L61 96 Z" fill="#C0392B"/>'+
+  '<line x1="40" y1="58" x2="64" y2="26" stroke="#8B5A2B" stroke-width="1.2"/>'+
+  '<circle cx="64" cy="26" r="1.8" fill="#C0392B"/>'+
+  '<ellipse cx="42" cy="68" rx="3.5" ry="4.5" fill="#F4D03F" stroke="#8B5A2B" stroke-width="0.4"/>'+
+  '<ellipse cx="80" cy="98" rx="7" ry="5" fill="#FDFEFE" stroke="#4A443C" stroke-width="0.5"/>'+
+  '<circle cx="86" cy="94" r="3" fill="#FDFEFE" stroke="#4A443C" stroke-width="0.5"/>'+
+  '<circle cx="87" cy="93" r="0.6" fill="#4A443C"/>',
+magician:
+  '<rect width="100" height="132" fill="#F5CBA7"/>'+
+  '<rect y="0" width="100" height="66" fill="#F9E79F" opacity="0.6"/>'+
+  '<path d="M0 96 L100 96 L100 132 L0 132 Z" fill="#7FB069"/>'+
+  '<path d="M0 96 Q30 88 60 96 Q80 100 100 96 L100 132 L0 132 Z" fill="#52BE80" opacity="0.7"/>'+
+  '<circle cx="50" cy="30" r="5.5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M44 26 Q50 20 56 26 L56 28 L44 28 Z" fill="#C0392B"/>'+
+  '<path d="M48 36 L38 74 L62 74 L52 36 Z" fill="#FDFEFE" stroke="#C0392B" stroke-width="0.9"/>'+
+  '<path d="M44 46 Q50 52 56 46 L54 64 L46 64 Z" fill="#C0392B"/>'+
+  '<line x1="44" y1="52" x2="64" y2="14" stroke="#8B5A2B" stroke-width="1.3"/>'+
+  '<circle cx="64" cy="14" r="2" fill="#F4D03F"/>'+
+  '<line x1="58" y1="46" x2="58" y2="34" stroke="#4A443C" stroke-width="0.8"/>'+
+  '<circle cx="58" cy="32" r="1.6" fill="#F4D03F"/>'+
+  '<rect x="24" y="76" width="52" height="7" fill="#8B5A2B"/>'+
+  '<rect x="26" y="83" width="4" height="14" fill="#8B5A2B"/>'+
+  '<rect x="70" y="83" width="4" height="14" fill="#8B5A2B"/>'+
+  '<circle cx="32" cy="70" r="3" fill="#F4D03F" stroke="#B9770E" stroke-width="0.4"/>'+
+  '<rect x="42" y="66" width="16" height="4" fill="#7FB3D5"/>'+
+  '<circle cx="50" cy="68" r="2" fill="#F4D03F"/>'+
+  '<rect x="40" y="58" width="20" height="8" fill="#D5D8DC" stroke="#4A443C" stroke-width="0.3"/>',
+priestess:
+  '<rect width="100" height="132" fill="#1B2631"/>'+
+  '<rect x="10" y="8" width="9" height="104" fill="#FDFEFE"/>'+
+  '<rect x="81" y="8" width="9" height="104" fill="#2C3E50"/>'+
+  '<rect x="0" y="100" width="100" height="32" fill="#5D6D7E"/>'+
+  '<circle cx="50" cy="34" r="5.5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M42 30 Q50 22 58 30 L58 32 L42 32 Z" fill="#F4D03F"/>'+
+  '<path d="M48 40 L36 92 L64 92 L52 40 Z" fill="#5DADE2"/>'+
+  '<path d="M44 50 Q50 46 56 50" stroke="#FDFEFE" stroke-width="0.7" fill="none"/>'+
+  '<path d="M44 60 Q50 56 56 60" stroke="#FDFEFE" stroke-width="0.7" fill="none"/>'+
+  '<circle cx="50" cy="78" r="9" fill="#F4D03F" opacity="0.55"/>'+
+  '<circle cx="50" cy="78" r="6" fill="#F5CBA7" opacity="0.4"/>',
+empress:
+  '<rect width="100" height="132" fill="#F5CBA7"/>'+
+  '<rect y="0" width="100" height="60" fill="#F9E79F" opacity="0.5"/>'+
+  '<path d="M0 88 L100 88 L100 132 L0 132 Z" fill="#7FB069"/>'+
+  '<circle cx="16" cy="76" r="13" fill="#27AE60"/>'+
+  '<circle cx="84" cy="80" r="11" fill="#27AE60"/>'+
+  '<circle cx="50" cy="30" r="5.5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M44 26 Q50 18 56 26 L56 28 L44 28 Z" fill="#F4D03F"/>'+
+  '<path d="M46 36 L36 80 L64 80 L54 36 Z" fill="#FDFEFE" stroke="#F4D03F" stroke-width="1.4"/>'+
+  '<circle cx="50" cy="46" r="2.6" fill="#F5CBA7"/>'+
+  '<circle cx="57" cy="58" r="2.6" fill="#F5CBA7"/>'+
+  '<circle cx="43" cy="58" r="2.6" fill="#F5CBA7"/>'+
+  '<circle cx="50" cy="70" r="2.6" fill="#F5CBA7"/>'+
+  '<line x1="64" y1="54" x2="64" y2="80" stroke="#8B5A2B" stroke-width="1.4"/>'+
+  '<path d="M60 42 L68 42 L64 34 Z" fill="#C0392B"/>',
+emperor:
+  '<rect width="100" height="132" fill="#D35400"/>'+
+  '<rect y="0" width="100" height="66" fill="#E67E22" opacity="0.5"/>'+
+  '<path d="M0 100 L100 100 L100 132 L0 132 Z" fill="#7F4F24"/>'+
+  '<circle cx="50" cy="30" r="5.5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M44 26 L44 22 L56 22 L56 26 L44 26 Z" fill="#F4D03F"/>'+
+  '<path d="M48 36 L38 76 L62 76 L52 36 Z" fill="#C0392B"/>'+
+  '<path d="M48 76 L44 100 M52 76 L56 100" stroke="#F4D03F" stroke-width="1.8"/>'+
+  '<rect x="30" y="56" width="40" height="5" fill="#F4D03F"/>'+
+  '<path d="M70 60 Q78 62 78 76 L70 76 Z" fill="#B9770E"/>'+
+  '<line x1="44" y1="34" x2="36" y2="70" stroke="#F4D03F" stroke-width="1"/>',
+hierophant:
+  '<rect width="100" height="132" fill="#B9770E"/>'+
+  '<rect y="0" width="100" height="60" fill="#F9E79F" opacity="0.55"/>'+
+  '<path d="M0 96 L100 96 L100 132 L0 132 Z" fill="#935116"/>'+
+  '<circle cx="50" cy="30" r="5.5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M42 24 L42 18 L50 14 L58 18 L58 24 Z" fill="#F4D03F"/>'+
+  '<path d="M48 36 L36 82 L64 82 L52 36 Z" fill="#C0392B"/>'+
+  '<path d="M44 46 Q50 42 56 46" stroke="#F4D03F" stroke-width="0.8" fill="none"/>'+
+  '<line x1="50" y1="42" x2="50" y2="82" stroke="#F4D03F" stroke-width="0.8"/>'+
+  '<circle cx="28" cy="74" r="4" fill="#F5CBA7"/>'+
+  '<path d="M24 82 L20 96 L36 96 L32 82 Z" fill="#7FB3D5"/>'+
+  '<circle cx="72" cy="74" r="4" fill="#F5CBA7"/>'+
+  '<path d="M68 82 L64 96 L80 96 L76 82 Z" fill="#7FB3D5"/>',
+lovers:
+  '<rect width="100" height="132" fill="#9B59B6"/>'+
+  '<rect y="0" width="100" height="50" fill="#D2B4DE" opacity="0.5"/>'+
+  '<path d="M0 96 L100 96 L100 132 L0 132 Z" fill="#7FB069"/>'+
+  '<circle cx="50" cy="26" r="7" fill="#F5CBA7" opacity="0.95"/>'+
+  '<path d="M36 26 Q50 8 64 26" stroke="#F4D03F" stroke-width="0.9" fill="none"/>'+
+  '<circle cx="50" cy="18" r="3" fill="#F4D03F"/>'+
+  '<circle cx="34" cy="52" r="5" fill="#F5CBA7"/>'+
+  '<path d="M30 60 L26 90 L42 90 L38 60 Z" fill="#F5CBA7" stroke="#8A8177" stroke-width="0.4"/>'+
+  '<circle cx="66" cy="52" r="5" fill="#F5CBA7"/>'+
+  '<path d="M62 60 L58 90 L74 90 L70 60 Z" fill="#F5CBA7" stroke="#8A8177" stroke-width="0.4"/>'+
+  '<line x1="18" y1="70" x2="18" y2="96" stroke="#8B5A2B" stroke-width="1.5"/>'+
+  '<circle cx="18" cy="62" r="7" fill="#52BE80"/>'+
+  '<path d="M78 70 Q88 62 88 50" stroke="#8B5A2B" stroke-width="1.2" fill="none"/>',
+chariot:
+  '<rect width="100" height="132" fill="#2E86AB"/>'+
+  '<rect y="0" width="100" height="36" fill="#5DADE2" opacity="0.6"/>'+
+  '<circle cx="20" cy="12" r="1.5" fill="#F4D03F"/><circle cx="50" cy="8" r="1.5" fill="#F4D03F"/><circle cx="80" cy="12" r="1.5" fill="#F4D03F"/>'+
+  '<path d="M0 106 L100 106 L100 132 L0 132 Z" fill="#4A443C"/>'+
+  '<circle cx="50" cy="34" r="5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M45 30 L45 26 L55 26 L55 30 Z" fill="#F4D03F"/>'+
+  '<path d="M46 40 L40 70 L60 70 L54 40 Z" fill="#BFC9CA"/>'+
+  '<path d="M42 62 L58 62 L60 82 L40 82 Z" fill="#F4D03F" stroke="#8B5A2B" stroke-width="0.5"/>'+
+  '<rect x="34" y="82" width="32" height="14" fill="#7F8C8D"/>'+
+  '<circle cx="28" cy="104" r="8" fill="#2C3E50"/>'+
+  '<circle cx="72" cy="104" r="8" fill="#FDFEFE" stroke="#4A443C" stroke-width="0.4"/>',
+strength:
+  '<rect width="100" height="132" fill="#F7DC6F"/>'+
+  '<path d="M0 96 L100 96 L100 132 L0 132 Z" fill="#7FB069"/>'+
+  '<circle cx="50" cy="28" r="5.5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M42 24 Q50 16 58 24 L58 26 L42 26 Z" fill="#F4D03F"/>'+
+  '<path d="M48 34 L38 74 L62 74 L52 34 Z" fill="#FDFEFE" stroke="#F4D03F" stroke-width="1.2"/>'+
+  '<circle cx="34" cy="80" r="9" fill="#E67E22" opacity="0.9"/>'+
+  '<path d="M24 78 Q20 82 22 88 Q28 92 36 90" fill="#D35400"/>'+
+  '<path d="M60 56 Q72 58 72 74" stroke="#F5CBA7" stroke-width="2" fill="none" stroke-linecap="round"/>',
+hermit:
+  '<rect width="100" height="132" fill="#34495E"/>'+
+  '<rect y="0" width="100" height="60" fill="#5D6D7E" opacity="0.6"/>'+
+  '<path d="M0 100 L100 100 L100 132 L0 132 Z" fill="#2C3E50"/>'+
+  '<circle cx="48" cy="44" r="5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M42 40 Q48 30 54 40 L54 42 L42 42 Z" fill="#5D6D7E"/>'+
+  '<path d="M46 50 L36 92 L60 92 L50 50 Z" fill="#7F8C8D"/>'+
+  '<circle cx="66" cy="60" r="8" fill="#F4D03F" opacity="0.9"/>'+
+  '<circle cx="66" cy="60" r="5" fill="#FCF3CF"/>'+
+  '<circle cx="66" cy="60" r="2" fill="#F4D03F"/>'+
+  '<line x1="66" y1="50" x2="66" y2="46" stroke="#B9770E" stroke-width="0.7"/>',
+wheel:
+  '<rect width="100" height="132" fill="#7FB3D5"/>'+
+  '<circle cx="50" cy="66" r="30" fill="none" stroke="#F4D03F" stroke-width="2"/>'+
+  '<circle cx="50" cy="66" r="24" fill="none" stroke="#B9770E" stroke-width="1"/>'+
+  '<circle cx="50" cy="66" r="14" fill="#F4D03F" opacity="0.4"/>'+
+  '<circle cx="50" cy="66" r="5" fill="#C0392B"/>'+
+  '<line x1="50" y1="36" x2="50" y2="96" stroke="#8B5A2B" stroke-width="0.9"/>'+
+  '<line x1="20" y1="66" x2="80" y2="66" stroke="#8B5A2B" stroke-width="0.9"/>'+
+  '<line x1="29" y1="45" x2="71" y2="87" stroke="#8B5A2B" stroke-width="0.9"/>'+
+  '<line x1="71" y1="45" x2="29" y2="87" stroke="#8B5A2B" stroke-width="0.9"/>'+
+  '<circle cx="18" cy="18" r="5" fill="#FDFEFE" opacity="0.9"/>'+
+  '<circle cx="82" cy="18" r="5" fill="#FDFEFE" opacity="0.9"/>'+
+  '<circle cx="18" cy="112" r="5" fill="#FDFEFE" opacity="0.9"/>'+
+  '<circle cx="82" cy="112" r="5" fill="#FDFEFE" opacity="0.9"/>',
+justice:
+  '<rect width="100" height="132" fill="#9B59B6"/>'+
+  '<rect y="0" width="100" height="52" fill="#D2B4DE" opacity="0.55"/>'+
+  '<path d="M0 100 L100 100 L100 132 L0 132 Z" fill="#7D3C98"/>'+
+  '<circle cx="50" cy="30" r="5.5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M43 26 L43 22 L57 22 L57 26 Z" fill="#C0392B"/>'+
+  '<path d="M48 36 L38 82 L62 82 L52 36 Z" fill="#C0392B"/>'+
+  '<line x1="50" y1="42" x2="50" y2="82" stroke="#F4D03F" stroke-width="0.8"/>'+
+  '<line x1="50" y1="52" x2="34" y2="52" stroke="#F4D03F" stroke-width="1"/>'+
+  '<line x1="50" y1="52" x2="66" y2="52" stroke="#F4D03F" stroke-width="1"/>'+
+  '<circle cx="34" cy="56" r="4" fill="none" stroke="#F4D03F" stroke-width="0.8"/>'+
+  '<circle cx="66" cy="56" r="4" fill="none" stroke="#F4D03F" stroke-width="0.8"/>'+
+  '<line x1="62" y1="36" x2="62" y2="82" stroke="#D5D8DC" stroke-width="1.6"/>',
+hanged:
+  '<rect width="100" height="132" fill="#5DADE2"/>'+
+  '<path d="M0 106 L100 106 L100 132 L0 132 Z" fill="#7FB069"/>'+
+  '<line x1="30" y1="16" x2="70" y2="16" stroke="#8B5A2B" stroke-width="2.5"/>'+
+  '<line x1="50" y1="16" x2="50" y2="44" stroke="#8B5A2B" stroke-width="1.8"/>'+
+  '<circle cx="50" cy="52" r="5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M46 60 L44 84 L56 84 L54 60 Z" fill="#C0392B"/>'+
+  '<path d="M44 68 L32 76 M56 68 L68 76" stroke="#F5CBA7" stroke-width="2.4" stroke-linecap="round"/>'+
+  '<path d="M46 84 L50 100 M54 84 L50 100" stroke="#C0392B" stroke-width="2.6"/>'+
+  '<circle cx="50" cy="50" r="12" fill="none" stroke="#F4D03F" stroke-width="1.2" opacity="0.8"/>',
+death:
+  '<rect width="100" height="132" fill="#34495E"/>'+
+  '<path d="M0 100 L100 100 L100 132 L0 132 Z" fill="#1B2631"/>'+
+  '<ellipse cx="46" cy="86" rx="20" ry="11" fill="#FDFEFE" stroke="#4A443C" stroke-width="0.5"/>'+
+  '<ellipse cx="46" cy="76" rx="8" ry="10" fill="#FDFEFE" stroke="#4A443C" stroke-width="0.5"/>'+
+  '<circle cx="43" cy="74" r="0.9" fill="#4A443C"/>'+
+  '<circle cx="49" cy="74" r="0.9" fill="#4A443C"/>'+
+  '<line x1="66" y1="48" x2="66" y2="26" stroke="#4A443C" stroke-width="1.4"/>'+
+  '<rect x="60" y="18" width="12" height="9" fill="#FDFEFE" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<circle cx="24" cy="96" r="5" fill="#C0392B"/>'+
+  '<path d="M20 100 L16 112 L32 112 L28 100 Z" fill="#C0392B"/>'+
+  '<circle cx="82" cy="60" r="5" fill="#F4D03F"/>'+
+  '<path d="M78 66 L74 88 L90 88 L86 66 Z" fill="#F4D03F"/>',
+temperance:
+  '<rect width="100" height="132" fill="#5DADE2"/>'+
+  '<rect y="0" width="100" height="44" fill="#F9E79F" opacity="0.6"/>'+
+  '<path d="M0 106 L100 106 L100 132 L0 132 Z" fill="#7FB069"/>'+
+  '<circle cx="50" cy="26" r="5.5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M42 22 L42 18 L58 18 L58 22 Z" fill="#F4D03F"/>'+
+  '<path d="M48 34 L38 78 L62 78 L52 34 Z" fill="#FDFEFE" stroke="#F4D03F" stroke-width="1.2"/>'+
+  '<path d="M40 60 L28 50 M60 60 L72 50" stroke="#F5CBA7" stroke-width="2" stroke-linecap="round"/>'+
+  '<path d="M24 44 L28 52 L32 44 Z" fill="#F4D03F"/>'+
+  '<path d="M68 44 L72 52 L76 44 Z" fill="#F4D03F"/>'+
+  '<path d="M46 78 L42 100 M54 78 L56 96" stroke="#F5CBA7" stroke-width="2"/>'+
+  '<ellipse cx="42" cy="104" rx="8" ry="3" fill="#7FB3D5" opacity="0.7"/>'+
+  '<ellipse cx="58" cy="100" rx="7" ry="3" fill="#52BE80" opacity="0.7"/>',
+devil:
+  '<rect width="100" height="132" fill="#2C3E50"/>'+
+  '<path d="M0 100 L100 100 L100 132 L0 132 Z" fill="#1B2631"/>'+
+  '<path d="M36 30 L44 12 L50 26 L56 12 L64 30 Z" fill="#C0392B"/>'+
+  '<circle cx="50" cy="44" r="8" fill="#7F8C8D"/>'+
+  '<circle cx="47" cy="42" r="1.2" fill="#F4D03F"/>'+
+  '<circle cx="53" cy="42" r="1.2" fill="#F4D03F"/>'+
+  '<path d="M44 52 L36 100 L64 100 L56 52 Z" fill="#34495E"/>'+
+  '<circle cx="24" cy="98" r="4" fill="#F5CBA7"/>'+
+  '<path d="M21 104 L18 120 L30 120 L27 104 Z" fill="#C0392B"/>'+
+  '<circle cx="76" cy="98" r="4" fill="#F5CBA7"/>'+
+  '<path d="M73 104 L70 120 L82 120 L79 104 Z" fill="#C0392B"/>',
+tower:
+  '<rect width="100" height="132" fill="#2C3E50"/>'+
+  '<path d="M0 108 L100 108 L100 132 L0 132 Z" fill="#1B2631"/>'+
+  '<path d="M36 44 L36 108 L64 108 L64 44 Z" fill="#5D6D7E" stroke="#2C3E50" stroke-width="0.6"/>'+
+  '<rect x="30" y="34" width="40" height="12" fill="#7F8C8D"/>'+
+  '<rect x="42" y="52" width="8" height="8" fill="#1B2631"/>'+
+  '<rect x="42" y="72" width="8" height="8" fill="#1B2631"/>'+
+  '<rect x="42" y="92" width="8" height="8" fill="#1B2631"/>'+
+  '<path d="M70 6 L52 36 L64 36 L44 62" stroke="#F4D03F" stroke-width="2" fill="none"/>'+
+  '<circle cx="26" cy="44" r="4" fill="#F5CBA7"/>'+
+  '<path d="M22 50 L18 68 L30 68 L28 50 Z" fill="#C0392B"/>'+
+  '<circle cx="76" cy="52" r="4" fill="#F5CBA7"/>'+
+  '<path d="M72 58 L68 74 L82 74 L78 58 Z" fill="#C0392B"/>',
+star:
+  '<rect width="100" height="132" fill="#5DADE2"/>'+
+  '<path d="M0 108 L100 108 L100 132 L0 132 Z" fill="#7FB069"/>'+
+  '<path d="M60 6 L64 20 L78 22 L67 32 L70 46 L60 38 L50 46 L53 32 L42 22 L56 20 Z" fill="#F4D03F"/>'+
+  '<circle cx="24" cy="22" r="1.4" fill="#FCF3CF"/><circle cx="84" cy="16" r="1.4" fill="#FCF3CF"/>'+
+  '<circle cx="20" cy="48" r="1.2" fill="#FCF3CF"/><circle cx="88" cy="44" r="1.2" fill="#FCF3CF"/>'+
+  '<circle cx="32" cy="36" r="1.2" fill="#FCF3CF"/><circle cx="70" cy="54" r="1.2" fill="#FCF3CF"/>'+
+  '<circle cx="50" cy="52" r="5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M46 60 L40 88 L60 88 L54 60 Z" fill="#F5CBA7" stroke="#8A8177" stroke-width="0.3"/>'+
+  '<path d="M42 66 L32 78" stroke="#F5CBA7" stroke-width="2"/>'+
+  '<path d="M58 66 L68 78" stroke="#F5CBA7" stroke-width="2"/>'+
+  '<ellipse cx="30" cy="82" rx="5" ry="4" fill="#AED6F1"/>'+
+  '<ellipse cx="70" cy="82" rx="5" ry="4" fill="#AED6F1"/>',
+moon:
+  '<rect width="100" height="132" fill="#1B2631"/>'+
+  '<path d="M0 100 L100 100 L100 132 L0 132 Z" fill="#34495E"/>'+
+  '<circle cx="60" cy="24" r="12" fill="#F4D03F" opacity="0.85"/>'+
+  '<circle cx="55" cy="22" r="10" fill="#1B2631"/>'+
+  '<path d="M8 74 L8 96 L24 96 L24 74 Z" fill="#5D6D7E"/>'+
+  '<path d="M76 74 L76 96 L92 96 L92 74 Z" fill="#5D6D7E"/>'+
+  '<ellipse cx="32" cy="96" rx="7" ry="5" fill="#7F8C8D"/>'+
+  '<ellipse cx="68" cy="96" rx="7" ry="5" fill="#7F8C8D"/>'+
+  '<ellipse cx="50" cy="112" rx="9" ry="5" fill="#C0392B" opacity="0.85"/>',
+sun:
+  '<rect width="100" height="132" fill="#F4D03F"/>'+
+  '<rect y="0" width="100" height="60" fill="#FCF3CF" opacity="0.6"/>'+
+  '<path d="M0 100 L100 100 L100 132 L0 132 Z" fill="#7FB069"/>'+
+  '<circle cx="50" cy="28" r="13" fill="#F9E79F" stroke="#E67E22" stroke-width="0.8"/>'+
+  '<circle cx="50" cy="28" r="9" fill="#F5CBA7"/>'+
+  '<path d="M46 26 L48 30 M54 26 L52 30" stroke="#4A443C" stroke-width="0.5"/>'+
+  '<path d="M46 33 Q50 36 54 33" stroke="#4A443C" stroke-width="0.5" fill="none"/>'+
+  '<circle cx="14" cy="90" r="5" fill="#F4D03F" stroke="#E67E22" stroke-width="0.5"/>'+
+  '<circle cx="86" cy="90" r="5" fill="#F4D03F" stroke="#E67E22" stroke-width="0.5"/>'+
+  '<ellipse cx="52" cy="96" rx="16" ry="9" fill="#FDFEFE" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<circle cx="44" cy="88" r="4" fill="#F5CBA7"/>'+
+  '<path d="M40 96 L38 110 L50 110 L48 96 Z" fill="#C0392B"/>'+
+  '<line x1="66" y1="90" x2="76" y2="76" stroke="#8B5A2B" stroke-width="1"/>',
+judgement:
+  '<rect width="100" height="132" fill="#7FB3D5"/>'+
+  '<path d="M0 100 L100 100 L100 132 L0 132 Z" fill="#34495E"/>'+
+  '<circle cx="50" cy="26" r="7" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M42 22 L42 18 L58 18 L58 22 Z" fill="#F4D03F"/>'+
+  '<path d="M48 34 L38 70 L62 70 L52 34 Z" fill="#FDFEFE" stroke="#F4D03F" stroke-width="1"/>'+
+  '<path d="M40 46 L20 26 M60 46 L80 26" stroke="#F5CBA7" stroke-width="2" stroke-linecap="round"/>'+
+  '<path d="M18 20 L22 28 L28 22" stroke="#B9770E" stroke-width="1.2" fill="none"/>'+
+  '<path d="M72 22 L78 28 L82 20" stroke="#B9770E" stroke-width="1.2" fill="none"/>'+
+  '<rect x="14" y="104" width="20" height="14" fill="#5D6D7E" stroke="#2C3E50" stroke-width="0.4"/>'+
+  '<rect x="66" y="104" width="20" height="14" fill="#5D6D7E" stroke="#2C3E50" stroke-width="0.4"/>'+
+  '<circle cx="24" cy="98" r="4" fill="#F5CBA7"/>'+
+  '<circle cx="76" cy="98" r="4" fill="#F5CBA7"/>',
+world:
+  '<rect width="100" height="132" fill="#9B59B6"/>'+
+  '<path d="M0 100 L100 100 L100 132 L0 132 Z" fill="#7D3C98" opacity="0.7"/>'+
+  '<ellipse cx="50" cy="66" rx="26" ry="40" fill="none" stroke="#F4D03F" stroke-width="2"/>'+
+  '<ellipse cx="50" cy="66" rx="22" ry="36" fill="none" stroke="#52BE80" stroke-width="1.4"/>'+
+  '<circle cx="50" cy="54" r="5" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>'+
+  '<path d="M46 62 L38 88 L62 88 L54 62 Z" fill="#C0392B"/>'+
+  '<path d="M42 70 L28 74 M58 70 L72 74" stroke="#F5CBA7" stroke-width="2" stroke-linecap="round"/>'+
+  '<path d="M44 88 L38 100 M56 88 L62 100" stroke="#F5CBA7" stroke-width="2" stroke-linecap="round"/>'+
+  '<circle cx="18" cy="20" r="6" fill="#F4D03F"/>'+
+  '<circle cx="82" cy="20" r="6" fill="#F4D03F"/>'+
+  '<circle cx="18" cy="112" r="6" fill="#F4D03F"/>'+
+  '<circle cx="82" cy="112" r="6" fill="#F4D03F"/>'
+};
+
+var SUIT_ART = {
+  wands:
+    '<rect x="-1.6" y="-11" width="3.2" height="22" rx="1.6" fill="#8B5A2B"/>'+
+    '<ellipse cx="0" cy="-10" rx="3.2" ry="1.8" fill="#A9DFBF"/>'+
+    '<ellipse cx="0" cy="10" rx="3.2" ry="1.8" fill="#A9DFBF"/>',
+  cups:
+    '<path d="M-8 -6 Q-8 6 0 6 Q8 6 8 -6 Z" fill="#F4D03F" stroke="#B9770E" stroke-width="0.5"/>'+
+    '<rect x="-1" y="6" width="2" height="5" fill="#B9770E"/>'+
+    '<ellipse cx="0" cy="12" rx="5" ry="1.5" fill="#B9770E"/>',
+  swords:
+    '<path d="M0 -12 L3 3 L0 7 L-3 3 Z" fill="#D5D8DC" stroke="#4A443C" stroke-width="0.4"/>'+
+    '<line x1="-6" y1="5" x2="6" y2="5" stroke="#B9770E" stroke-width="1.6"/>'+
+    '<rect x="-1" y="5" width="2" height="6" fill="#8B5A2B"/>',
+  pentacles:
+    '<circle r="9" fill="#F4D03F" stroke="#B9770E" stroke-width="0.6"/>'+
+    '<circle r="5.5" fill="none" stroke="#B9770E" stroke-width="0.5"/>'+
+    '<path d="M0 -5 L1.5 -1.5 L5 -1.5 L2 0.8 L3.2 4.5 L0 2.3 L-3.2 4.5 L-2 0.8 L-5 -1.5 L-1.5 -1.5 Z" fill="#B9770E" opacity="0.75"/>'
+};
+
+var PIP_LAYOUTS = {
+  1:[[50,50]],2:[[50,32],[50,72]],3:[[50,28],[30,78],[70,78]],
+  4:[[30,32],[70,32],[30,78],[70,78]],
+  5:[[28,30],[72,30],[50,54],[28,78],[72,78]],
+  6:[[28,30],[72,30],[28,54],[72,54],[28,78],[72,78]],
+  7:[[28,26],[72,26],[28,50],[72,50],[50,62],[28,80],[72,80]],
+  8:[[24,32],[42,32],[58,32],[76,32],[24,76],[42,76],[58,76],[76,76]],
+  9:[[26,26],[50,26],[74,26],[26,54],[50,54],[74,54],[26,82],[50,82],[74,82]],
+  10:[[20,36],[35,36],[50,36],[65,36],[80,36],[20,72],[35,72],[50,72],[65,72],[80,72]]
+};
+
+var ROMAN=['0','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
+
+var MAJOR_DATA=[
+ ['愚者','The Fool','fool','新的开始、纯真、冒险精神、不受约束的自由','鲁莽、逃避责任、盲目冒险、缺乏计划'],
+ ['魔术师','The Magician','magician','意志的力量、创造的才能、资源的整合','自我怀疑、能力被浪费、操控他人'],
+ ['女祭司','The High Priestess','priestess','直觉、潜意识的智慧、静观其变','忽视直觉、被表象迷惑、秘密被揭开'],
+ ['皇后','The Empress','empress','丰盛、滋养、创造力、感官的愉悦','过度依赖、创造力受阻、忽略自我照顾'],
+ ['皇帝','The Emperor','emperor','秩序、权威、结构、稳固的掌控','固执、专制、失去掌控、抗拒改变'],
+ ['教皇','The Hierophant','hierophant','传统、指引、信念体系、师承','盲从、教条、打破常规、信念动摇'],
+ ['恋人','The Lovers','lovers','结合、选择、价值观的一致、深度连接','关系失衡、错误的选择、内心分裂'],
+ ['战车','The Chariot','chariot','意志驱动、前进、掌控方向、胜利','失控、方向不明、被情绪裹挟'],
+ ['力量','Strength','strength','温柔的坚韧、驯服本能、内在勇气','自我怀疑、被情绪吞没、逞强'],
+ ['隐士','The Hermit','hermit','内省、独处、寻求真理、智慧之光','孤立、逃避、拒绝帮助、过度封闭'],
+ ['命运之轮','Wheel of Fortune','wheel','转折、循环、时机到来、命运的推动','时运不济、抗拒变化、重复旧模式'],
+ ['正义','Justice','justice','平衡、公正、因果、为选择负责','偏颇、逃避责任、失衡的评判'],
+ ['倒吊人','The Hanged Man','hanged','暂停、换个视角、自愿的牺牲、顿悟','无谓的牺牲、僵局、拖延、抗拒放手'],
+ ['死神','Death','death','结束、转化、放下、重生前的清理','抗拒结束、停滞、无法告别'],
+ ['节制','Temperance','temperance','调和、耐心、中道、资源的融合','极端、失衡、缺乏耐心、内耗'],
+ ['恶魔','The Devil','devil','束缚、欲望、执念、被看见的阴影','挣脱、觉察、切断不健康的依附'],
+ ['塔','The Tower','tower','突变、崩塌、真相揭露、结构重组','避免灾难、延缓崩塌、内在的震荡'],
+ ['星星','The Star','star','希望、疗愈、指引、重新相信','失去信心、希望落空、自我怀疑'],
+ ['月亮','The Moon','moon','潜意识、幻象、不安、直觉的暗流','迷雾散去、恐惧被澄清、真相浮现'],
+ ['太阳','The Sun','sun','喜悦、清晰、成功、生命力充沛','暂时的阴云、过度乐观、延迟的喜悦'],
+ ['审判','Judgement','judgement','觉醒、召唤、清算、重生','自我批判、逃避召唤、迟迟不决'],
+ ['世界','The World','world','完成、整合、圆满、一个循环的终点','未竟之事、欠缺收尾、停滞在终点前']
+];
+
+var SUITS={
+  wands:{name:'权杖',el:'火',theme:'行动与热情',color:'#D8A98C'},
+  cups:{name:'圣杯',el:'水',theme:'情感与关系',color:'#9FBBD8'},
+  swords:{name:'宝剑',el:'风',theme:'思想与沟通',color:'#ADA9C6'},
+  pentacles:{name:'星币',el:'土',theme:'物质与工作',color:'#A6C69E'}
+};
+var RANK_DATA={
+  1:{up:'出现一个干净利落的开始，机会正在打开',rev:'机会被错过，或者迟迟无法启动'},
+  2:{up:'两股力量需要协调，选择就在眼前',rev:'犹豫不决，或是在两端之间来回摇摆'},
+  3:{up:'合作带来初步的成果，值得继续投入',rev:'合作出现裂痕，成果不如预期'},
+  4:{up:'局面趋于稳定，但也容易陷入停滞',rev:'稳定被打破，或是过度固守现状'},
+  5:{up:'冲突或失落浮现，需要正面处理',rev:'冲突开始缓和，但伤口还在'},
+  6:{up:'在给予与接受之间找到了和谐',rev:'付出与回报失衡，或沉溺于过去'},
+  7:{up:'需要评估与坚持，考验的是耐心',rev:'方向不明，努力用错了地方'},
+  8:{up:'行动加速，进展比预想中更快',rev:'被琐事拖住，速度慢了下来'},
+  9:{up:'接近完成，但还差最后一步',rev:'临门一脚时退缩，或过度焦虑'},
+  10:{up:'一个循环走到终点，责任随之而来',rev:'该结束的还没结束，负担过重'},
+  11:{up:'新的学习与消息正在到来',rev:'消息延迟，或缺乏学习的耐心'},
+  12:{up:'行动力与追求的能量很强',rev:'冲动行事，或方向反复改变'},
+  13:{up:'内在的滋养与承载正在发挥作用',rev:'过度付出，忽略了自己的需要'},
+  14:{up:'成熟的掌控力已经形成',rev:'固执己见，或滥用了掌控'}
+};
+var CN_NUM=['','一','二','三','四','五','六','七','八','九','十'];
+var COURT=['','','','','','','','','','','','侍从','骑士','王后','国王'];
+
+function buildDeck(){
+  var deck=[];
+  MAJOR_DATA.forEach(function(m,i){
+    deck.push({id:'m'+i,arcana:'major',key:m[2],numeral:ROMAN[i],name:m[0],en:m[1],up:m[3],rev:m[4],element:null,suit:null,rank:0});
+  });
+  Object.keys(SUITS).forEach(function(sk){
+    var s=SUITS[sk];
+    for(var r=1;r<=14;r++){
+      var nm = r<=10 ? (s.name+CN_NUM[r]) : (s.name+COURT[r]);
+      var num = r<=10 ? String(r) : COURT[r];
+      deck.push({id:sk+r,arcana:'minor',suit:sk,rank:r,element:s.el,numeral:num,name:nm,en:'',
+        up:'在'+s.theme+'的领域里，'+RANK_DATA[r].up+'。',
+        rev:'在'+s.theme+'的领域里，'+RANK_DATA[r].rev+'。'});
+    }
+  });
+  return deck;
+}
+
+/* ═══════════════════════════════════════════════
+   内置牌阵
+   ═══════════════════════════════════════════════ */
+var BUILTIN=[
+  {id:'single',name:'单牌指引',glyph:'壹',ratio:1.0,desc:'一张牌，一个直接的答案。适合每日指引或单一问题。',
+    positions:[{name:'答案',meaning:'这件事最需要你看见的核心。'}],layout:[[50,50]]},
+  {id:'three',name:'时间之流',glyph:'叁',ratio:.95,desc:'过去—现在—未来，看清一件事的来龙去脉。',
+    positions:[
+      {name:'过去',meaning:'促成当前局面的根源与积累。'},
+      {name:'现在',meaning:'你此刻所处的真实状态与核心课题。'},
+      {name:'未来',meaning:'若保持当前趋势，事情将走向的方向。'}],
+    layout:[[20,50],[50,50],[80,50]]},
+  {id:'bridge',name:'心之桥',glyph:'肆',ratio:.95,desc:'用于关系与情感。看两个人的心，以及之间的桥。',
+    positions:[
+      {name:'你的心',meaning:'你在这段关系里真实的需求与状态。'},
+      {name:'对方的心',meaning:'对方此刻的处境与感受。'},
+      {name:'阻碍',meaning:'横在你们之间、需要被看见的东西。'},
+      {name:'桥梁',meaning:'可以真正连接彼此的着力点。'}],
+    layout:[[28,30],[72,30],[28,74],[72,74]]},
+  {id:'choice',name:'二选一',glyph:'伍',ratio:1.2,desc:'面对两个选项犹豫不决时，把两条路都摊开来看。',
+    positions:[
+      {name:'现状',meaning:'你提出选择时，真实的处境是什么。'},
+      {name:'选项 A',meaning:'第一条路本身的能量与性质。'},
+      {name:'选项 B',meaning:'第二条路本身的能量与性质。'},
+      {name:'A 的结果',meaning:'走第一条路可能抵达的地方。'},
+      {name:'B 的结果',meaning:'走第二条路可能抵达的地方。'}],
+    layout:[[50,14],[20,44],[80,44],[20,80],[80,80]]},
+  {id:'moon',name:'月相',glyph:'伍',ratio:1.15,desc:'跟随月亮的盈亏，看清一件事从意图到显化的完整周期。',
+    positions:[
+      {name:'新月 · 意图',meaning:'你真正想要的是什么，哪怕还没说出口。'},
+      {name:'上弦 · 行动',meaning:'需要迈出的第一步，以及会遇到的阻力。'},
+      {name:'满月 · 显化',meaning:'事情充分展开后，会呈现出的样子。'},
+      {name:'下弦 · 释放',meaning:'必须放下什么，才能继续往前走。'},
+      {name:'暗月 · 内在',meaning:'被隐藏的、但一直在起作用的心理力量。'}],
+    layout:[[14,58],[32,30],[50,18],[68,30],[86,58]]},
+  {id:'horseshoe',name:'马蹄铁',glyph:'柒',ratio:1.15,desc:'经典七牌阵，从过去一路推演到结果，并把干扰因素摊在明面上。',
+    positions:[
+      {name:'过去',meaning:'事情的起点与历史成因。'},
+      {name:'现在',meaning:'此刻的真实位置。'},
+      {name:'隐藏',meaning:'你尚未察觉、却在暗中影响局面的因素。'},
+      {name:'阻碍',meaning:'直接挡在前面的困难。'},
+      {name:'他人',meaning:'相关的人的态度与影响。'},
+      {name:'建议',meaning:'牌面给出的行动方向。'},
+      {name:'结果',meaning:'顺着当前轨迹，最可能抵达的结局。'}],
+    layout:[[8,22],[19,50],[34,74],[50,84],[66,74],[81,50],[92,22]]},
+  {id:'celtic',name:'凯尔特十字',glyph:'拾',ratio:1.2,desc:'最完整的经典牌阵，十张牌铺开一件事的全貌。',
+    positions:[
+      {name:'核心',meaning:'这件事最中心的议题。'},
+      {name:'横阻',meaning:'横在核心之上的力量，可能是助力也可能是阻力。'},
+      {name:'根基',meaning:'潜意识层面的根源，事情真正的立足点。'},
+      {name:'过去',meaning:'刚刚过去、正在退场的影响。'},
+      {name:'目标',meaning:'你意识层面想要达成的结果。'},
+      {name:'未来',meaning:'即将到来的短期发展。'},
+      {name:'自我',meaning:'你此刻呈现出来的姿态。'},
+      {name:'环境',meaning:'周围人对这件事的态度与影响。'},
+      {name:'希望与恐惧',meaning:'你内心最深的期待，以及最怕发生的事。'},
+      {name:'结局',meaning:'所有因素交汇后，事情最终的走向。'}],
+    layout:[[32,40],[32,40],[32,67],[13,40],[32,14],[51,40],[78,11],[78,33],[78,55],[78,77]]}
+];
+
+var S={screen:'home',deck:[],spread:null,question:'',drawn:[],custom:[],editor:null,libPage:0,detailCard:null};
+
+function loadCustom(){
+  try{var s=safeGet('tarot-custom-v1');var arr=s?JSON.parse(s):[];return Array.isArray(arr)?arr:[];}
+  catch(e){return [];}
+}
+function persistCustom(){if(!safeSet('tarot-custom-v1',JSON.stringify(S.custom))) toast('存储空间不足');}
+function allSpreads(){return BUILTIN.concat(S.custom);}
+
+/* ═══════════════════════════════════════════════
+   卡牌渲染：优先图片，回退到内置SVG
+   ═══════════════════════════════════════════════ */
+function minorArt(card){
+  var out='<rect width="100" height="132" fill="'+SUITS[card.suit].color+'"/>';
+  out+='<rect y="0" width="100" height="132" fill="#FBF7EF" opacity="0.55"/>';
+  var sym=SUIT_ART[card.suit];
+  if(card.rank>=11){
+    out+='<circle cx="50" cy="46" r="6" fill="#F5CBA7" stroke="#4A443C" stroke-width="0.4"/>';
+    out+='<path d="M44 56 L38 92 L62 92 L56 56 Z" fill="'+SUITS[card.suit].color+'" stroke="#4A443C" stroke-width="0.4"/>';
+    out+='<g transform="translate(50,76) scale(3.2)">'+sym+'</g>';
+  }else{
+    var pts=PIP_LAYOUTS[card.rank]||PIP_LAYOUTS[1];
+    var sc=card.rank>=8?0.68:(card.rank>=6?0.8:1.0);
+    pts.forEach(function(p){
+      var y=Math.round(p[1]*132/160);
+      out+='<g transform="translate('+p[0]+','+y+') scale('+sc+')">'+sym+'</g>';
+    });
+  }
+  return out;
+}
+
+function svgCardFace(card,reversed){
+  var art = card.arcana==='major' ? MAJOR_ART[card.key] : minorArt(card);
+  var rot = reversed ? ' transform="rotate(180 50 66)"' : '';
+  return '<svg viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">'+
+    '<rect x="0.5" y="0.5" width="99" height="159" rx="5" fill="#FBF7EF"/>'+
+    '<g clip-path="url(#cc_'+card.id+'_'+(reversed?'r':'u')+')">'+
+      '<g'+rot+'>'+ art +'</g>'+
+    '</g>'+
+    '<rect x="7" y="132" width="86" height="22" fill="#FBF7EF" opacity="0.94"/>'+
+    '<text x="50" y="143" text-anchor="middle" font-family="Georgia,\'Songti SC\',serif" font-size="9.5" letter-spacing="1" fill="#4A443C">'+esc(card.name)+'</text>'+
+    '<line x1="30" y1="147" x2="70" y2="147" stroke="#4A443C" stroke-opacity="0.25" stroke-width="0.6"/>'+
+    '<text x="50" y="156" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" letter-spacing="1.5" fill="#8A8177">'+esc(card.numeral)+'</text>'+
+    '<rect x="0.5" y="0.5" width="99" height="159" rx="5" fill="none" stroke="#4A443C" stroke-opacity="0.35" stroke-width="1"/>'+
+    '<rect x="4.5" y="4.5" width="91" height="151" rx="3" fill="none" stroke="#4A443C" stroke-opacity="0.12" stroke-width="0.6"/>'+
+    '<defs><clipPath id="cc_'+card.id+'_'+(reversed?'r':'u')+'"><rect x="5" y="5" width="90" height="150" rx="3"/></clipPath></defs>'+
+  '</svg>';
+}
+
+function cardFace(card,reversed){
+  var url = CARD_IMAGES[card.id];
+  if(url){
+    var rot = reversed ? 'transform:rotate(180deg);' : '';
+    return '<div style="position:relative;width:100%;height:100%">'+
+      '<img src="'+esc(url)+'" alt="'+esc(card.name)+'" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:4px;'+rot+'" '+
+        'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'">'+
+      '<div style="display:none;width:100%;height:100%">'+svgCardFace(card,reversed)+'</div>'+
+    '</div>';
+  }
+  return svgCardFace(card,reversed);
+}
+
+/* ═══════════════════════════════════════════════
+   AI 解读生成
+   ═══════════════════════════════════════════════ */
+function buildReading(){
+  var sp=S.spread, drawn=S.drawn, q=S.question.trim()||'你此刻的处境';
+  var n=drawn.length;
+  var major=drawn.filter(function(d){return d.card.arcana==='major';}).length;
+  var revs=drawn.filter(function(d){return d.reversed;}).length;
+  var elems={};
+  drawn.forEach(function(d){ if(d.card.element) elems[d.card.element]=(elems[d.card.element]||0)+1; });
+  var out=[];
+
+  var p1='你以「<span class="em">'+esc(sp.name)+'</span>」提出了关于「<span class="em">'+esc(q)+'</span>」的问题。';
+  p1+='这次抽出了 <span class="em">'+n+'</span> 张牌，其中大阿卡纳 '+major+' 张、逆位 '+revs+' 张。';
+  if(major/n>=0.5){
+    p1+='大阿卡纳占了多数，说明这件事牵动的是你生命中比较根本的课题——它不是随手就能翻过去的日常小事，而更像是一次必须认真对待的转折。';
+  }else if(major>0){
+    p1+='命运之牌与日常之牌交错出现，说明这件事既有你无法完全掌控的部分，也有你可以亲手推动的部分。分清这两者，是解牌的第一步。';
+  }else{
+    p1+='这组牌全部是小阿卡纳，意味着眼下的局面完全由具体的人、事、行动构成。它不神秘，也不宿命——它是可以被调整的。';
+  }
+  out.push({h:'整体气象',p:[p1]});
+
+  var rows=drawn.map(function(d,i){
+    var p=d.pos, c=d.card;
+    var meaning = d.reversed ? c.rev : c.up;
+    var head='<div class="rc-head">'+
+      '<span class="rc-idx">'+(i+1)+'</span>'+
+      '<span class="rc-pos">'+esc(p.name)+'</span>'+
+      '<span class="rc-name">'+esc(c.name)+(d.reversed?' · 逆位':' · 正位')+'</span>'+
+    '</div>';
+    var mean='<div class="rc-mean">这个位置问的是：'+esc(p.meaning)+'</div>';
+    var txt='<div class="rc-text">牌面在这里给出了'+esc(c.name)+(d.reversed?'（逆位）':'')+'——'+esc(meaning)+
+      (d.reversed?' 逆位并不是「坏」，它更多是在说：这股能量被卡住了，或者用过头了。':' 这是一股相对顺畅的能量，可以顺着它走。')+'</div>';
+    return '<div class="rc">'+head+mean+txt+'</div>';
+  }).join('');
+  out.push({h:'逐位解读',raw:rows});
+
+  var p3='';
+  var elNames=Object.keys(elems);
+  if(elNames.length>0){
+    elNames.sort(function(a,b){return elems[b]-elems[a];});
+    var top=elNames[0];
+    var elMap={
+      '火':'火元素（权杖）最突出，行动力和热情是这组牌的主调。你并不缺动力，要小心的是冲得太快、把耐心丢在后面。',
+      '水':'水元素（圣杯）最突出，情感与关系是这件事真正的核心。理智的分析在这里帮不上太多忙，你需要先承认自己的感受。',
+      '风':'风元素（宝剑）最突出，这是一场头脑层面的博弈。想清楚比做得多更重要，但也要小心陷入过度分析和自我辩论。',
+      '土':'土元素（星币）最突出，这件事最终要落在具体的资源、时间、金钱和身体上。务实的推进比漂亮的构想更有价值。'
+    };
+    p3+=elMap[top]||'';
+    if(elNames.length>=3) p3+=' 四种元素都出现了，说明这件事牵涉的面向很广，需要你同时照顾到好几个层面。';
+    else if(elNames.length===1) p3+=' 元素高度集中，说明这件事的焦点非常明确，几乎没有旁枝末节。';
+  }
+  if(p3) out.push({h:'元素结构',p:[p3]});
+
+  var p4='';
+  if(revs===0){
+    p4+='所有牌都是正位，这是一个非常顺畅的信号——能量没有被切断，你目前的方向大体是对的，剩下的只是时间问题。';
+  }else if(revs===n){
+    p4+='所有牌都是逆位。这并不意味着「坏」，而是说明——此刻的能量大多卡在内部：你可能还没准备好，或者一直在原地打转。';
+    p4+='先把阻力看清楚，比急着行动更重要。逆位从来不是判决书，它只是提醒你：现在用的方法可能不对。';
+  }else if(revs>=n*0.5){
+    p4+='逆位过半，说明这件事目前的阻力大于助力。但这恰恰是有价值的信息——它告诉你哪些地方需要先松开，而不是硬推。';
+  }else{
+    p4+='正位多于逆位，整体趋势是向前走的，只是中间有几处需要你留意的坎。';
+  }
+  p4+=' 把这几张牌连起来看，它们并不是在替你决定什么，而是把你其实已经隐约知道的东西，摆到了台面上。';
+  out.push({h:'综合',p:[p4]});
+
+  out.push({h:'给你的话',p:[
+    '塔罗不预测未来，它只描述此刻的能量结构。真正的选择，始终在你手上。'+
+    '如果这组牌让你有什么不舒服的地方，那份不舒服本身，往往就是最值得看的地方。'
+  ]});
+  return out;
+}
+
+function renderReading(){
+  return buildReading().map(function(s){
+    var head='<div class="reading-h">'+esc(s.h)+'</div>';
+    if(s.raw) return head+s.raw;
+    return head+s.p.map(function(x){return '<div class="reading-p">'+x+'</div>';}).join('');
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   渲染
+   ═══════════════════════════════════════════════ */
+function render(){
+  var app=document.getElementById('app');
+  var h='';
+  if(S.screen==='home') h=rHome();
+  else if(S.screen==='spreads') h=rSpreads();
+  else if(S.screen==='detail') h=rDetail();
+  else if(S.screen==='drawing') h=rDrawing();
+  else if(S.screen==='result') h=rResult();
+  else if(S.screen==='editor') h=rEditor();
+  else if(S.screen==='library') h=rLibrary();
+  else if(S.screen==='imgset') h=rImgSet();
+  if(S.detailCard) h+=rCardModal();
+  app.innerHTML=h;
+  if(S.screen==='editor') bindEditor();
+  window.scrollTo(0,0);
+}
+
+function rHome(){
+  return '<div class="screen">'+
+    '<div class="hero">'+
+      '<div class="hero-glyph">✦</div>'+
+      '<h1>塔 罗 牌 阵</h1>'+
+      '<div class="hero-sub">Tarot Spreads</div>'+
+      '<div class="hero-rule"></div>'+
+      '<div class="hint" style="max-width:300px;margin:0 auto">七十八张牌，七种经典牌阵。<br>静下来，问一个你真的想知道答案的问题。</div>'+
+    '</div>'+
+    '<button class="btn primary" data-a="spreads">抽 牌</button>'+
+    '<button class="btn" data-a="custom">创建我的牌阵</button>'+
+    '<button class="btn" data-a="library">牌义速查</button>'+
+    '<button class="btn" data-a="imgset">牌面图片（挂载真实韦特图）</button>'+
+    '<div class="footer">§ 对于不可说的，必须保持沉默</div>'+
+  '</div>';
+}
+
+function rSpreads(){
+  var list=allSpreads();
+  var h='<div class="screen"><h2>选择牌阵</h2>'+
+    '<div class="hint" style="margin-bottom:16px">每种牌阵都有不同的视角。不确定选哪个，就从「时间之流」开始。</div>';
+  list.forEach(function(sp,i){
+    var isCustom = i>=BUILTIN.length;
+    h+='<div class="spread-item" data-a="pickSpread" data-i="'+i+'">'+
+      '<div class="si-glyph">'+esc(sp.glyph||'✧')+'</div>'+
+      '<div class="si-body">'+
+        '<div class="si-name">'+esc(sp.name)+(isCustom?' <span style="font-size:10px;color:var(--ink3)">自定义</span>':'')+'</div>'+
+        '<div class="si-desc">'+esc(sp.desc)+'</div>'+
+        '<div class="si-count">'+sp.positions.length+' 张牌</div>'+
+      '</div>'+
+      '<div class="si-arrow">›</div>'+
+    '</div>';
+  });
+  h+='<button class="btn" data-a="custom" style="margin-top:18px">＋ 创建自定义牌阵</button>'+
+     '<button class="btn ghost" data-a="home">返回</button></div>';
+  return h;
+}
+
+function rDetail(){
+  var sp=S.spread;
+  var h='<div class="screen">'+
+    '<h2>'+esc(sp.name)+'</h2>'+
+    '<div class="hint">'+esc(sp.desc)+'</div>';
+  h+='<div class="mini-stage">';
+  sp.layout.forEach(function(pt,i){
+    h+='<div class="mini-card" style="left:'+pt[0]+'%;top:'+pt[1]+'%">'+(i+1)+'</div>';
+  });
+  h+='</div>';
+  h+='<h3>位置含义</h3>';
+  sp.positions.forEach(function(p,i){
+    h+='<div class="pos-row">'+
+      '<div class="pos-num">'+(i+1)+'</div>'+
+      '<div class="pos-body"><div class="pos-name">'+esc(p.name)+'</div>'+
+      '<div class="pos-mean">'+esc(p.meaning)+'</div></div>'+
+    '</div>';
+  });
+  h+='<label class="fl">你想问什么？（可留空）</label>'+
+     '<input class="input" id="qInput" placeholder="例如：我该不该换一份工作" value="'+esc(S.question)+'" maxlength="60">'+
+     '<button class="btn primary" data-a="startDraw">开 始 抽 牌</button>'+
+     '<button class="btn ghost" data-a="spreads">换个牌阵</button>'+
+     '<button class="btn ghost" data-a="home">返回首页</button>';
+  if(sp.isCustom){
+    h+='<button class="btn danger" data-a="delCustom" style="margin-top:18px">删除这个牌阵</button>';
+  }
+  h+='</div>';
+  return h;
+}
+
+function rDrawing(){
+  return '<div class="screen"><div class="drawing">'+
+    '<div class="shuffle-stack">'+
+      '<div class="sc"></div><div class="sc"></div><div class="sc"></div><div class="sc"></div>'+
+    '</div>'+
+    '<div class="draw-text">洗 牌 中</div>'+
+  '</div></div>';
+}
+
+function rResult(){
+  var sp=S.spread, drawn=S.drawn, n=drawn.length;
+  var stageW = n===1?46:(n===2?36:(n===3?30:(n===4?27:(n<=6?24:(n<=8?21:(n<=10?18:16))))));
+  var h='<div class="screen">';
+  h+='<h2 style="text-align:center">'+esc(sp.name)+'</h2>';
+  if(S.question.trim()) h+='<div class="hint" style="text-align:center;margin-bottom:4px">「'+esc(S.question.trim())+'」</div>';
+  h+='<div class="hint" style="text-align:center;font-size:11px;color:var(--ink3);margin-bottom:6px">点击任意牌查看正逆位含义</div>';
+  h+='<div class="stage" style="aspect-ratio:1/'+sp.ratio+'">';
+  drawn.forEach(function(d,i){
+    var pt=sp.layout[i]||[50,50];
+    var extra='transform:translate(-50%,-50%);';
+    if(sp.id==='celtic'&&i===1) extra='transform:translate(-50%,-50%) rotate(90deg);';
+    h+='<div class="slot-wrap" data-a="showCard" data-i="'+i+'" style="left:'+pt[0]+'%;top:'+pt[1]+'%;width:'+stageW+'%;'+extra+'">'+
+      '<div class="slot-rot" style="'+(d.reversed?'transform:rotate(180deg)':'')+'">'+
+        '<div class="slot-anim" style="animation-delay:'+(i*0.09)+'s">'+
+          '<span class="slot-badge">'+(i+1)+'</span>'+
+          cardFace(d.card,d.reversed)+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  });
+  h+='</div>';
+  h+='<div class="reading">'+renderReading()+'</div>';
+  h+='<button class="btn primary" data-a="again" style="margin-top:18px">再抽一次</button>'+
+     '<button class="btn ghost" data-a="spreads">换个牌阵</button>'+
+     '<button class="btn ghost" data-a="home">返回首页</button>';
+  h+='</div>';
+  return h;
+}
+
+function rCardModal(){
+  var c=S.detailCard.card, rev=S.detailCard.reversed, pos=S.detailCard.pos;
+  var orientation = rev ? 'REVERSED · 逆位' : 'UPRIGHT · 正位';
+  return '<div class="modal" data-a="closeModal">'+
+    '<div class="modal-box" data-stop="1">'+
+      '<div style="width:140px;margin:0 auto 16px">'+cardFace(c,rev)+'</div>'+
+      '<div class="m-name">'+esc(c.name)+'</div>'+
+      '<div class="m-sub">'+orientation+'</div>'+
+      '<div class="m-body">'+
+        (pos && pos.name && pos.name!=='牌义' ?
+          '<div class="m-section"><div class="m-label">位置</div>'+
+          '<div class="m-pos-name">'+esc(pos.name)+'</div>'+
+          (pos.meaning?'<div class="m-pos-mean">'+esc(pos.meaning)+'</div>':'')+
+          '</div>' : '')+
+        '<div class="m-section"><div class="m-label">正位含义</div>'+
+          '<div class="m-text '+(rev?'dim':'m-hl')+'">'+esc(c.up)+'</div>'+
+        '</div>'+
+        '<div class="m-section"><div class="m-label">逆位含义</div>'+
+          '<div class="m-text '+(rev?'m-hl':'dim')+'">'+esc(c.rev)+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<button class="btn" data-a="closeModal" style="margin-top:18px">关闭</button>'+
+    '</div>'+
+  '</div>';
+}
+
+function rEditor(){
+  var e=S.editor;
+  var h='<div class="screen">'+
+    '<h2>创建牌阵</h2>'+
+    '<div class="hint" style="margin-bottom:14px">定义每个位置的含义，保存后可以反复使用。</div>'+
+    '<label class="fl">牌阵名称</label>'+
+    '<input class="input" id="edName" placeholder="例如：事业十字" value="'+esc(e.name)+'" maxlength="12">'+
+    '<label class="fl">一句话说明</label>'+
+    '<input class="input" id="edDesc" placeholder="这个牌阵用来回答什么问题" value="'+esc(e.desc)+'" maxlength="40">'+
+    '<h3>位置定义</h3>';
+  e.positions.forEach(function(p,i){
+    h+='<div class="ed-sec">'+
+      '<div class="ed-head">'+
+        '<span class="ed-title">位置 '+(i+1)+'</span>'+
+        (e.positions.length>1?'<button class="ed-del" data-a="delPos" data-i="'+i+'">删除</button>':'')+
+      '</div>'+
+      '<input class="input" data-f="posName" data-i="'+i+'" placeholder="位置名称，例如：现状" value="'+esc(p.name)+'" maxlength="10" style="margin-bottom:6px">'+
+      '<textarea class="input" data-f="posMean" data-i="'+i+'" placeholder="这个位置代表什么含义" style="min-height:56px;margin-bottom:0">'+esc(p.meaning)+'</textarea>'+
+    '</div>';
+  });
+  h+='<button class="btn" data-a="addPos">＋ 添加位置</button>'+
+     '<button class="btn primary" data-a="saveCustom" style="margin-top:16px">保存牌阵</button>'+
+     '<button class="btn ghost" data-a="backFromEditor">取消</button>'+
+  '</div>';
+  return h;
+}
+
+function bindEditor(){
+  var app=document.getElementById('app');
+  function sync(){
+    var nm=document.getElementById('edName');
+    var ds=document.getElementById('edDesc');
+    if(nm) S.editor.name=nm.value;
+    if(ds) S.editor.desc=ds.value;
+    app.querySelectorAll('[data-f="posName"]').forEach(function(el){
+      var i=parseInt(el.dataset.i); if(S.editor.positions[i]) S.editor.positions[i].name=el.value;
+    });
+    app.querySelectorAll('[data-f="posMean"]').forEach(function(el){
+      var i=parseInt(el.dataset.i); if(S.editor.positions[i]) S.editor.positions[i].meaning=el.value;
+    });
+  }
+  S._syncEditor=sync;
+  app.addEventListener('input',function(ev){
+    if(ev.target.dataset.f||ev.target.id==='edName'||ev.target.id==='edDesc') sync();
+  });
+}
+
+function rLibrary(){
+  var page=S.libPage, per=24;
+  var start=page*per, end=Math.min(start+per,S.deck.length);
+  var total=Math.ceil(S.deck.length/per);
+  var h='<div class="screen"><h2>牌义速查</h2>'+
+    '<div class="hint" style="margin-bottom:14px">共 '+S.deck.length+' 张牌 · 第 '+(page+1)+' / '+total+' 页 · 点击任意牌查看正逆位含义</div>'+
+    '<div class="lib-grid">';
+  for(var i=start;i<end;i++){
+    var c=S.deck[i];
+    h+='<div class="lib-card" data-a="showLibCard" data-i="'+i+'">'+
+      cardFace(c,false)+
+      '<div class="lib-name">'+esc(c.name)+'</div>'+
+    '</div>';
+  }
+  h+='</div>';
+  h+='<div class="btn-row" style="margin-top:20px">'+
+    (page>0?'<button class="btn sm" data-a="libPrev">上一页</button>':'')+
+    (end<S.deck.length?'<button class="btn sm" data-a="libNext">下一页</button>':'')+
+  '</div>';
+  h+='<button class="btn ghost" data-a="home" style="margin-top:14px">返回首页</button></div>';
+  return h;
+}
+
+/* ── 牌面图片挂载页 ── */
+function rImgSet(){
+  var count = Object.keys(CARD_IMAGES).length;
+  var listLines = Object.keys(CARD_IMAGES).map(function(k){return k+' '+CARD_IMAGES[k];}).join('\n');
+  return '<div class="screen">'+
+    '<h2>牌面图片</h2>'+
+    '<div class="hint" style="margin-bottom:14px">默认使用内置绘制的韦特风格卡牌。你也可以在这里填入自己的图片链接，让牌面显示真实韦特扫描图。</div>'+
+    '<div class="card" style="font-size:12px;line-height:1.9">'+
+      '💡 <b>韦特塔罗牌（1909年）已进入公有领域</b>，可在 <b>Wikimedia Commons</b>、<b>sacred-texts.com</b> 等网站免费下载全套高清扫描图。下载后填入下方链接即可。'+
+    '</div>'+
+    '<label class="fl">图片链接（每行一条，格式：卡牌ID + 空格 + 图片URL）</label>'+
+    '<textarea class="input" id="imgInput" style="min-height:170px;font-family:\'SF Mono\',monospace;font-size:12px" placeholder="m0 https://example.com/fool.jpg&#10;m1 https://example.com/magician.jpg&#10;wands1 https://example.com/wands-ace.jpg">'+esc(listLines)+'</textarea>'+
+    '<div style="font-size:12px;color:var(--ink2);margin-bottom:8px">当前已挂载：<b>'+count+'</b> 张</div>'+
+    '<button class="btn primary" data-a="saveImages">保存</button>'+
+    '<button class="btn" data-a="clearImages">清空所有图片</button>'+
+    '<button class="btn ghost" data-a="home">返回</button>'+
+    '<h3>卡牌 ID 参考</h3>'+
+    '<div class="card mono" style="font-size:12px;line-height:2">'+
+      '<b>m0 – m21</b>　大阿卡纳（愚者 到 世界）<br>'+
+      '<b>wands1 – wands14</b>　权杖（一 到 国王）<br>'+
+      '<b>cups1 – cups14</b>　圣杯<br>'+
+      '<b>swords1 – swords14</b>　宝剑<br>'+
+      '<b>pentacles1 – pentacles14</b>　星币'+
+    '</div>'+
+  '</div>';
+}
+
+/* ═══════════════════════════════════════════════
+   事件
+   ═══════════════════════════════════════════════ */
+document.addEventListener('click',function(e){
+  try{
+    var el=e.target.closest('[data-a]');
+    if(!el) return;
+    if(e.target.closest('[data-stop]') && el.dataset.a==='closeModal' && e.target.closest('.modal-box') && !e.target.closest('button')) return;
+    var a=el.dataset.a;
+    var i = el.dataset.i!==undefined ? parseInt(el.dataset.i) : null;
+
+    if(a==='home'){ S.screen='home'; S.spread=null; S.drawn=[]; S.detailCard=null; render(); }
+    else if(a==='spreads'){ S.screen='spreads'; S.spread=null; S.detailCard=null; render(); }
+    else if(a==='library'){ S.screen='library'; S.libPage=0; render(); }
+    else if(a==='imgset'){ S.screen='imgset'; render(); }
+    else if(a==='libNext'){ S.libPage++; render(); }
+    else if(a==='libPrev'){ if(S.libPage>0)S.libPage--; render(); }
+    else if(a==='showLibCard'){
+      var c=S.deck[i];
+      S.detailCard={card:c,reversed:false,pos:{name:'牌义',meaning:c.arcana==='major'?'大阿卡纳 · 第 '+c.numeral+' 号':'小阿卡纳 · '+SUITS[c.suit].name+' · '+SUITS[c.suit].el+'元素'}};
+      render();
+    }
+    else if(a==='pickSpread'){ S.spread=allSpreads()[i]; S.screen='detail'; render(); }
+    else if(a==='startDraw'){ var qi=document.getElementById('qInput'); if(qi) S.question=qi.value; startDraw(); }
+    else if(a==='again'){ startDraw(); }
+    else if(a==='showCard'){ S.detailCard=S.drawn[i]; render(); }
+    else if(a==='closeModal'){ S.detailCard=null; render(); }
+    else if(a==='custom'){
+      S.editor={name:'',desc:'',positions:[{name:'',meaning:''},{name:'',meaning:''},{name:'',meaning:''}]};
+      S.screen='editor'; render();
+    }
+    else if(a==='addPos'){
+      if(S._syncEditor)S._syncEditor();
+      if(S.editor.positions.length>=12) return toast('最多 12 个位置');
+      S.editor.positions.push({name:'',meaning:''});
+      S.screen='editor'; render();
+    }
+    else if(a==='delPos'){
+      if(S._syncEditor)S._syncEditor();
+      S.editor.positions.splice(i,1);
+      S.screen='editor'; render();
+    }
+    else if(a==='saveCustom'){
+      if(S._syncEditor)S._syncEditor();
+      var e2=S.editor;
+      var nm=(e2.name||'').trim()||'我的牌阵';
+      var ds=(e2.desc||'').trim()||'自定义牌阵';
+      var pos=e2.positions.filter(function(p){return (p.name||'').trim();});
+      if(pos.length===0) return toast('至少填写一个位置名称');
+      pos=pos.map(function(p){return {name:p.name.trim(),meaning:(p.meaning||'').trim()||'这个位置代表的含义。'};});
+      S.custom.push({id:'custom_'+Date.now(),isCustom:true,name:nm,desc:ds,glyph:String(pos.length),ratio:1.1,positions:pos,layout:autoLayout(pos.length)});
+      persistCustom();
+      toast('✓ 已保存');
+      S.screen='spreads'; render();
+    }
+    else if(a==='backFromEditor'){ S.screen='spreads'; render(); }
+    else if(a==='delCustom'){
+      if(!S.spread||!S.spread.isCustom) return;
+      if(!confirm('删除「'+S.spread.name+'」？')) return;
+      S.custom=S.custom.filter(function(x){return x.id!==S.spread.id;});
+      persistCustom();
+      toast('已删除');
+      S.screen='spreads'; S.spread=null; render();
+    }
+    else if(a==='saveImages'){
+      var ta=document.getElementById('imgInput');
+      if(!ta) return;
+      var lines=ta.value.split('\n');
+      var map={}; var cnt=0;
+      lines.forEach(function(line){
+        line=line.trim();
+        if(!line) return;
+        var parts=line.split(/\s+/);
+        if(parts.length<2) return;
+        var id=parts[0];
+        var url=parts.slice(1).join(' ');
+        map[id]=url; cnt++;
+      });
+      CARD_IMAGES=map;
+      if(saveCardImages()) toast('✓ 已保存 '+cnt+' 张');
+      else toast('存储空间不足');
+      render();
+    }
+    else if(a==='clearImages'){
+      if(!confirm('清空所有自定义图片？牌面会恢复为内置绘制。')) return;
+      CARD_IMAGES={}; saveCardImages();
+      toast('已清空'); render();
+    }
+  }catch(err){ console.error(err); toast('出错了'); }
+});
+
+function autoLayout(n){
+  if(n===1) return [[50,50]];
+  if(n===2) return [[30,50],[70,50]];
+  if(n===3) return [[20,50],[50,50],[80,50]];
+  if(n===4) return [[28,30],[72,30],[28,74],[72,74]];
+  if(n===5) return [[50,14],[20,44],[80,44],[20,80],[80,80]];
+  var pts=[];
+  var cols = n<=6?3:(n<=8?4:(n<=9?3:4));
+  var rows = Math.ceil(n/cols);
+  for(var i=0;i<n;i++){
+    var c=i%cols, r=Math.floor(i/cols);
+    pts.push([ (c+0.5)/cols*84+8, (r+0.5)/rows*84+8 ]);
+  }
+  return pts;
+}
+
+/* ═══════════════════════════════════════════════
+   抽牌（正逆位概率随机：每次抽牌在 20%~80% 之间浮动）
+   ═══════════════════════════════════════════════ */
+function startDraw(){
+  var sp=S.spread;
+  if(!sp) return;
+  S.screen='drawing'; S.detailCard=null; render();
+  setTimeout(function(){
+    var deck=shuffle(S.deck);
+    S.drawn=[];
+    // 每次抽牌先随机一个整体逆位概率，范围 20%~80%
+    var revProb = 0.2 + Math.random() * 0.6;
+    for(var i=0;i<sp.positions.length;i++){
+      S.drawn.push({
+        card:deck[i],
+        reversed: Math.random() < revProb,   // 每张牌独立按此概率判断逆位
+        pos:sp.positions[i]
+      });
+    }
+    S.screen='result'; render();
+  },1400);
+}
+
+/* ═══════════════════════════════════════════════
+   初始化
+   ═══════════════════════════════════════════════ */
+try{
+  S.deck=buildDeck();
+  S.custom=loadCustom();
+  loadCardImages();
+  render();
+}catch(e){
+  console.error(e);
+  document.getElementById('app').innerHTML=
+    '<div style="padding:60px 20px;text-align:center;color:#8A8177">'+
+    '<div style="font-size:36px;margin-bottom:14px">✦</div>'+
+    '<div>初始化失败：'+esc(e.message)+'</div></div>';
+}
+</script>
+</body>
+</html>

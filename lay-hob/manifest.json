@@ -1,0 +1,18 @@
+{
+  "name": "一起来玩游戏呀",
+  "short_name": "玩游戏",
+  "description": "剧本杀、大富翁、工业革命、塔罗牌 —— 一个页面全搞定",
+  "lang": "zh-CN",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#FFF5F7",
+  "theme_color": "#ff7675",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

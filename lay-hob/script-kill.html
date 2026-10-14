@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>欢乐剧本杀合集</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC',sans-serif;background:#fff7ed;color:#2d3436;line-height:1.7;font-size:15px}
+#app{max-width:560px;margin:0 auto;padding:14px 12px 80px}
+h1{font-size:24px;font-weight:800}
+h2{font-size:19px;margin-bottom:12px;color:#e17055}
+h3{font-size:15px;margin:18px 0 8px;color:#6c5ce7}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.05);white-space:pre-line}
+.card.gold{background:#fff8e7;border:1.5px solid #fdcb6e}
+.card.rose{background:#fff0f5;border:1.5px solid #f8c8d8}
+.card.mint{background:#eef9f3;border:1.5px solid #b8e0c8}
+.card.blue{background:#eef4fc;border:1.5px solid #b8cde8}
+.card.secret{border-left:4px solid #e84393;background:#fff5f9}
+.card.clue{border-left:4px solid #e17055;background:#fffaf5}
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;background:#fff;color:#2d3436;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.06);margin-top:10px;font-family:inherit}
+.btn.primary{background:linear-gradient(135deg,#e17055,#e74c3c);color:#fff}
+.btn.gold{background:linear-gradient(135deg,#f39c12,#fdcb6e);color:#fff}
+.btn.green{background:linear-gradient(135deg,#00b894,#55efc4);color:#fff}
+.btn.purple{background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff}
+.btn.ghost{background:transparent;border:2px solid #e0d5c8;box-shadow:none}
+.btn:disabled{opacity:.4}
+.btn-row{display:flex;gap:10px;margin-top:10px}
+.btn-row .btn{margin-top:0;flex:1}
+.hint{color:#8b9aa8;font-size:13px;margin-bottom:12px}
+.input{width:100%;background:#fff;border:2px solid transparent;border-radius:12px;padding:13px;font-size:15px;font-family:inherit;outline:none;box-shadow:0 2px 8px rgba(0,0,0,.04);margin-bottom:12px}
+textarea.input{min-height:80px;resize:vertical}
+.hero{text-align:center;padding:20px 0 14px}
+.hero-emoji{font-size:56px}
+.player{display:flex;align-items:center;padding:12px;background:#fff;border-radius:12px;margin-bottom:8px}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.avatar.lg{width:64px;height:64px;font-size:26px}
+.pass{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 20px}
+.pass-icon{font-size:56px;margin-bottom:16px}
+.pass-name{font-size:26px;font-weight:800;color:#e17055;margin-bottom:14px}
+.pass-hint{color:#8b9aa8;font-size:14px;margin-bottom:24px;white-space:pre-line}
+.room-code{font-size:40px;font-weight:800;color:#f39c12;letter-spacing:8px;font-family:monospace;text-align:center;margin:10px 0}
+.copy-box{background:#fff;border:2px dashed #f39c12;border-radius:12px;padding:12px;font-size:12px;color:#8b9aa8;word-break:break-all;font-family:monospace;margin-bottom:12px}
+.host-says{display:flex;gap:10px;padding:13px;background:#fff8e7;border-radius:12px;border-left:4px solid #f39c12;margin-bottom:12px;font-size:14px;color:#7a5c2e;font-style:italic}
+.timer-box{text-align:center;padding:22px;background:#fff;border-radius:14px;margin:12px 0}
+.timer{font-size:48px;font-weight:200;letter-spacing:4px;color:#e17055;font-variant-numeric:tabular-nums}
+.vote-card{display:flex;align-items:center;gap:12px;padding:13px;background:#fff;border:2px solid transparent;border-radius:12px;cursor:pointer;margin-bottom:10px}
+.vote-card.selected{border-color:#e17055;background:#fff5f0}
+.vote-name{font-size:15px;font-weight:600}
+.vote-role{font-size:12px;color:#8b9aa8}
+.result-hero{text-align:center;padding:28px 20px;background:linear-gradient(135deg,#fff8e7,#ffe9d6);border-radius:20px;margin-bottom:16px}
+.result-emoji{font-size:56px;margin:10px 0}
+.result-title{font-size:22px;font-weight:800;color:#e17055}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2d3436;color:#fff;padding:12px 22px;border-radius:100px;font-size:14px;z-index:1000;max-width:90%;text-align:center;animation:tin .3s}
+@keyframes tin{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
+.connection{position:fixed;top:10px;right:10px;font-size:11px;padding:4px 10px;border-radius:12px;background:#fff;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.connection.on{color:#00b894}.connection.off{color:#e17055}.connection.wait{color:#f39c12}
+.chat{background:#fff;border-radius:12px;overflow:hidden;margin-top:12px}
+.chat-list{height:200px;overflow-y:auto;padding:12px}
+.msg{margin-bottom:10px;display:flex;gap:8px}
+.msg.me{flex-direction:row-reverse}
+.msg.sys{justify-content:center}
+.msg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;background:#e17055}
+.msg-body{max-width:75%}
+.msg.me .msg-body{text-align:right}
+.msg-name{font-size:11px;color:#8b9aa8}
+.msg-bub{display:inline-block;padding:7px 11px;background:#f0ebe3;border-radius:10px;font-size:13px;text-align:left;word-break:break-word}
+.msg.me .msg-bub{background:#e17055;color:#fff}
+.msg.sys .msg-bub{background:#fff8e7;color:#7a5c2e;font-style:italic;font-size:12px}
+.chat-input-bar{display:flex;gap:8px;padding:10px;border-top:1px solid #f0ebe3}
+.chat-input{flex:1;background:#fff7ed;border:none;border-radius:8px;padding:10px;font-size:14px;outline:none}
+.send-btn{padding:10px 16px;background:#e17055;color:#fff;border-radius:8px;font-size:14px;border:none;font-family:inherit}
+.script-card{display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border-radius:14px;margin-bottom:10px;cursor:pointer;border:2px solid transparent;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.script-card.selected{border-color:#e17055;background:#fffaf5}
+.script-emoji{font-size:34px}
+.script-info{flex:1}
+.script-title{font-size:16px;font-weight:700}
+.script-sub{font-size:12px;color:#8b9aa8}
+.script-actions{display:flex;gap:6px;margin-top:8px}
+.script-actions button{padding:6px 10px;font-size:12px;border:none;border-radius:6px;background:#f0ebe3;color:#5a6b7a;font-family:inherit;cursor:pointer;font-weight:600}
+.script-actions button.danger{background:#ffe0e0;color:#e17055}
+.editor-sec{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px}
+.editor-sec label{display:block;font-size:13px;color:#8b9aa8;margin-bottom:6px;font-weight:600}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #e17055;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+/* ═══════════════════════════════════════════════════════════
+   剧本数据 · 年会大作战
+   ═══════════════════════════════════════════════════════════ */
+var SC1={id:"nianhui",isCustom:false,title:"年会大作战",subtitle:"轻松搞笑 · 悬疑反转",emoji:"🎁",
+intro:"2024年12月31日，某互联网公司年会。\n\n大家都在期待特等奖——iPhone 16 Pro Max。\n\n抽奖前10分钟，行政刘姐打开奖品箱——空的！\n\n门没被撬，箱子完好。\n\n6个有嫌疑的人聚在了休息室……",
+scene:"年会现场 · 会议室\n- 奖品箱在角落，只有行政和老板有钥匙\n- 下午3点，奖品被刘姐放进箱子\n- 6点30分，发现奖品不见了",
+characters:[
+{id:1,name:"周凯",role:"实习生",age:22,emoji:"🎓",color:"#6c5ce7",intro:"你是周凯，22岁，实习生。\n\n你女朋友今天生日，你想送她iPhone，但工资不够。\n\n你偷偷量过奖品箱尺寸，想做个同样的木盒。",secret:"【你的秘密】\n\n你下午4点去会议室量了奖品箱尺寸。\n\n你不是想偷，是想做个同样大小的木盒，把礼物放进去给女朋友惊喜。",timeline:"15:00 赶报告\n16:00 去会议室量箱子\n16:15 回工位\n18:30 听说奖品不见了",task:"证明自己只是去量尺寸。"},
+{id:2,name:"林主管",role:"销售主管",age:35,emoji:"💼",color:"#0984e3",intro:"你是林主管，35岁。\n\n今年业绩差一点，大客户只认iPhone。\n\n你想过把奖品先给客户看一眼。",secret:"【你的秘密】\n\n你下午5点去看过奖品箱，想确认是不是iPhone。\n\n你没拿，但动过念头。",timeline:"15:00 见客户\n17:00 回公司看箱子\n17:20 回工位\n18:30 听说奖品不见了",task:"解释你去看箱子的真实目的。"},
+{id:3,name:"刘姐",role:"行政",age:40,emoji:"👩",color:"#e17055",intro:"你是刘姐，40岁，行政。\n\n你儿子昨晚发烧住院，你今天心不在焉。\n\n你今天拿了好几个盒子进进出出。",secret:"【你的秘密】\n\n下午4:30你拿了一个盒子出会议室，以为是饮料箱。\n\n现在你怀疑自己拿错了。",timeline:"15:00 把iPhone放进奖品箱\n16:30 拿了一个盒子出去\n18:00 回会议室准备抽奖\n18:30 发现箱子空了",task:"说清你下午拿走了什么。"},
+{id:4,name:"阿May",role:"前台",age:25,emoji:"💅",color:"#e84393",intro:"你是阿May，25岁，前台。\n\n老板让你留意谁靠近过奖品箱。\n\n你看到了两个身影，但不敢说。",secret:"【你的秘密】\n\n下午4:30看到刘姐拿盒子出来。\n下午5:00看到林主管进会议室。\n\n你只看到影子。",timeline:"16:30 看到刘姐拿盒子\n17:00 看到林主管进会议室\n18:30 和大家发现奖品不见了",task:"说出你看到的两个身影。"},
+{id:5,name:"老陈",role:"老员工",age:45,emoji:"🧔",color:"#00b894",intro:"你是老陈，45岁，公司老员工。\n\n你想中奖带老婆去旅游。\n\n下午5:30你偷偷去过会议室。",secret:"【你的秘密】\n\n你只是摸了摸箱子许愿，什么都没拿。",timeline:"15:00 布置会场\n17:30 去会议室摸箱子\n17:35 回会场\n18:30 听说奖品不见了",task:"承认去过会议室，但要说清你什么都没拿。"},
+{id:6,name:"小王",role:"老板侄子",age:26,emoji:"🕶",color:"#f39c12",intro:"你是小王，26岁，老板侄子。\n\n你想证明自己不是关系户。\n\n下午4:45，叔叔让你去会议室拿一个盒子。",secret:"【你的秘密】\n\n你拿了桌边看起来比较新的盒子送到叔叔办公室。\n\n现在你怀疑拿错了。",timeline:"16:45 收到叔叔消息\n17:00 去会议室拿了一个盒子\n17:10 送到老板办公室\n18:30 听说奖品不见了",task:"承认你拿了盒子，解释清楚是帮叔叔拿的。"}],
+rounds:[
+{title:"第一轮 · 案发",publicClues:["奖品箱完好，锁没被撬。","下午3点刘姐把iPhone放进奖品箱。","6点30分刘姐打开箱子，里面是空的。","监控显示有5个人在3点-6点30之间进过会议室：周凯(4:00)、刘姐(4:30)、小王(5:00)、林主管(5:00)、老陈(5:30)。","会议室的角落，有一个比奖品箱稍旧的纸箱（装饮料的）。"],privateClues:{1:["你下午4:00去过会议室。","你手机里有量箱子的照片。"],2:["你下午5:00去过会议室。","你手机里有和客户讨论iPhone的记录。"],3:["你下午4:30拿过一个盒子出去。","你以为是饮料箱，现在不确定了。"],4:["你看到刘姐4:30拿盒子出来。","你看到林主管5:00进会议室。"],5:["你下午5:30摸过箱子。","你对着箱子说过让我中吧。"],6:["你下午5:00拿了一个盒子送到老板办公室。","叔叔让你拿装合同的盒子。"]}},
+{title:"第二轮 · 疑点",publicClues:["监控拍到小王下午5:00从会议室出来，手里的盒子大小和奖品箱一样。","刘姐说拿走的盒子应该是饮料箱，但饮料箱还在角落。","老板办公室门锁着，只有老板和小王有钥匙。","老板今天4:30离开公司去机场。"],privateClues:{1:["你量箱子时看到旁边有个旧纸箱，你没动。"],2:["你看了箱子之后离开了，没触碰。"],3:["你开始回想：下午拿的到底是哪个盒子？"],4:["你拍的照片里，小王拿盒子的动作很清楚。"],5:["你想说：我什么都没拿，但怕大家不信。"],6:["你叔叔到现在还没联系你。"]}},
+{title:"第三轮 · 真相浮现",publicClues:["老板电话通了：我让小王拿一个装合同的盒子。","小王拿出叔叔发的消息：会议室角落那个新一点的盒子。","刘姐突然想起来：我把奖品箱挪到了桌子旁边！","老板办公室里的盒子打开——是全新的iPhone 16 Pro Max。"],privateClues:{1:["你终于可以放心了。"],2:["你庆幸自己没真动手。"],3:["你想起来：你拿的是饮料箱。"],4:["你把照片拿出来，证明了小王。"],5:["你说出了想中奖的真实原因。"],6:["你向叔叔解释清楚：你拿的是新一点的盒子。"]}}],
+truth:{story:"真相是这样的：\n\n下午3点，刘姐把iPhone放进奖品箱，放在会议室角落。\n\n下午4:30，刘姐把奖品箱从角落挪到桌边，拿了旁边的饮料箱出去。\n\n下午4:45，老板给侄子小王发消息：去会议室角落拿一个盒子，装着合同。\n\n下午5点，小王进会议室，看到桌边一个新盒子、角落一个旧盒子。\n\n小王想着老板说新一点的盒子，就拿了桌边那个——奖品箱。\n\n他送到老板办公室就走了。\n\n所以奖品不在会议室，在老板办公室。\n\n【反转】\n每个人今晚都藏着小秘密，但没有人是小偷。\n\n只有一群笨拙又可爱的人。",reasoning:["监控显示小王拿着和奖品箱一样大的盒子。","刘姐把奖品箱挪到了桌边，小王的记忆没错。","老板让小王拿装合同的盒子，但没说是哪个，小王凭新一点判断，拿错了。","刘姐拿走的确实是饮料箱，饮料箱在另一个房间被找到。","周凯、林主管、老陈都没有拿走盒子的动作。"],endings:[{name:"周凯",text:"你把手工木盒送给女朋友，她哭了。"},{name:"林主管",text:"老板把iPhone借给你谈客户，大单谈成了。"},{name:"刘姐",text:"儿子烧退了，老板悄悄给了你奖金。"},{name:"阿May",text:"你的照片帮了大忙，老板升你做行政助理。"},{name:"老陈",text:"你没能中奖，但老婆说带我去吃顿好的就行。"},{name:"小王",text:"你被笑了一个月，叔叔说你就是太急。"}]}};
+
+/* ═══════════════════════════════════════════════════════════
+   剧本数据 · 外卖大作战
+   ═══════════════════════════════════════════════════════════ */
+var SC2={id:"waimai",isCustom:false,title:"外卖大作战",subtitle:"加班夜 · 谁动了小龙虾",emoji:"🦞",
+intro:"某互联网公司，晚上8点。\n\n加班的6个人一起点了外卖，其中有一份限量版麻辣小龙虾。\n\n外卖小哥把餐放在前台就走了。\n\n8点30分，大家去前台取餐——\n\n小龙虾的盒子开着，少了大约一半！\n\n其他5份外卖都完好无损。\n\n前台监控恰好在8:00-8:30之间「维修中」。\n\n6个加班的人，谁动了小龙虾？",
+scene:"公司前台 · 茶水间\n- 6份外卖放在前台桌上\n- 小龙虾的盒子被打开，少了一半\n- 其他外卖都没被动过\n- 前台监控「维修中」，没有拍到画面\n- 楼层的垃圾桶已经被清运",
+characters:[
+{id:1,name:"张小胖",role:"程序猿",age:28,emoji:"🐷",color:"#6c5ce7",intro:"你是张小胖，28岁，程序员。\n\n你正在减肥，已经坚持了21天。\n\n今晚加班到很晚，你饿得前胸贴后背。\n\n你点了一份蔬菜沙拉。",secret:"【你的秘密】\n\n你8:15去前台看过外卖，因为饿得受不了想先拿自己的。\n\n你看到小龙虾盒子开着，但你忍住了，什么都没吃。",timeline:"18:00 开始加班\n19:00 和大家一起点外卖\n20:15 去前台看外卖\n20:16 回工位继续改bug\n20:30 和大家一起去取餐",task:"证明你虽然去看过，但没有吃。"},
+{id:2,name:"李美丽",role:"产品经理",age:30,emoji:"💄",color:"#e84393",intro:"你是李美丽，30岁，产品经理。\n\n你正在严格控制饮食，只吃沙拉。\n\n你对小龙虾过敏，碰都不能碰。\n\n但你有个习惯：看到什么都想拍照。",secret:"【你的秘密】\n\n你8:20去前台拿自己的沙拉。\n\n你看到小龙虾盒子已经开着，还拍了张照片发朋友圈吐槽「谁这么急」。\n\n你绝对没吃，因为过敏。",timeline:"19:00 点了一份藜麦沙拉\n20:20 去前台拿沙拉\n20:21 拍照发朋友圈\n20:30 和大家一起去取餐",task:"用照片证明你8:20看到盒子就开着了。"},
+{id:3,name:"王铁柱",role:"测试工程师",age:32,emoji:"🔧",color:"#0984e3",intro:"你是王铁柱，32岁，测试工程师。\n\n你工作特别认真，今晚一直在工位跑测试。\n\n你的工位离前台最近，只有5米。\n\n你桌上的垃圾桶里有一堆用过的纸巾。",secret:"【你的秘密】\n\n你8:00-8:30一直在工位测试，没离开过。\n\n桌上的纸巾是你8:10擦汗用的，和这场「小龙虾失踪案」没关系。\n\n但你确实听到了前台有动静。",timeline:"18:00 开始跑自动化测试\n20:10 擦汗用了几张纸巾\n20:25 听到前台有声音\n20:30 和大家一起去取餐",task:"用测试日志证明你一直在工位。"},
+{id:4,name:"赵小萌",role:"实习生",age:22,emoji:"🌸",color:"#f39c12",intro:"你是赵小萌，22岁，实习生。\n\n你第一天加班，什么都很新鲜。\n\n你8:10去茶水间倒水时，路过前台。\n\n你看到一个穿深色衣服的人影，但没看清是谁。",secret:"【你的秘密】\n\n你8:10看到一个身影在前台附近。\n\n那个人穿着深色衣服，还系着围裙。\n\n你当时没在意，现在回想起来有点可疑。",timeline:"18:00 留下来加班学习\n20:10 去茶水间倒水\n20:10 看到前台有人影\n20:30 和大家一起去取餐",task:"说出你看到的身影特征。"},
+{id:5,name:"刘大姐",role:"保洁",age:50,emoji:"🧹",color:"#00b894",intro:"你是刘大姐，50岁，公司保洁。\n\n你每天晚上8点半来公司打扫。\n\n你特别热心，总想着帮助别人。\n\n你今天看到前台有个开着的盒子，以为是吃剩的。",secret:"【你的秘密】\n\n你8:25来公司时看到前台有个开着的餐盒。\n\n你以为是加班的人吃剩不要的，就把它收走放到了楼下的「爱心冰箱」（给流浪者的）。\n\n你觉得自己是在做好事。",timeline:"20:25 到公司开始打扫\n20:26 看到前台开着的餐盒\n20:27 把餐盒放到楼下爱心冰箱\n20:30 继续打扫",task:"说清你把盒子放到了哪里。"},
+{id:6,name:"孙经理",role:"部门经理",age:40,emoji:"👔",color:"#e17055",intro:"你是孙经理，40岁，部门经理。\n\n你今晚本来要开视频会，但中途接了个私人电话。\n\n你在前台附近待了大约10分钟。\n\n你的助理说你「有嫌疑」。",secret:"【你的秘密】\n\n你8:15-8:25出去接了个私人电话（是老婆问你什么时候回家）。\n\n你就在前台旁边的楼梯间打电话。\n\n你确实看到了外卖盒，但你没打开过。",timeline:"20:00 开始视频会议\n20:15 出去接私人电话\n20:25 回会议室继续开会\n20:30 和大家一起去取餐",task:"解释你8:15-8:25在哪里、做什么。"}],
+rounds:[
+{title:"第一轮 · 案发",publicClues:["晚上8点外卖送到，放在前台。","8:30大家去取餐时，发现小龙虾盒子被打开，少了大约一半。","其他5份外卖都完好无损。","前台监控8:00-8:30「维修中」，没有画面。","楼层的垃圾桶已经被清运，找不到小龙虾壳。"],privateClues:{1:["你8:15去前台看过外卖。","你看到小龙虾盒子已经开着了。"],2:["你8:20去拿过沙拉。","你拍了照片，照片时间戳显示盒子开着。"],3:["你8:00-8:30一直在工位。","你桌上的纸巾是8:10擦汗用的。"],4:["你8:10路过前台。","你看到一个穿深色衣服、系围裙的人影。"],5:["你8:25到公司打扫。","你收走了一个开着的餐盒。"],6:["你8:15-8:25在前台旁楼梯间接电话。","你看到外卖盒，但没碰。"]}},
+{title:"第二轮 · 疑点",publicClues:["李美丽的朋友圈照片显示，小龙虾盒子在8:20就已经开着。","刘大姐说她收走的「剩菜」放到楼下爱心冰箱了。","爱心冰箱的志愿者说，8:40左右有一盒小龙虾被取走。","赵小萌看到的人影穿着深色衣服，系着围裙。","孙经理的会议记录显示他8:15-8:25不在线。"],privateClues:{1:["你8:15看到的盒子已经开着，说明8:15前就有人打开过。"],2:["你的照片里，盒子旁边放着一双筷子——你没在意，现在想想不对劲。"],3:["你桌上的纸巾确实是擦汗的，但你听到前台有塑料摩擦的声音。"],4:["你回想那个人影，好像系的是白色围裙。"],5:["你突然想起来：你收走的时候盒子好像挺满的，不像剩菜。"],6:["你承认8:15-8:25在楼梯间，但你没碰过外卖。"]}},
+{title:"第三轮 · 真相浮现",publicClues:["调取8:00-8:30的电梯监控：外卖小哥8:10又回来过一次。","外卖小哥承认：他送错了一份「加辣」的小龙虾，回来换。","刘大姐确认：她把开着的餐盒放到了爱心冰箱。","爱心冰箱志愿者：8:40有人取走了一份小龙虾。","监控显示，取走小龙虾的是一位流浪汉，他说「今晚运气真好」。"],privateClues:{1:["你终于放心了，你只是看了看。"],2:["你的照片成了关键证据。"],3:["你的测试日志证明你一直在工位。"],4:["你的证词帮了大忙。"],5:["你想起你确实做了一件好事。"],6:["你承认自己只是路过看了一眼。"]}}],
+truth:{story:"真相是这样的：\n\n晚上8点，外卖送到前台。\n\n外卖小哥发现其中一份小龙虾应该是「不要辣」，但他拿错了「加辣」的。\n\n8:10他返回前台，打开盒子确认——果然拿错了。\n\n他把那份加辣的小龙虾拿走，准备换一份正确的。\n\n但他忘了把盒子盖上，也没留纸条。\n\n8:15张小胖路过，看到盒子开着，忍住了没吃。\n\n8:20李美丽来拿沙拉，拍照发了朋友圈。\n\n8:25刘大姐来打扫，看到开着的盒子，以为是吃剩的，收走放到了楼下「爱心冰箱」。\n\n8:40一位流浪汉从爱心冰箱取走了这份小龙虾。\n\n【反转】\n没有小偷，没有偷吃。\n\n只有一个粗心的外卖小哥、一个热心的保洁阿姨，\n\n和一位今晚「运气真好」的流浪汉。",reasoning:["李美丽8:20的照片证明盒子在8:20前就开着了。","刘大姐8:25才到，她不是第一个打开的人。","张小胖8:15看到盒子已经开着。","电梯监控显示外卖小哥8:10回来过一次。","外卖小哥承认他回来换餐，忘了盖盒子。","刘大姐把盒子放到了爱心冰箱，流浪汉取走了。","办公室里没有人真正吃过小龙虾。"],endings:[{name:"张小胖",text:"你成功忍住没吃小龙虾，减肥大业继续。"},{name:"李美丽",text:"你的朋友圈照片成了关键证据，获封「最佳记录官」。"},{name:"王铁柱",text:"测试日志证明清白，还顺便发现了两个bug。"},{name:"赵小萌",text:"转正答辩时讲了这次推理，面试官笑了。"},{name:"刘大姐",text:"公司给你颁了「爱心大使」奖，你不好意思地笑了。"},{name:"孙经理",text:"你请全组吃了一顿真正的小龙虾，没人再提这件事。"}]}};
+
+/* ═══════════════════════════════════════════════════════════
+   剧本数据 · 消失的生日蛋糕
+   ═══════════════════════════════════════════════════════════ */
+var SC3={id:"cake",isCustom:false,title:"消失的生日蛋糕",subtitle:"下午茶 · 一场乌龙",emoji:"🎂",
+intro:"某公司下午3点。\n\n行政陈小美订了一个大蛋糕，要给即将离职的同事办欢送会。\n\n她亲手把蛋糕放进茶水间冰箱。\n\n下午4点，下午茶开始。\n\n打开冰箱——蛋糕不见了！\n\n冰箱里其他东西都在，蛋糕盒被扔在垃圾桶里，空的。\n\n茶水间没有监控，但门口的脚印只有三个人。",
+scene:"公司茶水间\n- 冰箱里其他东西都在，只有蛋糕不见了\n- 蛋糕盒被扔在茶水间垃圾桶里，是空的\n- 茶水间没有监控\n- 门口的脚印只有三个人：陈小美、钱阿姨、郑小强",
+characters:[
+{id:1,name:"陈小美",role:"行政",age:28,emoji:"🎀",color:"#e84393",intro:"你是陈小美，28岁，行政。\n\n你负责订蛋糕，还特意挑了芒果慕斯。\n\n你3点亲手把蛋糕放进冰箱。\n\n4点打开冰箱，蛋糕不见了。",secret:"【你的秘密】\n\n你3点放进冰箱的其实是商家送的展示盒，不是真蛋糕。\n\n真蛋糕商家说4点前送到，但一直没来。\n\n你没好意思说，怕大家觉得你没安排好。",timeline:"15:00 把蛋糕（展示盒）放进冰箱\n15:30 回工位准备欢送会\n16:00 打开冰箱，发现蛋糕不见了",task:"说清你放进冰箱的到底是什么。"},
+{id:2,name:"周大伟",role:"技术总监",age:38,emoji:"🧑‍💻",color:"#0984e3",intro:"你是周大伟，38岁，技术总监。\n\n你特别爱吃甜食，但最近在控糖。\n\n你3:30去茶水间倒咖啡，路过冰箱。\n\n你发誓自己没碰过蛋糕。",secret:"【你的秘密】\n\n你3:30确实去了茶水间，但你不是倒咖啡——你是去找零食的。\n\n你看到冰箱里有蛋糕盒，但你忍住了。\n\n你在冰箱前站了大约2分钟。",timeline:"15:30 去茶水间找零食\n15:32 在冰箱前犹豫了2分钟\n15:34 空手回工位\n16:00 听说蛋糕不见了",task:"承认你去过茶水间，但要说清你什么都没拿。"},
+{id:3,name:"吴小丽",role:"市场部",age:26,emoji:"💅",color:"#6c5ce7",intro:"你是吴小丽，26岁，市场部。\n\n你也在减肥，但你没忍住，偷偷在冰箱里放了一盒酸奶。\n\n你3:45去拿酸奶。\n\n你看到钱阿姨在翻冰箱。",secret:"【你的秘密】\n\n你3:45去拿酸奶时，看到钱阿姨在清理冰箱。\n\n你听到她嘀咕了一句「这个不能留」。\n\n但你不敢确定她说的是哪个。",timeline:"15:45 去茶水间拿酸奶\n15:45 看到钱阿姨在翻冰箱\n15:46 拿酸奶回工位\n16:00 听说蛋糕不见了",task:"说出你看到钱阿姨在做什么。"},
+{id:4,name:"郑小强",role:"销售",age:30,emoji:"💼",color:"#00b894",intro:"你是郑小强，30岁，销售。\n\n你刚跑完客户回来，一进公司就直奔茶水间。\n\n你4点整到茶水间，看到蛋糕盒已经在垃圾桶里了。\n\n你什么都没拿，但你很想知道发生了什么。",secret:"【你的秘密】\n\n你4点进茶水间时，看到钱阿姨正从茶水间出来。\n\n她手里好像拿着什么东西，但你没看清。\n\n你当时没在意，现在想想有点可疑。",timeline:"16:00 跑完客户回公司\n16:00 直奔茶水间\n16:00 看到钱阿姨从茶水间出来\n16:01 看到蛋糕盒在垃圾桶里",task:"说出你看到钱阿姨手里的东西。"},
+{id:5,name:"钱阿姨",role:"茶水间管理员",age:52,emoji:"🧓",color:"#e17055",intro:"你是钱阿姨，52岁，茶水间管理员。\n\n你每天下午3:40清理冰箱。\n\n你今天看到冰箱里有一个旧蛋糕盒，上面还有点化了。\n\n你以为是上周的，就扔了。",secret:"【你的秘密】\n\n你3:40清理冰箱时，扔了一个旧蛋糕盒。\n\n那个盒子确实有点旧，奶油都化了。\n\n但你不太确定那是今天的还是上周的。",timeline:"15:40 开始清理冰箱\n15:42 扔了一个旧蛋糕盒\n15:45 继续打扫\n16:00 听说蛋糕不见了",task:"说清你扔掉的是什么。"},
+{id:6,name:"冯总",role:"公司副总",age:45,emoji:"🎩",color:"#f39c12",intro:"你是冯总，45岁，公司副总。\n\n你3:20去茶水间洗了个手。\n\n你看到钱阿姨已经在茶水间了。\n\n你没碰任何东西。",secret:"【你的秘密】\n\n你3:20去茶水间洗手时，看到钱阿姨已经在擦冰箱了。\n\n你看到冰箱里有个蛋糕盒，但你没在意。\n\n你洗完手就回办公室了。",timeline:"15:20 去茶水间洗手\n15:20 看到钱阿姨已经在擦冰箱\n15:22 回办公室\n16:00 听说蛋糕不见了",task:"说出你看到钱阿姨在做什么。"}],
+rounds:[
+{title:"第一轮 · 案发",publicClues:["下午3点，陈小美把蛋糕放进茶水间冰箱。","下午4点，打开冰箱，蛋糕不见了。","冰箱里其他东西都在，只有蛋糕不见。","蛋糕盒被扔在茶水间垃圾桶里，是空的。","茶水间没有监控，但门口的脚印只有三个人：陈小美、钱阿姨、郑小强。"],privateClues:{1:["你3点放进去的，盒子是完整的。"],2:["你3:30去茶水间倒咖啡，看到冰箱里有蛋糕盒。"],3:["你3:45去拿酸奶，看到钱阿姨在翻冰箱。"],4:["你4点进茶水间时，看到钱阿姨正从里面出来。"],5:["你3:40清理冰箱，扔了一个盒子。"],6:["你3:20去洗手，看到钱阿姨已经在茶水间了。"]}},
+{title:"第二轮 · 疑点",publicClues:["垃圾桶里的蛋糕盒，是陈小美订的那个牌子。","但盒子里还有一层奶油残留，说明蛋糕应该被吃过。","茶水间门口的脚印只有三个人：陈小美、钱阿姨、郑小强。","周大伟说自己3:30去倒咖啡，但咖啡机在另一个方向。","吴小丽说自己拿酸奶，但她的酸奶还在冰箱里。"],privateClues:{1:["你发现冰箱里还有一个盒子，看起来很像蛋糕盒。"],2:["你承认自己3:30其实是去找零食的。"],3:["你听到钱阿姨说的不是「这个不能留」，而是「这个不能吃」。"],4:["你看到钱阿姨手里拿的好像是个小盒子。"],5:["你仔细回想，你扔的那个盒子是旧的，不是今天新放的。"],6:["你想起3:20看到的蛋糕盒确实是旧的。"]}},
+{title:"第三轮 · 真相浮现",publicClues:["钱阿姨承认扔了蛋糕盒，但她说那是旧盒子。","陈小美发现订的蛋糕是「芒果慕斯」，但垃圾桶里的盒子写着「巧克力」。","郑小强想起来，自己4点进茶水间时，看到钱阿姨手里拿着什么。","冯总回忆，3:20他看到钱阿姨在擦冰箱，旁边有个旧蛋糕盒。","茶水间的窗户开着，外面是消防通道。"],privateClues:{1:["你突然想起，你订的芒果慕斯其实还没到，商家说4点前送来。"],2:["你想起3:30确实看到冰箱里有两个盒子：一个便当盒，一个旧蛋糕盒。"],3:["你想起钱阿姨当时说的其实是「这个不能吃」。"],4:["你想起钱阿姨手里拿的好像是个小盒子，不是蛋糕盒。"],5:["你仔细回想，你扔的那个盒子确实是旧的，上面还有上周的日期标签。"],6:["你想起3:20看到的那个旧蛋糕盒，就是你上周见过的那个。"]}}],
+truth:{story:"真相是这样的：\n\n陈小美订的芒果慕斯蛋糕，商家承诺4点前送到，但一直没来。\n\n她3点放进冰箱的，其实是商家送的「展示盒」——一个空盒子。\n\n3:40钱阿姨清理冰箱时，发现一个旧的巧克力蛋糕盒（是上周留下的），就扔了。\n\n4点陈小美打开冰箱，发现空盒子还在，以为蛋糕被偷了。\n\n其实蛋糕根本没送进来。\n\n商家后来打电话道歉，说配送失误，并补送了一个更大的蛋糕。\n\n【反转】\n没有小偷，没有偷吃。\n\n只有一个忘记配送的商家、一个认真清理冰箱的阿姨，\n\n和一场所有人都以为「蛋糕被偷了」的乌龙。",reasoning:["垃圾桶里的是巧克力蛋糕盒，但陈小美订的是芒果慕斯。","冰箱里的「蛋糕盒」其实是空盒子，是商家的展示盒。","钱阿姨扔的是上周的旧盒子。","商家后来承认配送失误。","所有人都没有偷吃，是一场乌龙。"],endings:[{name:"陈小美",text:"商家补送的大蛋糕让欢送会更热闹了，你还拿到了一笔赔偿。"},{name:"周大伟",text:"你成功忍住没吃甜食，控糖大业继续。"},{name:"吴小丽",text:"你的酸奶线索帮了忙，你终于可以安心喝酸奶了。"},{name:"郑小强",text:"你跑客户回来还能参与推理，销售业绩也涨了。"},{name:"钱阿姨",text:"公司给你颁了「最佳整理奖」，但你以后会先确认再扔。"},{name:"冯总",text:"你请大家吃了一顿下午茶，顺便宣布了涨薪。"}]}};
+
+/* ═══════════════════════════════════════════════════════════
+   剧本数据 · 年会节目大作战
+   ═══════════════════════════════════════════════════════════ */
+var SC4={id:"show",isCustom:false,title:"年会节目大作战",subtitle:"演出前 · 奖杯去哪儿了",emoji:"🏆",
+intro:"公司年会演出前1小时。\n\n所有节目都在紧张排练。\n\n最重要的道具——「金鸡奖」奖杯不见了！\n\n奖杯是塑料镀金的，不贵但很重要。\n\n会议室外堆满了道具，中午12点大家都去吃饭，会议室没锁。\n\n下午1点回来，奖杯不见了。",
+scene:"公司会议室 · 排练现场\n- 会议室堆满了道具和服装\n- 奖杯上午一直放在桌子上\n- 中午12点大家去吃饭，会议室没锁\n- 下午1点回来，奖杯不见了\n- 会议室的监控被道具箱挡住了",
+characters:[
+{id:1,name:"朱小胖",role:"主持人",age:30,emoji:"🎤",color:"#e17055",intro:"你是朱小胖，30岁，年会主持人。\n\n你负责串场，需要熟悉所有节目。\n\n你12:10回来拿过话筒。\n\n你看到奖杯还在桌子上。",secret:"【你的秘密】\n\n你12:10回来时，确实看到桌子上有个金色的东西。\n\n但你其实没看清，只看到那是金色的。\n\n你现在有点不确定那是不是奖杯。",timeline:"12:00 去食堂吃饭\n12:10 回会议室拿话筒\n12:12 回食堂\n13:00 回来发现奖杯不见了",task:"说清你12:10看到的金色物体。"},
+{id:2,name:"马小云",role:"舞蹈组组长",age:28,emoji:"💃",color:"#e84393",intro:"你是马小云，28岁，舞蹈组组长。\n\n你12:00-12:40在食堂吃饭，和杨小过坐一起。\n\n你吃饭时看到杨小过中途出去过一次。",secret:"【你的秘密】\n\n你吃饭时看到杨小过12:15左右出去过一次，大概5分钟。\n\n你当时没在意，现在想想他可能是去会议室了。",timeline:"12:00 到食堂吃饭\n12:15 看到杨小过出去\n12:20 杨小过回来\n12:40 吃完饭回会议室",task:"说出你看到的杨小过出去的时间。"},
+{id:3,name:"杨小过",role:"小品组组长",age:32,emoji:"🎭",color:"#6c5ce7",intro:"你是杨小过，32岁，小品组组长。\n\n你12:00-12:40在食堂，和马小云一起。\n\n但你中途出去接了个电话。\n\n你回来时看到林小冲从会议室方向出来。",secret:"【你的秘密】\n\n你12:15出去接电话，就在楼道里。\n\n你看到林小冲12:15左右从会议室出来，抱着一个大箱子。\n\n你没在意，继续打电话。",timeline:"12:00 到食堂吃饭\n12:15 出去接电话\n12:15 看到林小冲从会议室出来\n12:20 回食堂\n12:40 吃完饭回会议室",task:"说出你看到的林小冲和箱子。"},
+{id:4,name:"黄小蓉",role:"歌唱组组长",age:26,emoji:"🎵",color:"#0984e3",intro:"你是黄小蓉，26岁，歌唱组组长。\n\n你12:20回会议室拿过歌谱。\n\n你看到奖杯还在桌子上。\n\n但你现在回想，那个奖杯好像比平时小一点。",secret:"【你的秘密】\n\n你12:20看到的「奖杯」其实是一个金色的保温杯。\n\n你当时没细看，现在想起来那个东西确实不像奖杯。\n\n真正的奖杯可能在那时已经不见了。",timeline:"12:00 去食堂吃饭\n12:20 回会议室拿歌谱\n12:22 回食堂\n13:00 回来发现奖杯不见了",task:"说清你12:20看到的「奖杯」是什么。"},
+{id:5,name:"林小冲",role:"道具组",age:28,emoji:"📦",color:"#00b894",intro:"你是林小冲，28岁，道具组。\n\n你11:50去会议室检查道具，奖杯还在。\n\n然后你去了洗手间。\n\n你12:15回会议室拿过落下的手机。",secret:"【你的秘密】\n\n你11:50检查道具时，把奖杯收进了一个道具箱的最底层。\n\n你怕它被碰倒，就把它压在下面。\n\n你12:15回来拿手机时，顺手又检查了一下道具箱，确认奖杯还在。",timeline:"11:50 检查道具，把奖杯收进道具箱\n11:55 去洗手间\n12:15 回会议室拿手机\n12:17 又检查了一下道具箱\n12:20 回食堂",task:"说清你把奖杯放到了哪里。"},
+{id:6,name:"岳小群",role:"节目总监",age:35,emoji:"🎬",color:"#f39c12",intro:"你是岳小群，35岁，节目总监。\n\n你12:00-12:30在办公室打电话。\n\n你12:30打完电话去会议室看了一眼。\n\n你看到奖杯好像还在。",secret:"【你的秘密】\n\n你12:30去会议室时，看到桌子上有个金色的东西。\n\n你以为那是奖杯，就放心回办公室了。\n\n其实那可能是别的东西。",timeline:"12:00 在办公室打电话\n12:30 打完电话去会议室\n12:30 看到桌子上的金色物体\n12:35 回办公室\n13:00 发现奖杯不见了",task:"说清你12:30看到的金色物体。"}],
+rounds:[
+{title:"第一轮 · 案发",publicClues:["演出前1小时，发现奖杯不见了。","奖杯是塑料镀金的，不贵但很重要。","会议室从上午开始堆满道具。","中午12点大家都去吃饭，会议室没锁。","下午1点回来发现奖杯不见了。","会议室的监控被道具箱挡住了。"],privateClues:{1:["你12:10回来拿过话筒。","你看到奖杯还在桌子上。"],2:["你12:00-12:40在食堂，和杨小过一起。"],3:["你12:00-12:40在食堂，和马小云一起。"],4:["你12:20回来拿过歌谱。","你看到奖杯还在桌子上。"],5:["你11:50去会议室检查道具。","奖杯那时还在。"],6:["你12:00-12:30在办公室打电话。"]}},
+{title:"第二轮 · 疑点",publicClues:["朱小胖说12:10看到奖杯。","黄小蓉说12:20看到奖杯。","但两人描述的奖杯位置不一样。","会议室的监控被道具箱挡住了。","保安说12:15看到一个人从会议室出来，抱着一堆东西。"],privateClues:{1:["你其实没看清，只看到桌子上有个金色的东西。"],2:["你吃饭时看到杨小过中途出去过一次，大概12:15。"],3:["你承认12:15出去接了个电话，5分钟就回来了。"],4:["你12:20看到的「奖杯」好像比平时小一点。"],5:["你从洗手间回来时，看到会议室门开着，里面有个穿黑衣服的人。"],6:["你12:30打完电话，去会议室看了一眼，奖杯好像还在。"]}},
+{title:"第三轮 · 真相浮现",publicClues:["杨小过接电话的地方在楼道，可以看到会议室门口。","他说看到林小冲在12:15左右从会议室出来。","林小冲说自己从洗手间回来是12:15，不是12:20。","黄小蓉想起来，她12:20看到的「奖杯」其实是一个金色的保温杯。","真正的奖杯在道具箱最底层被找到了。"],privateClues:{1:["你想起12:10看到的金色东西其实可能是别的道具。"],2:["你确认杨小过只出去了5分钟。"],3:["你想起你看到的确实是林小冲，他拿着一个大箱子。"],4:["你确认12:20看到的是保温杯，不是奖杯。"],5:["你承认自己12:15确实回过会议室，是去拿落下的手机。"],6:["你想起你12:30看到奖杯时，它确实还在。"]}}],
+truth:{story:"真相是这样的：\n\n奖杯其实一直没有丢。\n\n11:50，道具组的林小冲检查道具时，把奖杯放进了一个道具箱的最底层，还盖上了其他道具。\n\n12:10朱小胖看到的「金色东西」，其实是奖杯旁边的一个金色话筒架。\n\n12:15林小冲回来拿手机，顺手又检查了一下道具箱，确认奖杯还在。\n\n杨小过在楼道接电话时看到林小冲，以为他抱走了奖杯。\n\n12:20黄小蓉看到的「奖杯」是桌上的金色保温杯。\n\n12:30岳小群看到的金色物体也是那个保温杯。\n\n所有人都以为奖杯丢了，其实它一直安安稳稳地躺在道具箱里。\n\n【反转】\n没有小偷，没有偷拿。\n\n只有一个认真整理道具的组长、一个误判的目击者，\n\n和一群自己吓自己的人。",reasoning:["朱小胖看到的金色物体其实是话筒架。","黄小蓉看到的是保温杯。","林小冲11:50确实把奖杯收进了道具箱。","保安看到的人影是林小冲12:15回来拿手机。","最后在道具箱底层找到奖杯。"],endings:[{name:"朱小胖",text:"你主持时自嘲「差点把话筒架当奖杯」，观众笑翻。"},{name:"马小云",text:"你带领舞蹈组拿了最佳表演奖。"},{name:"杨小过",text:"你的小品成了全场最受欢迎的节目。"},{name:"黄小蓉",text:"你的歌让全场大合唱。"},{name:"林小冲",text:"你被授予「最靠谱道具管理员」称号。"},{name:"岳小群",text:"你的节目总监工作圆满完成，还加了薪。"}]}};
+
+/* ═══════════════════════════════════════════════════════════
+   空模板
+   ═══════════════════════════════════════════════════════════ */
+function emptyTemplate(count){
+  count = count || 6;
+  if(count < 4) count = 4;
+  if(count > 14) count = 14;
+  var palette=["#e84393","#6c5ce7","#0984e3","#e17055","#00b894","#fdcb6e","#a29bfe","#fd79a8","#55efc4","#fab1a0","#74b9ff","#ffeaa7","#81ecec","#dfe6e9"];
+  var cs=[];
+  for(var i=1;i<=count;i++){
+    cs.push({
+      id:i,
+      name:"角色"+i,
+      role:"身份",
+      age:30,
+      emoji:"🎭",
+      color:palette[(i-1)%palette.length],
+      intro:"角色故事",
+      secret:"【你的秘密】",
+      timeline:"时间 事件",
+      task:"任务"
+    });
+  }
+  var rs=[];
+  for(var r=1;r<=3;r++){
+    var pc={};
+    for(var j=1;j<=count;j++){pc[j]=["角色"+j+"线索"];}
+    rs.push({title:"第"+r+"轮",publicClues:["线索1","线索2"],privateClues:pc});
+  }
+  return{
+    id:"custom_"+Date.now(),
+    isCustom:true,
+    title:"新剧本",
+    subtitle:"自定义 · "+count+"人",
+    emoji:"✨",
+    playerCount:count,
+    intro:"故事背景",
+    scene:"场景",
+    characters:cs,
+    rounds:rs,
+    truth:{story:"真相",reasoning:["推理点"],endings:[]}
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   全局状态
+   ═══════════════════════════════════════════════════════════ */
+var S={
+  screen:'home',scripts:[],script:null,editingIndex:-1,
+  peer:null,conns:{},isHost:false,myId:'',roomCode:'',connected:false,connecting:false,
+  HOST:null,ME:{name:'',charId:0,char:null,clues:[]},
+  PUB:{phase:'lobby',round:0,players:[],messages:[],voteCount:0,totalPlayers:0,discussionEnd:0,votes:null,result:null,isHost:false,statusMsg:''},
+  voteTarget:0,voted:false,_lastPhase:null,reconnectTimer:null,clientId:'',
+  peerLoading:false,peerLoaded:false,
+  G:null,
+  timer:null
+};
+
+/* ═══════════════════════════════════════════════════════════
+   工具
+   ═══════════════════════════════════════════════════════════ */
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function toast(m){try{var e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(function(){e.remove();},2600);}catch(err){alert(m);}}
+function shuffle(a){var r=a.slice();for(var i=r.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=r[i];r[i]=r[j];r[j]=t;}return r;}
+function genCode(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';var s='';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+function getChar(id){return S.script.characters.find(function(c){return c.id===id;});}
+function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function parseURL(){try{var h=window.location.hash||'';var r=h.match(/room=([A-Z0-9]+)/i);return{room:r?r[1].toUpperCase():null};}catch(e){return{room:null};}}
+function setURL(code){try{var u=new URL(window.location.href);u.hash=code?('room='+code):'';history.replaceState(null,'',u.toString());}catch(e){}}
+function shareURL(){if(!S.roomCode)return window.location.href;try{var u=new URL(window.location.href);u.hash='room='+S.roomCode;return u.toString();}catch(e){return window.location.href.split('#')[0]+'#room='+S.roomCode;}}
+function loadScripts(){var cs=[];try{var s=safeGet('svv-custom');if(s)cs=JSON.parse(s)||[];}catch(e){}return[SC1,SC2,SC3,SC4].concat(cs);}
+function saveCustom(){var cs=S.scripts.filter(function(s){return s.isCustom;});safeSet('svv-custom',JSON.stringify(cs));toast('✓ 已保存');}
+
+/* ═══════════════════════════════════════════════════════════
+   PeerJS 动态加载
+   ═══════════════════════════════════════════════════════════ */
+var PEER_CDNS=[
+  'https://npm.elemecdn.com/peerjs@1.5.2/dist/peerjs.min.js',
+  'https://cdn.staticfile.org/peerjs/1.5.2/peerjs.min.js',
+  'https://lib.baomitu.com/peerjs/1.5.2/peerjs.min.js',
+  'https://cdn.bytedance.com/peerjs/1.5.2/peerjs.min.js',
+  'https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js',
+  'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js'
+];
+function loadPeerJS(cb){
+  if(typeof Peer!=='undefined'){S.peerLoaded=true;cb(true);return;}
+  S.peerLoading=true;var i=0;
+  function next(){
+    if(i>=PEER_CDNS.length){S.peerLoading=false;cb(false);return;}
+    var url=PEER_CDNS[i++];
+    S.PUB.statusMsg='加载网络库('+i+'/'+PEER_CDNS.length+')...';
+    render();
+    var s=document.createElement('script');var done=false;
+    var t=setTimeout(function(){if(!done){done=true;s.onload=s.onerror=null;s.remove();next();}},4000);
+    s.src=url;
+    s.onload=function(){if(done)return;done=true;clearTimeout(t);
+      if(typeof Peer!=='undefined'){S.peerLoading=false;S.peerLoaded=true;cb(true);}else next();};
+    s.onerror=function(){if(done)return;done=true;clearTimeout(t);next();};
+    document.head.appendChild(s);
+  }
+  next();
+}
+
+var PEER_SERVERS=[
+  {name:'官方',host:'0.peerjs.com',port:443,secure:true,path:'/'},
+  {name:'德国备用',host:'peerjs.92k.de',port:443,secure:true,path:'/'}
+];
+
+function tryCreatePeer(code){
+  if(typeof Peer==='undefined'){S.connecting=false;toast('网络库未加载');S.screen='home';render();return;}
+  var idx=(S._attempt||0)%PEER_SERVERS.length;
+  var srv=PEER_SERVERS[idx];S._attempt=(S._attempt||0)+1;
+  S.PUB.statusMsg='连接信令服务器('+(idx+1)+'/'+PEER_SERVERS.length+')：'+srv.name;
+  render();
+  var timeout=setTimeout(function(){
+    if(S.peer){try{S.peer.destroy();}catch(e){}S.peer=null;}
+    if(S._attempt<PEER_SERVERS.length)tryCreatePeer(code);
+    else{S.connecting=false;toast('无法连接服务器，建议使用离线模式');S.screen='home';render();}
+  },8000);
+  try{
+    S.peer=new Peer('svv-'+code,srv);
+    S.peer.on('open',function(){
+      clearTimeout(timeout);
+      S.connected=true;S.connecting=false;setURL(code);
+      S.HOST={players:[{id:S.myId,clientId:S.clientId,name:S.ME.name||'房主',charId:0,ready:true,voted:false,isHost:true,online:true}],phase:'lobby',round:0,messages:[],votes:{},voteDetails:[],discussionEnd:0,result:null};
+      addSys('🎩 房间已创建。剧本：'+S.script.title);
+      toast('✓ 房间已创建');render();broadcast();
+    });
+    S.peer.on('error',function(err){
+      clearTimeout(timeout);
+      if(err.type==='unavailable-id'){
+        if(S.peer){try{S.peer.destroy();}catch(e){}S.peer=null;}
+        var nc=genCode();S.roomCode=nc;S.myId='svv-'+nc;
+        setTimeout(function(){tryCreatePeer(nc);},200);return;
+      }
+      if(S._attempt<PEER_SERVERS.length){if(S.peer){try{S.peer.destroy();}catch(e){}S.peer=null;}tryCreatePeer(code);}
+      else{S.connecting=false;toast('网络错误：'+err.type);S.screen='home';render();}
+    });
+    S.peer.on('connection',function(conn){
+      conn.on('open',function(){S.conns[conn.peer]=conn;});
+      conn.on('data',function(d){onHostData(conn.peer,d);});
+      conn.on('close',function(){delete S.conns[conn.peer];
+        if(S.HOST){var p=S.HOST.players.find(function(x){return x.id===conn.peer;});
+        if(p){p.online=false;addSys('💤 '+p.name+' 暂时离线');broadcast();}}});
+    });
+  }catch(e){
+    clearTimeout(timeout);
+    if(S._attempt<PEER_SERVERS.length)tryCreatePeer(code);
+    else{S.connecting=false;toast('创建失败：'+e.message);S.screen='home';render();}
+  }
+}
+
+function tryJoinPeer(code){
+  if(typeof Peer==='undefined'){S.connecting=false;toast('网络库未加载');S.screen='home';render();return;}
+  var idx=(S._attempt||0)%PEER_SERVERS.length;
+  var srv=PEER_SERVERS[idx];S._attempt=(S._attempt||0)+1;
+  S.PUB.statusMsg='连接信令服务器('+(idx+1)+'/'+PEER_SERVERS.length+')：'+srv.name;
+  render();
+  var joined=false;
+  var timeout=setTimeout(function(){
+    if(joined)return;
+    if(S.peer){try{S.peer.destroy();}catch(e){}S.peer=null;}
+    if(S._attempt<PEER_SERVERS.length)tryJoinPeer(code);
+    else{S.connecting=false;toast('无法连接房主，建议使用离线模式');S.screen='home';render();}
+  },15000);
+  try{
+    S.peer=new Peer(srv);
+    S.peer.on('open',function(id){
+      S.myId=id;
+      var c=S.peer.connect('svv-'+code,{reliable:true});
+      c.on('open',function(){
+        clearTimeout(timeout);joined=true;S.connected=true;S.connecting=false;
+        S.conns['host']=c;
+        c.send({type:'join',name:S.ME.name,clientId:S.clientId});
+        toast('✓ 已加入');render();
+      });
+      c.on('data',function(d){onClientData(d);});
+      c.on('close',function(){S.connected=false;addSys('⚠️ 与房主断开');render();scheduleReconnect();});
+      c.on('error',function(){clearTimeout(timeout);});
+    });
+    S.peer.on('error',function(err){
+      clearTimeout(timeout);
+      if(err.type==='peer-unavailable'){S.connecting=false;toast('找不到房间');S.screen='home';render();return;}
+      if(S._attempt<PEER_SERVERS.length)tryJoinPeer(code);
+      else{S.connecting=false;toast('网络错误：'+err.type);S.screen='home';render();}
+    });
+  }catch(e){
+    clearTimeout(timeout);
+    if(S._attempt<PEER_SERVERS.length)tryJoinPeer(code);
+    else{S.connecting=false;toast('创建失败：'+e.message);S.screen='home';render();}
+  }
+}
+
+function scheduleReconnect(){if(S.reconnectTimer)return;S.reconnectTimer=setTimeout(function(){S.reconnectTimer=null;if(S.connected||!S.roomCode||S.isHost)return;tryReconnect();},3000);}
+function tryReconnect(){
+  if(S.connected||!S.roomCode||!S.peer)return;
+  try{
+    var c=S.peer.connect('svv-'+S.roomCode,{reliable:true});
+    var done=false;
+    var t=setTimeout(function(){if(!done){try{c.close();}catch(e){}scheduleReconnect();}},8000);
+    c.on('open',function(){clearTimeout(t);done=true;S.conns['host']=c;S.connected=true;c.send({type:'join',name:S.ME.name,clientId:S.clientId});addSys('✅ 已重连');render();});
+    c.on('data',onClientData);
+    c.on('close',function(){S.connected=false;scheduleReconnect();});
+  }catch(e){scheduleReconnect();}
+}
+function leaveRoom(){
+  Object.keys(S.conns).forEach(function(k){try{S.conns[k].close();}catch(e){}});
+  if(S.peer){try{S.peer.destroy();}catch(e){}}
+  S.conns={};S.peer=null;S.connected=false;S.connecting=false;S.isHost=false;
+}
+function Net_send(d){if(S.isHost){Object.keys(S.conns).forEach(function(k){try{S.conns[k].send(d);}catch(e){}});}else{var c=S.conns['host'];if(c&&c.open)c.send(d);}}
+function Net_sendTo(id,d){var c=S.conns[id];if(c&&c.open){try{c.send(d);}catch(e){}}}
+
+/* ═══════════════════════════════════════════════════════════
+   房主逻辑
+   ═══════════════════════════════════════════════════════════ */
+function addSys(t){if(!S.HOST)return;S.HOST.messages.push({from:'sys',name:'主持人',text:t,type:'sys',ts:Date.now()});if(S.HOST.messages.length>200)S.HOST.messages=S.HOST.messages.slice(-200);}
+function broadcast(){
+  if(!S.isHost||!S.HOST)return;var H=S.HOST;
+  var pub={phase:H.phase,round:H.round,players:H.players.map(function(p){return{id:p.id,name:p.name,hasChar:!!p.charId,ready:p.ready,voted:p.voted,isHost:p.isHost,online:p.online!==false};}),messages:H.messages.slice(-80),voteCount:H.voteDetails?H.voteDetails.length:0,totalPlayers:H.players.filter(function(p){return p.online!==false;}).length,discussionEnd:H.discussionEnd,votes:H.phase==='result'?H.votes:null,result:H.phase==='result'?H.result:null,isHost:false,statusMsg:''};
+  var prev=S._lastPhase;S.PUB=Object.assign({},pub,{isHost:true,statusMsg:''});
+  if(S.PUB.phase!==prev){S._lastPhase=S.PUB.phase;S.voted=false;S.voteTarget=0;}
+  render();
+  Object.keys(S.conns).forEach(function(pid){Net_sendTo(pid,{type:'state',state:pub});});
+}
+function sendPrivate(pid){
+  var H=S.HOST;var p=H.players.find(function(x){return x.id===pid;});if(!p||!p.charId)return;
+  var c=getChar(p.charId);var round=H.round;
+  var clues=round>0?((S.script.rounds[round-1].privateClues[c.id])||[]):[];
+  Net_sendTo(pid,{type:'private',charId:c.id,char:{id:c.id,name:c.name,role:c.role,age:c.age,emoji:c.emoji,color:c.color,intro:c.intro,secret:c.secret,timeline:c.timeline,task:c.task},clues:clues});
+}
+function onHostData(fromId,d){
+  var H=S.HOST;if(!H)return;
+  if(d.type==='join'){
+    var exist=H.players.find(function(p){return p.clientId===d.clientId;});
+    if(exist){exist.id=fromId;exist.online=true;setTimeout(function(){sendPrivate(fromId);},300);addSys('🔄 '+exist.name+' 重新连上');broadcast();return;}
+    if(H.phase!=='lobby'){Net_sendTo(fromId,{type:'error',msg:'游戏已开始'});return;}
+    var oc=H.players.filter(function(p){return p.online!==false;}).length;
+    if(oc>=14){Net_sendTo(fromId,{type:'error',msg:'房间已满（最多14人）'});return;}
+    H.players.push({id:fromId,clientId:d.clientId,name:d.name||'玩家',charId:0,ready:false,voted:false,isHost:false,online:true});
+    addSys('👋 '+(d.name||'玩家')+' 加入');broadcast();
+  }else if(d.type==='chat'){
+    var p1=H.players.find(function(x){return x.id===fromId;});if(!p1)return;
+    H.messages.push({from:fromId,name:p1.name,text:d.text,type:'chat',ts:Date.now()});
+    if(H.messages.length>200)H.messages=H.messages.slice(-200);broadcast();
+  }else if(d.type==='vote'){
+    if(H.phase!=='vote')return;
+    var p2=H.players.find(function(x){return x.id===fromId;});if(!p2||p2.voted)return;
+    p2.voted=true;H.voteDetails.push({from:fromId,target:d.target});
+    H.votes[d.target]=(H.votes[d.target]||0)+1;
+    addSys('🗳 '+p2.name+' 已投票');broadcast();
+    var op=H.players.filter(function(x){return x.online!==false;});
+    if(op.every(function(x){return x.voted;}))setTimeout(function(){if(H.phase==='vote')doResult();},1000);
+  }
+}
+function onClientData(d){
+  if(d.type==='state'){
+    var prev=S._lastPhase;S.PUB=Object.assign({},S.PUB,d.state);
+    if(d.state.phase!==prev){S._lastPhase=d.state.phase;S.voted=false;S.voteTarget=0;}
+    S.connected=true;render();
+  }else if(d.type==='private'){
+    S.ME.charId=d.charId;S.ME.char=d.char;S.ME.clues=d.clues||[];render();
+  }else if(d.type==='error'){toast(d.msg);}
+}
+function hostAction(action,payload){
+  var H=S.HOST;if(!H)return;
+  if(action==='start'){var op=H.players.filter(function(p){return p.online!==false;});if(op.length<4)return toast('至少4名在线玩家');if(op.length>S.script.characters.length)return toast('玩家数超过剧本角色数（'+S.script.characters.length+'人），请选更大的剧本');var n=op.length;var picked=shuffle(S.script.characters).slice(0,n);op.forEach(function(p,i){p.charId=picked[i].id;});H.phase='intro';H.round=0;addSys('🎭 角色已分配。');broadcast();op.forEach(function(p){sendPrivate(p.id);});}
+  else if(action==='toScript'){H.phase='script';broadcast();}
+  else if(action==='toRound'){H.round++;H.phase='round'+H.round;H.discussionEnd=0;addSys('📢 第'+H.round+'轮开始。');broadcast();H.players.forEach(function(p){sendPrivate(p.id);});}
+  else if(action==='startDiscuss'){var min=payload||5;H.discussionEnd=Date.now()+min*60*1000;addSys('⏱ 讨论开始，共 '+min+' 分钟。');broadcast();hostTimer(min);}
+  else if(action==='endDiscuss'){H.discussionEnd=0;addSys('⏱ 讨论结束。');broadcast();}
+  else if(action==='toVote'){H.phase='vote';H.votes={};H.voteDetails=[];H.players.forEach(function(p){p.voted=false;});addSys('🗳 进入投票。');broadcast();}
+  else if(action==='reveal'){doResult();}
+  else if(action==='restart'){H.phase='lobby';H.round=0;H.votes={};H.voteDetails=[];H.messages=[];H.result=null;H.discussionEnd=0;H.players.forEach(function(p){p.charId=0;p.ready=p.isHost;p.voted=false;});addSys('🔄 已重置。');broadcast();}
+}
+function doResult(){
+  var H=S.HOST;if(!H)return;H.phase='result';
+  var max=0,top=0;Object.keys(H.votes).forEach(function(cid){if(H.votes[cid]>max){max=H.votes[cid];top=parseInt(cid);}});
+  var vc=S.script.characters.find(function(c){return c.id===top;});var rk=S.script.characters[0];
+  H.result={votes:H.votes,votedChar:vc?{id:vc.id,name:vc.name}:null,realKiller:{id:rk.id,name:rk.name},isCorrect:vc&&vc.id===rk.id,truth:S.script.truth,voteDetails:H.voteDetails.map(function(v){var p=H.players.find(function(x){return x.id===v.from;});var t=S.script.characters.find(function(c){return c.id===v.target;});return{from:p?p.name:'?',target:t?t.name:'?'};})};
+  addSys('🔍 真相揭晓！');broadcast();
+}
+var hostTimerHandle=null;
+function hostTimer(min){if(hostTimerHandle)clearInterval(hostTimerHandle);var end=Date.now()+min*60*1000;
+hostTimerHandle=setInterval(function(){if(!S.HOST||S.HOST.phase==='vote'||S.HOST.phase==='result'){clearInterval(hostTimerHandle);return;}
+var rem=end-Date.now();if(rem>0&&rem<30000&&!S.HOST._warned){S.HOST._warned=true;addSys('⏰ 还剩30秒！');broadcast();}
+if(rem<=0){clearInterval(hostTimerHandle);S.HOST.discussionEnd=0;addSys('⏰ 时间到！');broadcast();}},1000);}
+
+/* ═══════════════════════════════════════════════════════════
+   渲染
+   ═══════════════════════════════════════════════════════════ */
+function render(){
+  var app=document.getElementById('app');var h='';
+  if(S.screen==='home')h=rHome();
+  else if(S.screen==='scriptList')h=rScriptList();
+  else if(S.screen==='editor')h=rEditor();
+  else if(S.screen==='lobby')h=rLobby();
+  else if(S.screen==='game')h=rGame();
+  else if(S.screen==='offline-setup')h=rOfflineSetup();
+  else if(S.screen==='offline-pass')h=rOfflinePass();
+  else if(S.screen==='offline-script')h=rOfflineScript();
+  else if(S.screen==='offline-round')h=rOfflineRound();
+  else if(S.screen==='offline-private')h=rOfflinePrivate();
+  else if(S.screen==='offline-discuss')h=rOfflineDiscuss();
+  else if(S.screen==='offline-vote')h=rOfflineVote();
+  else if(S.screen==='offline-result')h=rOfflineResult();
+  var isOffline=S.screen.indexOf('offline')===0;
+  if(!isOffline){
+    var cls='off',txt='● 未连接';
+    if(S.connecting||S.peerLoading){cls='wait';txt='◌ 连接中';}else if(S.connected){cls='on';txt='● 已连接';}
+    h+='<div class="connection '+cls+'">'+txt+'</div>';
+  }
+  app.innerHTML=h;bindUI();
+}
+
+function rHome(){
+  var p=parseURL();
+  if(p.room&&!S.isHost&&!S.connected)return rInvite();
+  var sc=S.script;
+  return '<div class="screen">'+
+    '<div class="hero"><div class="hero-emoji">'+sc.emoji+'</div>'+
+    '<h1>'+esc(sc.title)+'</h1>'+
+    '<p style="color:#8b9aa8;font-size:14px">'+esc(sc.subtitle)+'</p></div>'+
+    '<div class="card gold">'+esc(sc.intro)+'</div>'+
+    '<h3>🎮 选择游戏方式</h3>'+
+    '<input class="input" id="nickInput" placeholder="输入你的昵称" maxlength="10" value="'+esc(S.ME.name)+'">'+
+    '<button class="btn green" data-a="offlineSetup">📱 离线传阅（推荐·100%可用）</button>'+
+    '<button class="btn primary" data-a="createOnline" style="margin-top:10px">🌐 在线联机（需联网）</button>'+
+    '<button class="btn gold" data-a="scriptList" style="margin-top:16px">📚 选择其他剧本（'+S.scripts.length+'个）</button>'+
+    '<button class="btn purple" data-a="addScript" style="margin-top:10px">➕ 自定义新剧本</button>'+
+    '<button class="btn gold" data-a="gotoMonopoly" style="margin-top:10px">🎲 玩大富翁</button>'+
+    '<p style="text-align:center;color:#8b9aa8;font-size:12px;margin-top:20px;line-height:1.6">'+
+    '💡 6人围坐，一台手机轮流传阅<br>不需要网络，最稳定可靠</p>'+
+ '</div>';
+}
+function rInvite(){
+  var p=parseURL();
+  return '<div class="screen"><div class="hero"><div class="hero-emoji">'+S.script.emoji+'</div>'+
+    '<h1>'+esc(S.script.title)+'</h1><p style="color:#8b9aa8">你被邀请加入房间</p>'+
+    '<div class="room-code">'+esc(p.room)+'</div></div>'+
+    '<input class="input" id="nickInput" placeholder="输入昵称" maxlength="10" value="'+esc(S.ME.name)+'">'+
+    '<button class="btn primary" data-a="acceptInvite">✓ 加入房间</button>'+
+    '<button class="btn ghost" data-a="declineInvite" style="margin-top:10px">创建我自己的房间</button></div>';
+}
+function rScriptList(){
+  var h='<div class="screen"><h2>📚 剧本库</h2><p class="hint">选择或编辑剧本。</p>';
+  S.scripts.forEach(function(sc,i){
+    var sel=S.script&&sc.id===S.script.id;
+    h+='<div class="script-card '+(sel?'selected':'')+'" data-a="pickScript" data-idx="'+i+'">'+
+      '<div class="script-emoji">'+sc.emoji+'</div>'+
+      '<div class="script-info"><div class="script-title">'+esc(sc.title)+'</div>'+
+      '<div class="script-sub">'+esc(sc.subtitle)+'</div></div></div>';
+    if(sel)h+='<div class="script-actions" style="margin-left:60px;margin-top:-8px;margin-bottom:14px"><button data-a="editScript" data-idx="'+i+'">✏️ 编辑</button>'+(sc.isCustom?'<button class="danger" data-a="delScript" data-idx="'+i+'">🗑 删除</button>':'')+'</div>';
+  });
+  h+='<button class="btn green" data-a="addScript" style="margin-top:14px">➕ 添加新剧本</button>'+
+    '<button class="btn ghost" data-a="backHome" style="margin-top:10px">返回</button></div>';
+  return h;
+}
+function rLobby(){
+  if(S.connecting||S.peerLoading){
+    return '<div class="screen"><div class="card gold" style="text-align:center;padding:40px 20px">'+
+      '<div style="margin-bottom:16px"><span class="spinner"></span></div>'+
+      '<div style="font-size:18px;font-weight:600;margin-bottom:8px">正在准备...</div>'+
+      '<div style="color:#8b9aa8;font-size:13px">'+(S.PUB.statusMsg||'加载中')+'</div></div>'+
+      '<button class="btn ghost" data-a="leave">取消</button></div>';
+  }
+  var H=S.HOST;var players=H?H.players:[];
+  var url=shareURL();
+  var httpOK=location.protocol==='http:'||location.protocol==='https:';
+  var h='<div class="screen"><h2 style="text-align:center">🎉 房间已创建</h2>'+
+    '<p class="hint" style="text-align:center">剧本：'+esc(S.script.title)+'</p>'+
+    '<div class="room-code">'+S.roomCode+'</div>'+
+    '<div class="copy-box">'+esc(url)+'</div>'+
+    '<div class="btn-row"><button class="btn gold" data-a="share">📤 分享</button>'+
+    '<button class="btn" data-a="copyLink">📋 复制</button></div>';
+  if(!httpOK)h+='<div class="card rose" style="font-size:13px;margin-top:12px">⚠️ 本地打开无法分享链接，请上传到 Netlify。</div>';
+  h+='<h3 style="margin-top:20px">👥 玩家（'+players.length+'/6）</h3>';
+  players.forEach(function(p){
+    var online=p.online!==false;
+    h+='<div class="player" style="opacity:'+(online?'1':'0.5')+'">'+
+      '<div class="avatar">'+esc((p.name||'?')[0])+'</div>'+
+      '<div style="flex:1;margin-left:12px"><div class="pname">'+esc(p.name)+(p.isHost?' 👑':'')+(online?'':' [离线]')+'</div>'+
+      '<div class="pstat" style="font-size:12px;color:#8b9aa8">'+(p.charId?'✓ 已分配角色':'等待中')+'</div></div></div>';
+  });
+  var oc=players.filter(function(p){return p.online!==false;}).length;
+  if(S.isHost)h+='<button class="btn primary" data-a="startGame" '+(oc<4?'disabled':'')+' style="margin-top:16px">'+(oc<4?'等待玩家加入（至少4人）':'🎭 开始游戏')+'</button>';
+  else h+='<div class="hint" style="text-align:center;padding:16px">等待房主开始...</div>';
+  h+='<button class="btn ghost" data-a="leave" style="margin-top:10px">退出房间</button></div>';
+  return h;
+}
+function rGame(){
+  var p=S.PUB.phase;
+  if(p==='intro')return rIntro();
+  if(p==='script')return rScript();
+  if(p==='round1'||p==='round2'||p==='round3')return rRound();
+  if(p==='vote')return rVote();
+  if(p==='result')return rResult();
+  return '<div class="screen"><div class="hint">加载中...</div></div>';
+}
+function rIntro(){
+  var sc=S.script;
+  return '<div class="screen"><h2 style="text-align:center">🎬 故事背景</h2>'+
+    '<div class="card gold">'+esc(sc.intro)+'</div><h3>🏠 场景</h3>'+
+    '<div class="card blue">'+esc(sc.scene)+'</div>'+
+    '<div class="host-says"><div>🎩</div><div>请仔细阅读你的剧本，记住你的秘密。</div></div>'+
+    (S.isHost?'<button class="btn primary" data-a="toScript">进入剧本阅读 →</button>':'<div class="hint" style="text-align:center;padding:14px">等待房主推进...</div>')+'</div>';
+}
+function rScript(){
+  var me=S.ME;if(!me.char)return '<div class="screen"><div class="hint" style="text-align:center;padding:80px 0">角色分配中...</div></div>';
+  var c=me.char;
+  return '<div class="screen"><div style="display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border-radius:14px;margin-bottom:12px">'+
+    '<div class="avatar lg" style="background:'+c.color+'">'+esc(c.emoji)+'</div>'+
+    '<div><h2 style="margin:0;font-size:19px;color:#2d3436">'+esc(c.name)+'</h2>'+
+    '<p style="color:#8b9aa8;font-size:13px;margin-top:4px">'+esc(c.role)+' · '+c.age+'岁</p></div></div>'+
+    '<h3>🎭 你是谁</h3><div class="card">'+esc(c.intro)+'</div>'+
+    '<h3>🔒 你的秘密</h3><div class="card secret">'+esc(c.secret)+'</div>'+
+    '<h3>🕐 你的时间线</h3><div class="card blue">'+esc(c.timeline)+'</div>'+
+    '<h3>🎯 你的任务</h3><div class="card mint">'+esc(c.task)+'</div>'+
+    (S.isHost?'<button class="btn primary" data-a="toRound" style="margin-top:16px">开始第一轮 →</button>':'<div class="hint" style="text-align:center;padding:14px">等待房主推进...</div>')+'</div>';
+}
+function rRound(){
+  var P=S.PUB;var r=S.script.rounds[P.round-1];var me=S.ME;
+  var h='<div class="screen"><div style="text-align:center;margin-bottom:10px">'+
+    '<div style="display:inline-block;padding:4px 14px;background:#e17055;color:#fff;border-radius:20px;font-size:12px">第 '+P.round+' 轮</div>'+
+    '<div style="font-size:20px;font-weight:700;margin-top:10px">'+esc(r.title)+'</div></div><h3>📢 公开线索</h3>';
+  r.publicClues.forEach(function(c){h+='<div class="card clue">'+esc(c)+'</div>';});
+  h+='<h3>🔐 我的私人线索</h3>';
+  if(me.clues&&me.clues.length>0)me.clues.forEach(function(c){h+='<div class="card secret">'+esc(c)+'</div>';});
+  else h+='<div class="card">本轮你没有专属线索。</div>';
+  if(P.discussionEnd>0)h+='<div class="timer-box"><div class="timer" id="td">--:--</div><div style="font-size:12px;color:#8b9aa8;margin-top:6px">讨论倒计时</div></div>';
+  h+=renderChat();
+  if(S.isHost){
+    h+='<div class="host-says" style="margin-top:16px"><div>🕹</div><div>房主控制。</div></div>';
+    if(P.discussionEnd>0)h+='<button class="btn" data-a="endDiscuss">结束讨论</button>';
+    else h+='<div class="btn-row"><button class="btn" data-a="discuss" data-min="3">3分钟</button><button class="btn" data-a="discuss" data-min="5">5分钟</button></div>';
+    h+='<button class="btn primary" data-a="nextRound">'+(P.round<3?'进入第 '+(P.round+1)+' 轮 →':'进入投票 →')+'</button>';
+  }
+  h+='</div>';return h;
+}
+function renderChat(){
+  var P=S.PUB;
+  var h='<h3>💬 讨论区</h3><div class="chat"><div class="chat-list" id="chatList">';
+  if(P.messages.length===0)h+='<div style="text-align:center;color:#8b9aa8;font-size:12px;padding:30px 0">暂无消息</div>';
+  P.messages.forEach(function(m){
+    if(m.type==='sys')h+='<div class="msg sys"><div class="msg-body"><div class="msg-bub">🎩 '+esc(m.text)+'</div></div></div>';
+    else{var isMe=m.from===S.myId;h+='<div class="msg '+(isMe?'me':'')+'"><div class="msg-av">'+esc((m.name||'?')[0])+'</div><div class="msg-body"><div class="msg-name">'+esc(m.name)+'</div><div class="msg-bub">'+esc(m.text)+'</div></div></div>';}
+  });
+  h+='</div><div class="chat-input-bar"><input class="chat-input" id="chatInput" placeholder="说点什么..."><button class="send-btn" data-a="sendChat">发送</button></div></div>';
+  return h;
+}
+function rVote(){
+  var P=S.PUB;
+  var h='<div class="screen"><h2 style="text-align:center">🗳 投票</h2>'+
+    '<p class="hint" style="text-align:center">选出你认为最可疑的人</p>'+
+    '<div class="card" style="text-align:center">投票进度：'+P.voteCount+' / '+P.totalPlayers+'</div>';
+  S.script.characters.forEach(function(c){
+    var sel=S.voteTarget===c.id;var isMe=S.ME.charId===c.id;
+    h+='<div class="vote-card '+(sel?'selected':'')+'" data-a="selVote" data-id="'+c.id+'" '+(isMe||S.voted?'style="opacity:.5"':'')+'>'+
+      '<div class="avatar" style="background:'+c.color+'">'+esc(c.emoji)+'</div>'+
+      '<div style="flex:1"><div class="vote-name">'+esc(c.name)+(isMe?' (你)':'')+'</div>'+
+      '<div class="vote-role">'+esc(c.role)+'</div></div>'+
+      (sel?'<div style="color:#e17055;font-size:20px;font-weight:700">✓</div>':'')+'</div>';
+  });
+  if(S.voted)h+='<div class="hint" style="text-align:center;color:#00b894;padding:14px">✓ 已投票，等待其他玩家...</div>';
+  else h+='<button class="btn primary" data-a="submitVote" '+(!S.voteTarget?'disabled':'')+'>确认投票</button>';
+  if(S.isHost)h+='<button class="btn gold" data-a="reveal" style="margin-top:16px">🔍 立即揭晓</button>';
+  h+='</div>';return h;
+}
+function rResult(){
+  var R=S.PUB.result;
+  if(!R)return '<div class="screen"><div class="hint" style="text-align:center;padding:80px 0">揭晓中...</div></div>';
+  var h='<div class="screen"><div class="result-hero"><div style="font-size:12px;color:#8b9aa8;letter-spacing:4px">投 票 结 果</div>'+
+    '<div class="result-emoji">'+(R.isCorrect?'🎉':'😯')+'</div>'+
+    '<div class="result-title">你们投给了</div>'+
+    '<div style="font-size:26px;font-weight:800;color:#e17055;margin:8px 0">'+esc(R.votedChar?R.votedChar.name:'平票')+'</div>'+
+    '<div style="color:#8b9aa8;font-size:13px">'+(R.isCorrect?'✓ 正确':'✗ 错了')+'</div></div>'+
+    '<div class="card rose" style="text-align:center"><div style="font-size:12px;color:#8b9aa8;letter-spacing:4px">真 相</div>'+
+    '<div style="font-size:26px;font-weight:800;color:#6c5ce7">'+esc(R.realKiller.name)+'</div></div>'+
+    '<h3>📖 完整真相</h3><div class="card">'+esc(R.truth.story)+'</div><h3>🔍 推理链</h3>';
+  (R.truth.reasoning||[]).forEach(function(x,i){h+='<div class="card clue"><b>'+(i+1)+'.</b> '+esc(x)+'</div>';});
+  h+='<h3>📊 投票明细</h3>';
+  if(R.voteDetails&&R.voteDetails.length>0)R.voteDetails.forEach(function(v){h+='<div class="card" style="padding:10px 14px;font-size:13px"><b>'+esc(v.from)+'</b> → '+esc(v.target)+'</div>';});
+  if(R.truth.endings&&R.truth.endings.length>0){
+    h+='<h3>🎬 各角色结局</h3>';
+    R.truth.endings.forEach(function(e){var c=S.script.characters.find(function(x){return x.name===e.name;});h+='<div class="card"><b style="color:'+(c?c.color:'#2d3436')+'">'+(c?c.emoji+' ':'')+esc(e.name)+'</b>：'+esc(e.text)+'</div>';});
+  }
+  h+='<button class="btn primary" data-a="backHome" style="margin-top:24px">🏠 返回首页</button>';
+  if(S.isHost)h+='<button class="btn gold" data-a="restart" style="margin-top:10px">🔄 再来一局</button>';
+  h+='</div>';return h;
+}
+function rEditor(){
+  var idx=S.editingIndex>=0?S.editingIndex:S.scripts.indexOf(S.script);
+  var sc=S.scripts[idx];if(!sc){S.screen='scriptList';return rScriptList();}
+  var h='<div class="screen"><h2>✏️ 编辑剧本</h2>'+
+    '<div class="editor-sec"><label>标题</label><input class="input" id="e-title" value="'+esc(sc.title)+'">'+
+    '<label>副标题</label><input class="input" id="e-sub" value="'+esc(sc.subtitle)+'">'+
+    '<label>Emoji</label><input class="input" id="e-emoji" maxlength="4" value="'+esc(sc.emoji)+'">'+
+    '<label>故事背景</label><textarea class="input" id="e-intro" rows="6">'+esc(sc.intro)+'</textarea>'+
+    '<label>场景</label><textarea class="input" id="e-scene" rows="4">'+esc(sc.scene)+'</textarea></div>';
+  sc.characters.forEach(function(c,i){
+    h+='<div class="editor-sec"><div style="font-weight:700;color:#6c5ce7;margin-bottom:8px">角色 '+(i+1)+'</div>'+
+      '<label>名字</label><input class="input" id="e-c'+i+'-name" value="'+esc(c.name)+'">'+
+      '<label>身份</label><input class="input" id="e-c'+i+'-role" value="'+esc(c.role)+'">'+
+      '<label>你是谁</label><textarea class="input" id="e-c'+i+'-intro" rows="3">'+esc(c.intro)+'</textarea>'+
+      '<label>秘密</label><textarea class="input" id="e-c'+i+'-secret" rows="3">'+esc(c.secret)+'</textarea>'+
+      '<label>时间线</label><textarea class="input" id="e-c'+i+'-timeline" rows="2">'+esc(c.timeline)+'</textarea>'+
+      '<label>任务</label><input class="input" id="e-c'+i+'-task" value="'+esc(c.task)+'"></div>';
+  });
+  sc.rounds.forEach(function(r,i){
+    h+='<div class="editor-sec"><div style="font-weight:700;color:#6c5ce7;margin-bottom:8px">第 '+(i+1)+' 轮</div>'+
+      '<label>标题</label><input class="input" id="e-r'+i+'-title" value="'+esc(r.title)+'">'+
+      '<label>公开线索（每行一条）</label><textarea class="input" id="e-r'+i+'-clues" rows="4">'+esc(r.publicClues.join('\n'))+'</textarea></div>';
+  });
+  h+='<div class="editor-sec"><label>真相故事</label><textarea class="input" id="e-truth" rows="6">'+esc(sc.truth.story)+'</textarea>'+
+    '<label>推理链（每行一条）</label><textarea class="input" id="e-reason" rows="4">'+esc((sc.truth.reasoning||[]).join('\n'))+'</textarea></div>'+
+    '<button class="btn primary" data-a="saveScript">💾 保存</button>'+
+    '<button class="btn ghost" data-a="backToList">取消</button></div>';
+  return h;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   离线模式
+   ═══════════════════════════════════════════════════════════ */
+function rOfflineSetup(){
+  var count=S.script.characters.length;
+  var inputs=[];
+  for(var i=0;i<count;i++){
+    inputs.push('<input class="input" id="on'+i+'" placeholder="玩家 '+(i+1)+'" maxlength="10">');
+  }
+  return '<div class="screen"><h2>📱 离线传阅模式</h2>'+
+    '<p class="hint">'+count+'个人围坐，一台手机轮流传阅。不需要网络。</p>'+
+    '<div style="font-weight:700;margin:16px 0 8px;color:#6c5ce7">输入玩家昵称</div>'+
+    inputs.join('')+
+    '<button class="btn primary" data-a="offlineStart" style="margin-top:16px">开始游戏</button>'+
+    '<button class="btn ghost" data-a="backHome" style="margin-top:10px">返回</button></div>';
+}
+function rOfflinePass(){
+  var p=S.G.players[S.G.idx];
+  return '<div class="screen"><div class="pass"><div class="pass-icon">📱</div>'+
+    '<div style="font-size:14px;color:#8b9aa8;margin-bottom:10px">请把手机交给</div>'+
+    '<div class="pass-name">'+esc(p.name)+'</div>'+
+    '<div class="pass-hint">接下来是 '+esc(p.name)+' 阅读剧本\n其他人请不要偷看</div>'+
+    '<button class="btn primary" data-a="offlineRead" style="min-width:220px">👉 开始阅读</button></div></div>';
+}
+function rOfflineScript(){
+  var p=S.G.players[S.G.idx];var c=getChar(p.charId);
+  return '<div class="screen">'+
+    '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border-radius:14px;margin-bottom:12px">'+
+    '<div class="avatar lg" style="background:'+c.color+'">'+esc(c.emoji)+'</div>'+
+    '<div><h2 style="margin:0;font-size:19px;color:#2d3436">'+esc(c.name)+'</h2>'+
+    '<p style="color:#8b9aa8;font-size:13px;margin-top:4px">'+esc(c.role)+' · '+c.age+'岁</p></div></div>'+
+    '<h3>🎭 你是谁</h3><div class="card">'+esc(c.intro)+'</div>'+
+    '<h3>🔒 你的秘密</h3><div class="card secret">'+esc(c.secret)+'</div>'+
+    '<h3>🕐 你的时间线</h3><div class="card blue">'+esc(c.timeline)+'</div>'+
+    '<h3>🎯 你的任务</h3><div class="card mint">'+esc(c.task)+'</div>'+
+    '<button class="btn primary" data-a="offlineNext" style="margin-top:16px">✅ 记住了，传给下一位</button></div>';
+}
+function rOfflineRound(){
+  var r=S.script.rounds[S.G.round-1];
+  return '<div class="screen"><div style="text-align:center;margin-bottom:10px">'+
+    '<div style="display:inline-block;padding:4px 14px;background:#e17055;color:#fff;border-radius:20px;font-size:12px">第 '+S.G.round+' 轮</div>'+
+    '<div style="font-size:20px;font-weight:700;margin-top:10px">'+esc(r.title)+'</div></div>'+
+    '<h3>📢 公开线索</h3>'+
+    r.publicClues.map(function(x){return '<div class="card clue">'+esc(x)+'</div>';}).join('')+
+    '<div class="host-says"><div>🎩</div><div>接下来请把手机传给每位玩家查看私人线索</div></div>'+
+    '<button class="btn primary" data-a="offlineShowPrivate">👉 请 '+esc(S.G.players[S.G.idx].name)+' 查看私人线索</button></div>';
+}
+function rOfflinePrivate(){
+  var r=S.script.rounds[S.G.round-1];
+  var p=S.G.players[S.G.idx];var c=getChar(p.charId);
+  var clues=r.privateClues[c.id]||[];
+  return '<div class="screen">'+
+    '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border-radius:14px;margin-bottom:12px">'+
+    '<div class="avatar lg" style="background:'+c.color+'">'+esc(c.emoji)+'</div>'+
+    '<div><h2 style="margin:0;font-size:19px;color:#2d3436">'+esc(c.name)+'</h2>'+
+    '<p style="color:#8b9aa8;font-size:13px;margin-top:4px">第 '+S.G.round+' 轮 · 私人线索</p></div></div>'+
+    '<h3>🔐 只有你能看到的线索</h3>'+
+    clues.map(function(x){return '<div class="card secret">'+esc(x)+'</div>';}).join('')+
+    '<button class="btn primary" data-a="offlineNextPrivate" style="margin-top:16px">✅ 记住了，传给下一位</button></div>';
+}
+function rOfflineDiscuss(){
+  var h='<div class="screen">'+
+    '<h2>💬 讨论时间</h2>'+
+    '<p class="hint">手机放在桌上，大家面对面讨论。</p>'+
+    '<div class="timer-box"><div class="timer" id="td">05:00</div>'+
+    '<div style="font-size:12px;color:#8b9aa8;margin-top:6px">倒计时</div></div>'+
+    '<button class="btn" data-a="offlineToggleTimer">⏸ 暂停 / ▶ 继续</button>';
+  if(S.G.round<3)h+='<button class="btn primary" data-a="offlineNextRound" style="margin-top:16px">进入第 '+(S.G.round+1)+' 轮 →</button>';
+  else h+='<button class="btn primary" data-a="offlineToVote" style="margin-top:16px">进入投票 →</button>';
+  h+='</div>';
+  return h;
+}
+function rOfflineVote(){
+  var p=S.G.players[S.G.voteIdx];
+  var voted=S.G.votes.some(function(v){return v.voterIdx===S.G.voteIdx;});
+  if(voted){
+    return '<div class="screen"><div class="pass"><div class="pass-icon">✅</div>'+
+      '<div class="pass-name">'+esc(p.name)+'</div>'+
+      '<div class="pass-hint">已投票，请传给下一位</div>'+
+      '<button class="btn primary" data-a="offlineNextVote" style="min-width:220px">下一位 →</button></div></div>';
+  }
+  var h='<div class="screen"><h2 style="text-align:center">🗳 投票</h2>'+
+    '<p class="hint" style="text-align:center">'+esc(p.name)+'，选出你认为最可疑的人</p>';
+  S.script.characters.forEach(function(c){
+    var isMe=c.id===p.charId;
+    h+='<div class="vote-card" data-a="offlineSelVote" data-id="'+c.id+'" '+(isMe?'style="opacity:.5"':'')+'>'+
+      '<div class="avatar" style="background:'+c.color+'">'+esc(c.emoji)+'</div>'+
+      '<div style="flex:1"><div class="vote-name">'+esc(c.name)+(isMe?' (你)':'')+'</div>'+
+      '<div class="vote-role">'+esc(c.role)+'</div></div></div>';
+  });
+  h+='</div>';return h;
+}
+function rOfflineResult(){
+  var cnt={};S.G.votes.forEach(function(v){cnt[v.target]=(cnt[v.target]||0)+1;});
+  var sorted=Object.keys(cnt).map(function(k){return[parseInt(k),cnt[k]];}).sort(function(a,b){return b[1]-a[1];});
+  var top=sorted[0]?sorted[0][0]:0;var vc=top?getChar(top):null;var rk=S.script.characters[0];
+  var h='<div class="screen"><div class="result-hero">'+
+    '<div class="result-emoji">'+(vc&&vc.id===rk.id?'🎉':'😯')+'</div>'+
+    '<div class="result-title">你们投给了</div>'+
+    '<div style="font-size:26px;font-weight:800;color:#e17055;margin:8px 0">'+esc(vc?vc.name:'平票')+'</div></div>'+
+    '<div class="card rose" style="text-align:center"><div style="font-size:12px;color:#8b9aa8">真 相</div>'+
+    '<div style="font-size:26px;font-weight:800;color:#6c5ce7">'+esc(rk.name)+'</div></div>'+
+    '<h3>📖 真相</h3><div class="card">'+esc(S.script.truth.story)+'</div><h3>🔍 推理链</h3>';
+  (S.script.truth.reasoning||[]).forEach(function(x,i){h+='<div class="card clue"><b>'+(i+1)+'.</b> '+esc(x)+'</div>';});
+  if(S.script.truth.endings&&S.script.truth.endings.length>0){
+    h+='<h3>🎬 各角色结局</h3>';
+    S.script.truth.endings.forEach(function(e){var c=S.script.characters.find(function(x){return x.name===e.name;});h+='<div class="card"><b style="color:'+(c?c.color:'#2d3436')+'">'+(c?c.emoji+' ':'')+esc(e.name)+'</b>：'+esc(e.text)+'</div>';});
+  }
+  h+='<button class="btn primary" data-a="backHome" style="margin-top:24px">🏠 返回首页</button></div>';
+  return h;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UI 绑定 + 计时
+   ═══════════════════════════════════════════════════════════ */
+var offlineTimer=null,offlineTimerSec=300,offlineTimerPaused=false;
+function bindUI(){
+  try{
+    var ni=document.getElementById('nickInput');
+    if(ni)ni.addEventListener('input',function(e){S.ME.name=e.target.value.trim();safeSet('svv-name',S.ME.name);});
+    window._send=function(){
+      var input=document.getElementById('chatInput');if(!input)return;
+      var t=input.value.trim();if(!t)return;input.value='';
+      if(S.isHost){var p=S.HOST.players.find(function(x){return x.id===S.myId;});
+        S.HOST.messages.push({from:S.myId,name:p?p.name:'房主',text:t,type:'chat',ts:Date.now()});
+        if(S.HOST.messages.length>200)S.HOST.messages=S.HOST.messages.slice(-200);broadcast();}
+      else Net_send({type:'chat',text:t});
+    };
+    var cl=document.getElementById('chatList');if(cl)cl.scrollTop=cl.scrollHeight;
+    if(S.timer){clearInterval(S.timer);S.timer=null;}
+    if(S.screen==='game'&&S.PUB.discussionEnd>0){
+      S.timer=setInterval(function(){
+        var el=document.getElementById('td');if(!el)return;
+        var rem=Math.max(0,S.PUB.discussionEnd-Date.now());
+        var m=Math.floor(rem/60000);var s=Math.floor((rem%60000)/1000);
+        el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+      },500);
+    }
+    if(S.screen==='offline-discuss'){
+      if(!offlineTimer||offlineTimerSec<=0){offlineTimerSec=300;offlineTimerPaused=false;}
+      if(offlineTimer)clearInterval(offlineTimer);
+      offlineTimer=setInterval(function(){
+        var el=document.getElementById('td');if(!el)return;
+        if(!offlineTimerPaused&&offlineTimerSec>0)offlineTimerSec--;
+        var m=Math.floor(offlineTimerSec/60000);var s=offlineTimerSec%60;
+        el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+      },1000);
+    } else {if(offlineTimer){clearInterval(offlineTimer);offlineTimer=null;}}
+  }catch(e){console.error(e);}
+}
+function copyText(t){
+  try{
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(function(){toast('✓ 已复制');});}
+    else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');toast('✓ 已复制');ta.remove();}
+  }catch(e){alert(t);}
+}
+function saveScript(){
+  try{
+    var idx=S.editingIndex>=0?S.editingIndex:S.scripts.indexOf(S.script);var sc=S.scripts[idx];if(!sc)return;
+    sc.title=document.getElementById('e-title').value.trim()||sc.title;
+    sc.subtitle=document.getElementById('e-sub').value.trim()||sc.subtitle;
+    sc.emoji=document.getElementById('e-emoji').value.trim()||sc.emoji;
+    sc.intro=document.getElementById('e-intro').value;sc.scene=document.getElementById('e-scene').value;
+    sc.characters.forEach(function(c,i){
+      c.name=document.getElementById('e-c'+i+'-name').value.trim()||c.name;
+      c.role=document.getElementById('e-c'+i+'-role').value.trim()||c.role;
+      c.intro=document.getElementById('e-c'+i+'-intro').value;
+      c.secret=document.getElementById('e-c'+i+'-secret').value;
+      c.timeline=document.getElementById('e-c'+i+'-timeline').value;
+      c.task=document.getElementById('e-c'+i+'-task').value.trim()||c.task;
+    });
+    sc.rounds.forEach(function(r,i){
+      r.title=document.getElementById('e-r'+i+'-title').value.trim()||r.title;
+      var lines=document.getElementById('e-r'+i+'-clues').value.split('\n').map(function(x){return x.trim();}).filter(Boolean);
+      if(lines.length)r.publicClues=lines;
+    });
+    sc.truth.story=document.getElementById('e-truth').value||sc.truth.story;
+    var reasons=document.getElementById('e-reason').value.split('\n').map(function(x){return x.trim();}).filter(Boolean);
+    if(reasons.length)sc.truth.reasoning=reasons;
+    if(sc.isCustom)saveCustom();
+    S.script=sc;toast('✓ 已保存');S.screen='scriptList';S.editingIndex=-1;render();
+  }catch(e){toast('保存出错：'+e.message);}
+}
+
+/* ═══════════════════════════════════════════════════════════
+   事件处理
+   ═══════════════════════════════════════════════════════════ */
+document.addEventListener('click',function(e){
+  try{
+    var el=e.target.closest('[data-a]');if(!el)return;
+    var a=el.dataset.a;
+    var id=el.dataset.id?parseInt(el.dataset.id):null;
+    var idx=el.dataset.idx?parseInt(el.dataset.idx):null;
+    var min=el.dataset.min?parseInt(el.dataset.min):null;
+
+    if(a==='createOnline'){
+      if(!S.ME.name.trim())return toast('请先输入昵称');
+      S.roomCode=genCode();S.screen='lobby';S._attempt=0;S.PUB.statusMsg='加载网络库...';render();
+      loadPeerJS(function(ok){
+        if(!ok){toast('无法加载网络库，请使用离线模式');S.screen='home';render();return;}
+        tryCreatePeer(S.roomCode);
+      });
+    }
+    else if(a==='acceptInvite'){
+      if(!S.ME.name.trim())return toast('请输入昵称');
+      var p=parseURL();if(!p.room)return;
+      S.roomCode=p.room;S.screen='lobby';S._attempt=0;S.PUB.statusMsg='加载网络库...';render();
+      loadPeerJS(function(ok){
+        if(!ok){toast('无法加载网络库，请使用离线模式');S.screen='home';render();return;}
+        tryJoinPeer(S.roomCode);
+      });
+    }
+    else if(a==='leave'||a==='backHome'){
+      leaveRoom();setURL(null);S.screen='home';S.HOST=null;S.roomCode='';
+      S.PUB={phase:'lobby',round:0,players:[],messages:[],voteCount:0,totalPlayers:0,discussionEnd:0,votes:null,result:null,isHost:false,statusMsg:''};
+      S.ME.charId=0;S.ME.char=null;S.ME.clues=[];
+      if(S.timer){clearInterval(S.timer);S.timer=null;}
+      if(offlineTimer){clearInterval(offlineTimer);offlineTimer=null;}
+      render();
+    }
+    else if(a==='scriptList'){S.screen='scriptList';render();}
+    else if(a==='backToList'){S.editingIndex=-1;S.screen='scriptList';render();}
+    else if(a==='pickScript'){S.script=S.scripts[idx];S.screen='home';render();}
+    else if(a==='editScript'){S.editingIndex=idx;S.screen='editor';render();}
+    else if(a==='delScript'){var sc=S.scripts[idx];if(!sc.isCustom)return;if(!confirm('删除「'+sc.title+'」？'))return;S.scripts.splice(idx,1);saveCustom();if(S.script===sc)S.script=S.scripts[0];toast('已删除');render();}
+    else if(a==='addScript'){
+      var input=window.prompt('请输入剧本人数（4-14）：','6');
+      var count=parseInt(input);
+      if(!count||isNaN(count))return;
+      if(count<4)count=4;
+      if(count>14)count=14;
+      var tpl=emptyTemplate(count);
+      S.scripts.push(tpl);
+      S.editingIndex=S.scripts.length-1;
+      S.screen='editor';
+      toast('已创建 '+count+' 人剧本，请填写内容');
+      render();
+    }
+    else if(a==='saveScript'){saveScript();}
+    else if(a==='declineInvite'){setURL(null);S.screen='home';render();}
+    else if(a==='share'){var url=shareURL();if(navigator.share)navigator.share({title:S.script.title,text:'来玩剧本杀！',url:url}).catch(function(){});else copyText(url);}
+    else if(a==='copyLink'){copyText(shareURL());}
+    else if(a==='startGame'){if(!S.isHost)return;hostAction('start');S.screen='game';render();}
+    else if(a==='toScript'){if(!S.isHost)return;hostAction('toScript');render();}
+    else if(a==='toRound'){if(!S.isHost)return;hostAction('toRound');render();}
+    else if(a==='nextRound'){if(!S.isHost)return;if(S.PUB.round>=3)hostAction('toVote');else hostAction('toRound');render();}
+    else if(a==='discuss'){if(!S.isHost)return;hostAction('startDiscuss',min||5);render();}
+    else if(a==='endDiscuss'){if(!S.isHost)return;hostAction('endDiscuss');render();}
+    else if(a==='reveal'){if(!S.isHost)return;doResult();render();}
+    else if(a==='selVote'){if(S.voted)return;if(S.ME.charId===id)return toast('不能投给自己');S.voteTarget=id;render();}
+    else if(a==='submitVote'){
+      if(S.voted||!S.voteTarget)return;
+      if(S.isHost){var H=S.HOST;var me=H.players.find(function(p){return p.id===S.myId;});
+        if(me&&!me.voted){me.voted=true;H.voteDetails.push({from:S.myId,target:S.voteTarget});H.votes[S.voteTarget]=(H.votes[S.voteTarget]||0)+1;addSys('🗳 '+me.name+' 已投票');broadcast();
+        var op=H.players.filter(function(p){return p.online!==false;});if(op.every(function(p){return p.voted;}))setTimeout(function(){if(H.phase==='vote')doResult();},1000);}}
+      else Net_send({type:'vote',target:S.voteTarget});
+      S.voted=true;render();
+    }
+    else if(a==='restart'){if(!S.isHost)return;hostAction('restart');S.screen='lobby';render();}
+    else if(a==='sendChat'){window._send();}
+    else if(a==='gotoMonopoly'){window.location.href='monopoly.html';}
+    else if(a==='offlineSetup'){S.screen='offline-setup';render();}
+    else if(a==='offlineStart'){
+      var count2=S.script.characters.length;
+      var names=[];
+      for(var i=0;i<count2;i++){var v=document.getElementById('on'+i).value.trim();if(!v)return toast('请输入玩家 '+(i+1)+' 昵称');names.push(v);}
+      var picked=shuffle(S.script.characters).slice(0,count2);
+      S.G={players:names.map(function(n,i){return{name:n,charId:picked[i].id};}),idx:0,round:1,votes:[],voteIdx:0};
+      offlineTimerSec=300;offlineTimerPaused=false;
+      S.screen='offline-pass';render();
+    }
+    else if(a==='offlineRead'){S.screen='offline-script';render();}
+    else if(a==='offlineNext'){
+      S.G.idx++;
+      if(S.G.idx>=S.G.players.length){S.G.idx=0;S.screen='offline-round';}
+      else S.screen='offline-pass';
+      render();
+    }
+    else if(a==='offlineShowPrivate'){S.screen='offline-private';render();}
+    else if(a==='offlineNextPrivate'){
+      S.G.idx++;
+      if(S.G.idx>=S.G.players.length){S.screen='offline-discuss';}
+      else S.screen='offline-pass';
+      render();
+    }
+    else if(a==='offlineToggleTimer'){offlineTimerPaused=!offlineTimerPaused;toast(offlineTimerPaused?'已暂停':'继续');render();}
+    else if(a==='offlineNextRound'){
+      if(S.G.round<3){S.G.round++;S.G.idx=0;S.screen='offline-round';}
+      render();
+    }
+    else if(a==='offlineToVote'){
+      S.G.voteIdx=0;S.G.votes=[];S.screen='offline-vote';
+      render();
+    }
+    else if(a==='offlineSelVote'){
+      var isMe=S.G.players[S.G.voteIdx].charId===id;
+      if(isMe)return toast('不能投给自己');
+      S.G.votes.push({voterIdx:S.G.voteIdx,target:id});
+      render();
+    }
+    else if(a==='offlineNextVote'){
+      S.G.voteIdx++;
+      if(S.G.voteIdx>=S.G.players.length){S.screen='offline-result';}
+      render();
+    }
+  }catch(err){console.error('click error',err);}
+});
+
+/* ═══════════════════════════════════════════════════════════
+   初始化
+   ═══════════════════════════════════════════════════════════ */
+try{
+  var n=safeGet('svv-name');if(n)S.ME.name=n;
+  S.scripts=loadScripts();
+  if(!S.scripts||S.scripts.length===0)S.scripts=[SC1,SC2,SC3,SC4];
+  S.script=S.scripts[0];
+  try{var cid=sessionStorage.getItem('svv-cid');
+    if(!cid){cid='c_'+Math.random().toString(36).slice(2,10);sessionStorage.setItem('svv-cid',cid);}
+    S.clientId=cid;
+  }catch(e){S.clientId='c_'+Math.random().toString(36).slice(2,10);}
+  render();
+}catch(e){
+  console.error('init error',e);
+  document.getElementById('app').innerHTML='<div style="padding:40px;text-align:center;color:#e17055"><h2>初始化失败</h2><p style="margin-top:12px;color:#8b9aa8">'+e.message+'</p></div>';
+}
+</script>
+</body>
+</html>
+<!-- ✅ 文件末尾标记：看到这行说明文件完整 -->

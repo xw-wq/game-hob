@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>工业革命 · 伯明翰</title>
+<style>
+:root{
+  --bg:#1A1812;
+  --bg2:#232019;
+  --panel:#2A2620;
+  --panel2:#332E25;
+  --ink:#E8DCC0;
+  --ink2:#B8A882;
+  --ink3:#7A6E58;
+  --line:#4A4234;
+  --line2:#5C5240;
+  --gold:#C9A961;
+  --gold2:#E0C88A;
+  --brass:#B8860B;
+  --copper:#A0522D;
+  --forest:#3A4A38;
+  --burgundy:#6B2737;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;overflow-x:hidden}
+body{
+  font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 20% 10%,rgba(201,169,97,.06),transparent 40%),
+    radial-gradient(circle at 80% 90%,rgba(160,82,45,.05),transparent 45%),
+    linear-gradient(160deg,#1A1812 0%,#232019 50%,#1A1812 100%);
+  background-attachment:fixed;
+  font-size:14px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+#app{max-width:700px;margin:0 auto;padding:14px 12px 80px}
+h1{font-size:24px;font-weight:700;letter-spacing:2px;
+  font-family:Georgia,'Songti SC',serif;
+  background:linear-gradient(180deg,#E0C88A,#A8905C);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+h2{font-size:18px;font-weight:600;color:var(--gold);letter-spacing:2px;
+  font-family:Georgia,'Songti SC',serif;margin-bottom:10px}
+h3{font-size:12px;font-weight:600;color:var(--ink2);letter-spacing:2.5px;
+  margin:16px 0 8px;text-transform:uppercase}
+
+.btn{
+  display:block;width:100%;padding:13px 16px;
+  border:1px solid var(--line2);border-radius:6px;
+  background:linear-gradient(180deg,#332E25,#2A2620);
+  color:var(--ink);font-size:15px;font-weight:500;
+  font-family:inherit;letter-spacing:1px;cursor:pointer;
+  margin-top:9px;transition:.2s;text-align:center;
+  box-shadow:inset 0 1px 0 rgba(232,220,192,.06),0 2px 6px rgba(0,0,0,.3);
+}
+.btn:active{transform:scale(.985);background:#3A3428}
+.btn.primary{
+  background:linear-gradient(180deg,#8B6B2E,#5C4A20);
+  border-color:#A8905C;color:#F0E4C8;
+  box-shadow:inset 0 1px 0 rgba(240,228,200,.15),0 2px 8px rgba(139,107,46,.3);
+}
+.btn.primary:active{background:#7A5C28}
+.btn.green{
+  background:linear-gradient(180deg,#3A5A3A,#2A4229);
+  border-color:#5A7A55;color:#D8E8CC;
+}
+.btn.gold{
+  background:linear-gradient(180deg,#8B6B2E,#5C4A20);
+  border-color:#C9A961;color:#F0E4C8;
+}
+.btn.ghost{background:rgba(42,38,32,.6)}
+.btn.danger{color:#C87A6A;border-color:#5C3A30}
+.btn:disabled{opacity:.35}
+.btn-row{display:flex;gap:8px;margin-top:9px}
+.btn-row .btn{margin-top:0;flex:1}
+
+.input{
+  width:100%;background:#1F1C16;
+  border:1px solid var(--line2);border-radius:6px;
+  padding:12px 14px;font-size:15px;font-family:inherit;
+  color:var(--ink);outline:none;margin-bottom:9px;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.3);
+}
+.input:focus{border-color:var(--gold)}
+.input::placeholder{color:var(--ink3)}
+
+.card{
+  background:linear-gradient(180deg,#2A2620,#252019);
+  border:1px solid var(--line);
+  border-radius:8px;padding:16px 18px;margin-bottom:11px;
+  box-shadow:0 2px 8px rgba(0,0,0,.3),inset 0 1px 0 rgba(232,220,192,.04);
+}
+
+.hero{text-align:center;padding:30px 0 20px}
+.hero-icon{font-size:56px;line-height:1;filter:drop-shadow(0 4px 12px rgba(201,169,97,.3))}
+.hero h1{margin-top:14px}
+.hero-sub{color:var(--ink2);font-size:11px;letter-spacing:4px;margin-top:8px;text-transform:uppercase}
+.hero-rule{
+  width:60px;height:1px;margin:18px auto;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  position:relative;
+}
+.hero-rule::before,.hero-rule::after{
+  content:'◆';position:absolute;top:-6px;color:var(--gold);font-size:8px;
+}
+.hero-rule::before{left:-12px}
+.hero-rule::after{right:-12px}
+
+.hint{color:var(--ink2);font-size:12.5px;line-height:1.75}
+
+/* ───── 玩家信息面板 ───── */
+.players-bar{
+  display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px;
+}
+.players-bar::-webkit-scrollbar{display:none}
+.pcard{
+  flex:0 0 auto;display:flex;align-items:center;gap:9px;
+  padding:9px 13px;background:linear-gradient(180deg,#2A2620,#221E18);
+  border:1px solid var(--line);border-radius:8px;min-width:136px;
+  transition:.2s;position:relative;
+}
+.pcard.current{
+  border-color:var(--gold);
+  box-shadow:0 0 0 2px rgba(201,169,97,.18),0 0 12px rgba(201,169,97,.15);
+}
+.pcard.you::after{
+  content:'你';position:absolute;top:-6px;right:8px;
+  font-size:9px;background:var(--gold);color:#1A1812;
+  padding:1px 5px;border-radius:3px;font-weight:700;
+  letter-spacing:1px;
+}
+.pcolor{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  box-shadow:0 1px 3px rgba(0,0,0,.4),inset 0 1px 2px rgba(255,255,255,.15);
+}
+.pinfo{flex:1;min-width:0}
+.pname{
+  font-size:12px;font-weight:700;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;color:var(--ink);
+  letter-spacing:.5px;
+}
+.pstats{
+  font-size:11px;color:var(--ink2);margin-top:1px;
+  font-variant-numeric:tabular-nums;letter-spacing:.3px;
+}
+
+/* ───── 顶部信息 ───── */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 4px;margin-bottom:6px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:8px;
+}
+.topbar-left{font-size:12px;color:var(--ink2);font-weight:600;letter-spacing:1px}
+.topbar-right{font-size:12px;color:var(--ink2)}
+
+/* ───── 棋盘 ───── */
+.board-frame{
+  position:relative;
+  padding:8px;
+  background:
+    linear-gradient(135deg,#3A3226 0%,#2A2418 50%,#3A3226 100%);
+  border:2px solid var(--gold);
+  border-radius:10px;
+  box-shadow:
+    0 4px 24px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(232,220,192,.08),
+    inset 0 0 40px rgba(0,0,0,.3);
+  margin-bottom:10px;
+}
+.board-frame::before{
+  content:'';
+  position:absolute;inset:3px;
+  border:1px solid rgba(201,169,97,.3);
+  border-radius:7px;pointer-events:none;
+}
+.board{
+  position:relative;width:100%;aspect-ratio:1;
+  background:
+    radial-gradient(ellipse at 30% 25%,rgba(58,74,56,.5),transparent 55%),
+    radial-gradient(ellipse at 70% 75%,rgba(58,74,56,.45),transparent 55%),
+    radial-gradient(ellipse at 50% 50%,rgba(107,39,55,.2),transparent 60%),
+    linear-gradient(160deg,#3A3528 0%,#2E2A20 40%,#38321F 100%);
+  border-radius:6px;overflow:hidden;
+  box-shadow:inset 0 0 30px rgba(0,0,0,.5);
+}
+/* 地图纹理层 */
+.board::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(45deg,rgba(201,169,97,.025) 0 1px,transparent 1px 8px),
+    repeating-linear-gradient(-45deg,rgba(201,169,97,.02) 0 1px,transparent 1px 12px);
+  pointer-events:none;
+}
+/* 边缘暗角 */
+.board::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.5) 100%);
+}
+
+.board-svg{
+  position:absolute;inset:0;width:100%;height:100%;
+  pointer-events:none;z-index:1;
+}
+.board-svg line{
+  pointer-events:stroke;
+}
+.board-svg line.link-target{
+  cursor:pointer;
+  animation:pulse 1s infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1}50%{opacity:.35}
+}
+
+/* ───── 城市 ───── */
+.loc{
+  position:absolute;transform:translate(-50%,-50%);
+  background:linear-gradient(180deg,#F5ECD2,#D8C8A0);
+  border:1.5px solid #6B5535;
+  border-radius:5px;padding:3px 6px 3px;
+  text-align:center;z-index:2;
+  box-shadow:0 2px 6px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.4);
+  transition:.18s;
+}
+.loc.city{
+  border-width:2px;
+  background:linear-gradient(180deg,#FFF5DC,#E0C88A);
+  box-shadow:0 2px 8px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.5),
+             0 0 12px rgba(201,169,97,.25);
+}
+.loc.target{
+  border-color:#5AE08A;border-width:2.5px;
+  box-shadow:0 0 0 3px rgba(90,224,138,.3),0 0 16px rgba(90,224,138,.5);
+  cursor:pointer;z-index:5;
+  animation:targetPulse 1.2s infinite;
+}
+@keyframes targetPulse{
+  0%,100%{box-shadow:0 0 0 3px rgba(90,224,138,.3),0 0 16px rgba(90,224,138,.5)}
+  50%{box-shadow:0 0 0 5px rgba(90,224,138,.2),0 0 20px rgba(90,224,138,.7)}
+}
+.loc.target:active{transform:translate(-50%,-50%) scale(1.08)}
+.loc-name{
+  font-size:8.5px;font-weight:800;color:#4A3A1E;
+  letter-spacing:.2px;line-height:1.2;white-space:nowrap;
+  text-shadow:0 1px 0 rgba(255,255,255,.4);
+}
+.loc.city .loc-name{font-size:9.5px;color:#6B4423}
+.loc-slots{
+  display:flex;gap:2px;justify-content:center;margin-top:2px;
+}
+.slot{
+  width:10px;height:10px;background:#C8BC9A;
+  border:1px solid #8A7A58;border-radius:2px;
+  transition:.2s;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.2);
+}
+.slot.filled{
+  border-color:rgba(0,0,0,.4);
+  box-shadow:inset 0 -1px 2px rgba(0,0,0,.3),0 0 4px rgba(255,255,255,.1);
+}
+.slot-ind{
+  font-size:5.5px;color:#fff;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1;width:100%;height:100%;
+  text-shadow:0 1px 1px rgba(0,0,0,.5);
+}
+
+/* ───── 行动栏 ───── */
+.action-bar{
+  background:linear-gradient(180deg,#2A2620,#252019);
+  border:1px solid var(--line);
+  border-radius:10px;padding:13px;margin-bottom:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.action-title{
+  font-size:12px;color:var(--ink2);margin-bottom:9px;
+  font-weight:600;letter-spacing:.5px;
+  padding-left:8px;border-left:2px solid var(--gold);
+}
+.action-row{display:flex;gap:8px}
+.action-row .btn{margin-top:0;flex:1;padding:11px 6px;font-size:13px}
+
+.waiting{
+  text-align:center;padding:16px;
+  background:linear-gradient(180deg,#2A2620,#252019);
+  border:1px solid var(--line);border-radius:10px;
+  color:var(--ink2);font-size:14px;font-weight:600;
+  letter-spacing:1px;
+}
+
+.turn-banner{
+  text-align:center;padding:11px;margin-bottom:10px;
+  background:linear-gradient(180deg,#332E25,#2A2620);
+  border:1px solid var(--line2);border-radius:10px;
+  position:relative;overflow:hidden;
+}
+.turn-banner::before{
+  content:'';position:absolute;left:0;right:0;top:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.turn-banner .who{
+  font-size:16px;font-weight:800;letter-spacing:2px;
+  font-family:Georgia,'Songti SC',serif;
+}
+.turn-banner .tag{
+  font-size:10px;color:var(--ink3);letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:3px;
+}
+
+/* ───── 弹窗 ───── */
+.modal{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(10,8,6,.7);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;padding:16px;
+}
+.modal-box{
+  background:linear-gradient(180deg,#2E2A22,#252019);
+  border:1.5px solid var(--gold);border-radius:12px;
+  max-width:400px;width:100%;max-height:85vh;overflow-y:auto;
+  padding:22px;
+  box-shadow:0 20px 60px rgba(0,0,0,.7),inset 0 1px 0 rgba(201,169,97,.15);
+  animation:pop .25s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-title{
+  font-size:17px;font-weight:700;color:var(--gold2);margin-bottom:4px;
+  font-family:Georgia,'Songti SC',serif;letter-spacing:1px;
+}
+.modal-sub{font-size:12px;color:var(--ink2);margin-bottom:16px}
+
+.ind-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.ind-btn{
+  display:flex;align-items:center;gap:9px;padding:11px 12px;
+  background:linear-gradient(180deg,#332E25,#2A2620);
+  border:1px solid var(--line2);border-radius:7px;
+  cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;
+  color:var(--ink);transition:.15s;text-align:left;
+}
+.ind-btn:active{transform:scale(.97)}
+.ind-btn.disabled{opacity:.35;pointer-events:none}
+.ind-icon{
+  width:28px;height:28px;border-radius:6px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:11px;font-weight:800;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 3px rgba(0,0,0,.4);
+}
+.ind-meta{flex:1;min-width:0}
+.ind-cost{font-size:11px;color:var(--ink2);font-weight:500}
+
+/* ───── 日志 ───── */
+.log{
+  background:linear-gradient(180deg,#252019,#1F1C16);
+  border:1px solid var(--line);
+  border-radius:7px;padding:10px 12px;margin-top:8px;
+  max-height:110px;overflow-y:auto;
+  font-size:11.5px;line-height:1.75;color:var(--ink2);
+}
+.log::-webkit-scrollbar{width:3px}
+.log::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
+.log-line{padding:1px 0;border-bottom:1px dashed rgba(74,66,52,.4)}
+.log-line:last-child{border-bottom:none}
+.log-line b{color:var(--gold2);font-weight:600}
+
+/* ───── Toast ───── */
+.toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(180deg,#3A3428,#2A2620);
+  color:var(--ink);padding:12px 24px;
+  border:1px solid var(--gold);border-radius:100px;
+  font-size:13px;z-index:999;max-width:88%;text-align:center;
+  animation:tin .25s;box-shadow:0 8px 24px rgba(0,0,0,.6);
+}
+@keyframes tin{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* ───── 结束 ───── */
+.result-hero{
+  text-align:center;padding:26px 16px;
+  background:
+    radial-gradient(ellipse at center,rgba(201,169,97,.15),transparent 70%),
+    linear-gradient(180deg,#332E25,#252019);
+  border:1.5px solid var(--gold);
+  border-radius:14px;margin-bottom:14px;
+  box-shadow:inset 0 1px 0 rgba(201,169,97,.2);
+}
+.result-icon{font-size:52px;margin:8px 0;filter:drop-shadow(0 4px 12px rgba(201,169,97,.5))}
+.result-title{font-size:22px;font-weight:800;color:var(--gold2);
+  font-family:Georgia,'Songti SC',serif;letter-spacing:2px}
+.result-winner{font-size:16px;font-weight:700;color:var(--ink);margin-top:8px;letter-spacing:1px}
+
+.rank-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;
+  background:linear-gradient(180deg,#2E2A22,#252019);
+  border:1px solid var(--line);border-radius:8px;margin-bottom:6px;
+}
+.rank-num{
+  width:24px;height:24px;border-radius:50%;
+  background:#3A3428;color:var(--ink2);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:13px;flex-shrink:0;
+}
+.rank-num.gold{background:linear-gradient(180deg,#D4A017,#8B6B2E);color:#1A1812}
+.rank-num.silver{background:linear-gradient(180deg,#A8A29A,#6B6558);color:#1A1812}
+.rank-num.bronze{background:linear-gradient(180deg,#B87333,#6B4423);color:#1A1812}
+
+.conn-status{
+  position:fixed;top:10px;right:10px;
+  font-size:11px;padding:5px 12px;border-radius:20px;
+  background:rgba(42,38,32,.9);border:1px solid var(--line2);
+  z-index:100;backdrop-filter:blur(4px);
+}
+.conn-on{color:#7AE0A0}
+.conn-off{color:#C87A6A}
+.conn-wait{color:var(--gold2)}
+
+.count-pick{display:flex;gap:8px;margin-top:6px}
+.count-pick button{
+  flex:1;padding:14px 8px;
+  border:1px solid var(--line2);background:linear-gradient(180deg,#2A2620,#221E18);
+  border-radius:7px;font-family:inherit;
+  font-size:16px;font-weight:800;color:var(--ink2);cursor:pointer;
+  transition:.15s;
+}
+.count-pick button.active{
+  border-color:var(--gold);
+  background:linear-gradient(180deg,#8B6B2E,#5C4A20);
+  color:#F0E4C8;
+  box-shadow:inset 0 1px 0 rgba(240,228,200,.2);
+}
+
+/* 产业图例 */
+.legend{
+  display:flex;flex-wrap:wrap;gap:6px;
+  padding:8px 10px;margin-bottom:8px;
+  background:linear-gradient(180deg,#252019,#1F1C16);
+  border:1px solid var(--line);border-radius:7px;
+}
+.legend-item{
+  display:flex;align-items:center;gap:5px;
+  font-size:10.5px;color:var(--ink2);
+  letter-spacing:.3px;
+}
+.legend-dot{
+  width:12px;height:12px;border-radius:3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 2px rgba(0,0,0,.4);
+}
+.legend-dot::after{
+  content:attr(data-short);color:#fff;font-size:6px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+/* ═══════════════════════════════════════════════════════════
+   棋盘数据
+   ═══════════════════════════════════════════════════════════ */
+var LOCS = {
+  BIR:{name:'伯明翰',    x:50, y:62, slots:4, city:true},
+  WAL:{name:'沃尔索尔',  x:32, y:46, slots:2, city:false},
+  WOL:{name:'伍尔弗汉普顿',x:14, y:40, slots:3, city:true},
+  DUD:{name:'达德利',    x:28, y:57, slots:2, city:false},
+  KID:{name:'基德明斯特',x:14, y:73, slots:2, city:false},
+  STA:{name:'斯陶尔布里奇',x:34,y:70,slots:2, city:false},
+  TAM:{name:'塔姆沃思',  x:66, y:46, slots:2, city:false},
+  LIC:{name:'利奇菲尔德',x:63, y:29, slots:2, city:false},
+  BUR:{name:'伯顿',      x:77, y:15, slots:2, city:false},
+  COV:{name:'考文垂',    x:68, y:70, slots:3, city:true},
+  LEI:{name:'莱斯特',    x:86, y:78, slots:2, city:true},
+  DER:{name:'德比',      x:81, y:26, slots:3, city:true},
+  NOT:{name:'诺丁汉',    x:95, y:42, slots:3, city:true}
+};
+
+var LINKS = [
+  ['BIR','WAL'],['BIR','DUD'],['BIR','STA'],['BIR','TAM'],['BIR','COV'],
+  ['WAL','WOL'],['WAL','LIC'],['WAL','DUD'],
+  ['WOL','DUD'],
+  ['DUD','KID'],['DUD','STA'],
+  ['KID','STA'],
+  ['TAM','LIC'],['TAM','BUR'],['TAM','COV'],
+  ['LIC','BUR'],['LIC','DER'],
+  ['BUR','DER'],
+  ['COV','LEI'],
+  ['DER','NOT'],
+  ['LEI','NOT']
+];
+
+var IND = {
+  coal:{name:'煤矿',   short:'煤', cost:1, vp:1, color:'#2A2A2A'},
+  iron:{name:'铁厂',   short:'铁', cost:2, vp:2, color:'#7A3E1A'},
+  mill:{name:'棉纺厂', short:'纺', cost:3, vp:3, color:'#8B2531'},
+  manu:{name:'制造商', short:'造', cost:4, vp:4, color:'#1E4E6E'},
+  pott:{name:'陶器厂', short:'陶', cost:5, vp:5, color:'#5A2A6B'}
+};
+var SUPPLY_LIMIT = {coal:6, iron:6, mill:6, manu:6, pott:6};
+
+var PLAYER_COLORS = ['#C0392B','#2E86C1','#27AE60','#E67E22'];
+
+/* ═══════════════════════════════════════════════════════════
+   状态
+   ═══════════════════════════════════════════════════════════ */
+var S = {
+  screen:'home',
+  peer:null, conns:{}, isHost:false, myId:'', roomCode:'',
+  connected:false, connecting:false, peerLoading:false,
+  clientId:'',
+  HOST:null, PUB:null, ME:{name:''},
+  isLocal:false,
+  LOCAL:{count:2, names:['','','','']},
+  mode:null, modal:null
+};
+
+/* ═══════════════════════════════════════════════════════════
+   工具
+   ═══════════════════════════════════════════════════════════ */
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function toast(m){try{var e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(function(){e.remove();},2200);}catch(err){alert(m);}}
+function genCode(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';var s='';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+function linkKey(a,b){return a<b?a+'-'+b:b+'-'+a;}
+function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function parseURL(){try{var h=window.location.hash||'';var r=h.match(/room=([A-Z0-9]+)/i);return{room:r?r[1].toUpperCase():null};}catch(e){return{room:null};}}
+function setURL(code){try{var u=new URL(window.location.href);u.hash=code?('room='+code):'';history.replaceState(null,'',u.toString());}catch(e){}}
+function shareURL(){if(!S.roomCode)return window.location.href;try{var u=new URL(window.location.href);u.hash='room='+S.roomCode;return u.toString();}catch(e){return window.location.href.split('#')[0]+'#room='+S.roomCode;}}
+
+/* ═══════════════════════════════════════════════════════════
+   游戏逻辑
+   ═══════════════════════════════════════════════════════════ */
+function newGame(playerInfos){
+  var G = {
+    players: playerInfos.map(function(p,i){
+      return {
+        id:p.id, name:p.name, isHost:!!p.isHost,
+        color:PLAYER_COLORS[i%PLAYER_COLORS.length],
+        money:30, vp:0, links:[]
+      };
+    }),
+    locState:{}, linkState:{},
+    turn:0, round:1, maxRounds:12,
+    phase:'playing', log:[]
+  };
+  Object.keys(LOCS).forEach(function(id){
+    G.locState[id]=new Array(LOCS[id].slots).fill(null);
+  });
+  glog(G,'⚙ 工业革命 · 伯明翰 开始');
+  glog(G,'每位玩家 30 金币，目标：积攒最多分数');
+  return G;
+}
+
+function glog(G, msg){
+  G.log.push({t:msg, ts:Date.now()});
+  if(G.log.length>60) G.log=G.log.slice(-60);
+}
+
+function playerIndexOf(G, id){
+  for(var i=0;i<G.players.length;i++) if(G.players[i].id===id) return i;
+  return -1;
+}
+
+function playerLocations(G, pIdx){
+  var out=[];
+  Object.keys(G.locState).forEach(function(locId){
+    if(G.locState[locId].some(function(s){return s && s.owner===pIdx;})) out.push(locId);
+  });
+  return out;
+}
+
+function isConnectedTo(G, locId, pIdx){
+  var player = G.players[pIdx];
+  var visited={}, queue=[];
+  playerLocations(G,pIdx).forEach(function(l){queue.push(l);visited[l]=true;});
+  if(queue.length===0) return false;
+  while(queue.length>0){
+    var cur=queue.shift();
+    if(cur===locId) return true;
+    player.links.forEach(function(lk){
+      var a=lk[0], b=lk[1];
+      if(a===cur && !visited[b]){visited[b]=true;queue.push(b);}
+      if(b===cur && !visited[a]){visited[a]=true;queue.push(a);}
+    });
+  }
+  return false;
+}
+
+function canBuild(G, locId, pIdx){
+  if(!G.locState[locId]) return false;
+  if(!G.locState[locId].some(function(s){return s===null;})) return false;
+  var player = G.players[pIdx];
+  if(playerLocations(G,pIdx).length===0) return true;
+  return isConnectedTo(G, locId, pIdx);
+}
+
+function canLink(G, a, b, pIdx){
+  if(!LOCS[a]||!LOCS[b]) return false;
+  var exists = LINKS.some(function(l){
+    return (l[0]===a&&l[1]===b)||(l[0]===b&&l[1]===a);
+  });
+  if(!exists) return false;
+  return G.linkState[linkKey(a,b)]===undefined;
+}
+
+function firstFreeSlot(G, locId){
+  var slots = G.locState[locId];
+  for(var i=0;i<slots.length;i++) if(slots[i]===null) return i;
+  return -1;
+}
+
+function usedSupply(G, ind){
+  var n=0;
+  Object.keys(G.locState).forEach(function(locId){
+    G.locState[locId].forEach(function(s){if(s&&s.ind===ind)n++;});
+  });
+  return n;
+}
+
+function applyBuild(G, locId, slotIdx, indKey, pIdx){
+  var p=G.players[pIdx], ind=IND[indKey];
+  if(p.money<ind.cost) return '金币不足';
+  if(!canBuild(G, locId, pIdx)) return '这个地点暂不可建造';
+  if(slotIdx<0 || G.locState[locId][slotIdx]!==null) return '这个槽位已被占用';
+  if(usedSupply(G,indKey)>=SUPPLY_LIMIT[indKey]) return IND[indKey].name+'已耗尽';
+  p.money-=ind.cost;
+  G.locState[locId][slotIdx]={ind:indKey, owner:pIdx, level:ind.cost};
+  p.vp+=ind.vp;
+  glog(G,'🏭 '+p.name+' 在 '+LOCS[locId].name+' 建造了 '+ind.name+' (+'+ind.vp+'分)');
+  return null;
+}
+
+function applyLink(G, a, b, pIdx){
+  var p=G.players[pIdx];
+  if(p.money<1) return '金币不足';
+  if(!canLink(G,a,b,pIdx)) return '这条连接不可用';
+  p.money-=1;
+  G.linkState[linkKey(a,b)]=pIdx;
+  p.links.push([a,b]);
+  p.vp+=1;
+  glog(G,'🛤 '+p.name+' 连接了 '+LOCS[a].name+' — '+LOCS[b].name+' (+1分)');
+  return null;
+}
+
+function applyLoan(G, pIdx){
+  var p=G.players[pIdx];
+  p.money+=20;
+  p.vp=Math.max(0,p.vp-3);
+  glog(G,'💷 '+p.name+' 贷款 (+20金币, -3分)');
+  return null;
+}
+
+function nextTurn(G){
+  G.turn=(G.turn+1)%G.players.length;
+  if(G.turn===0){
+    G.round++;
+    if(G.round>G.maxRounds){ finishGame(G); return; }
+    glog(G,'—— 第 '+G.round+' 回合 ——');
+  }
+}
+
+function finishGame(G){
+  G.phase='over';
+  var arr=G.players.slice().sort(function(a,b){
+    if(b.vp!==a.vp) return b.vp-a.vp;
+    return b.money-a.money;
+  });
+  glog(G,'🏆 游戏结束，'+arr[0].name+' 获胜！');
+}
+
+function performAction(action, payload){
+  var G = S.isHost ? S.HOST.game : null;
+  if(!G) return;
+  var pIdx = S.isLocal ? G.turn : playerIndexOf(G, S.myId);
+  if(!S.isLocal && G.turn!==pIdx) return false;
+
+  var err=null;
+  if(action==='build'){
+    var slotIdx = firstFreeSlot(G, payload.locId);
+    err = applyBuild(G, payload.locId, slotIdx, payload.ind, pIdx);
+  }else if(action==='link'){
+    err = applyLink(G, payload.a, payload.b, pIdx);
+  }else if(action==='loan'){
+    err = applyLoan(G, pIdx);
+  }
+  if(err){ toast(err); return false; }
+  nextTurn(G);
+  return true;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   渲染
+   ═══════════════════════════════════════════════════════════ */
+function render(){
+  var app=document.getElementById('app');
+  var h='';
+  var showConn = (S.screen==='lobby'||S.screen==='game') && !S.isLocal;
+  if(S.screen==='home') h=rHome();
+  else if(S.screen==='rules') h=rRules();
+  else if(S.screen==='local-setup') h=rLocalSetup();
+  else if(S.screen==='lobby') h=rLobby();
+  else if(S.screen==='game') h=rGame();
+  else if(S.screen==='result') h=rResult();
+  if(showConn){
+    var cls='conn-off', txt='● 未连接';
+    if(S.connecting||S.peerLoading){cls='conn-wait';txt='◌ 连接中';}
+    else if(S.connected){cls='conn-on';txt='● 已连接';}
+    h+='<div class="conn-status '+cls+'">'+txt+'</div>';
+  }
+  if(S.modal) h+=rModal();
+  app.innerHTML=h;
+  bindAfterRender();
+  window.scrollTo(0,0);
+}
+
+function rHome(){
+  var p=parseURL();
+  if(p.room && !S.isHost && !S.connected) return rInvite();
+  return '<div class="screen">'+
+    '<div class="hero">'+
+      '<div class="hero-icon">⚙️</div>'+
+      '<h1>工业革命 · 伯明翰</h1>'+
+      '<div class="hero-sub">Brass · Birmingham</div>'+
+      '<div class="hero-rule"></div>'+
+      '<div class="hint" style="max-width:320px;margin:0 auto">'+
+        '在英格兰的心脏地带建造煤矿、铁厂与纺织厂。<br>'+
+        '连接城市，积攒分数，成为工业时代的赢家。'+
+      '</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<h3 style="margin-top:0">开始游戏</h3>'+
+      '<input class="input" id="nickInput" placeholder="输入你的名字" maxlength="10" value="'+esc(S.ME.name)+'">'+
+      '<button class="btn gold" data-a="localSetup">👥 本地模式（一台设备轮流玩）</button>'+
+      '<button class="btn primary" data-a="createOnline" style="margin-top:9px">🌐 创建房间（联机）</button>'+
+      '<button class="btn green" data-a="joinByCode" style="margin-top:9px">🔑 输入房间号加入</button>'+
+    '</div>'+
+    '<div class="card">'+
+      '<h3 style="margin-top:0">关于游戏</h3>'+
+      '<div class="hint">'+
+        '每位玩家 30 金币起步。<br>'+
+        '· <b>建造</b>：在空槽位放产业板块，获得分数<br>'+
+        '· <b>连接</b>：连接相邻两城，建立你的网络<br>'+
+        '· <b>贷款</b>：+20 金币，-3 分<br>'+
+        '共 12 回合，分数最高者获胜。'+
+      '</div>'+
+      '<button class="btn ghost" data-a="rules" style="margin-top:9px">查看详细规则</button>'+
+    '</div>'+
+  '</div>';
+}
+
+function rRules(){
+  return '<div class="screen">'+
+    '<h2>详细规则</h2>'+
+    '<div class="card"><h3 style="margin-top:0">目标</h3>'+
+      '<div class="hint">在 12 个回合内积攒最多分数。分数来自建造的产业板块和建立的连接。</div></div>'+
+    '<div class="card"><h3 style="margin-top:0">资源</h3>'+
+      '<div class="hint">起始金币：<b>30</b><br>起始分数：<b>0</b><br>起始连接：<b>0</b></div></div>'+
+    '<div class="card"><h3 style="margin-top:0">产业板块</h3>'+
+      '<div class="hint">'+
+        '煤矿　花费 1　+1 分<br>'+
+        '铁厂　花费 2　+2 分<br>'+
+        '棉纺厂　花费 3　+3 分<br>'+
+        '制造商　花费 4　+4 分<br>'+
+        '陶器厂　花费 5　+5 分<br>'+
+        '每种产业全图限量 6 个。'+
+      '</div></div>'+
+    '<div class="card"><h3 style="margin-top:0">连接规则</h3>'+
+      '<div class="hint">'+
+        '每条相邻连接花费 <b>1 金币</b>，获得 <b>1 分</b>。<br>'+
+        '每条连接只能被一位玩家建立。<br>'+
+        '你的第一个产业可以建在任何城市。<br>'+
+        '之后，必须建在你自己的连接网络覆盖到的城市。'+
+      '</div></div>'+
+    '<div class="card"><h3 style="margin-top:0">贷款</h3>'+
+      '<div class="hint">任何时候都可以贷款：+20 金币，-3 分（分数不低于 0）。</div></div>'+
+    '<button class="btn ghost" data-a="home">返回</button>'+
+  '</div>';
+}
+
+function rInvite(){
+  var p=parseURL();
+  return '<div class="screen">'+
+    '<div class="hero">'+
+      '<div class="hero-icon">⚙️</div>'+
+      '<h1>加入房间</h1>'+
+      '<div style="font-size:32px;font-weight:800;color:#D4A017;letter-spacing:6px;text-align:center;margin:14px 0;font-family:Georgia,serif">'+esc(p.room)+'</div>'+
+    '</div>'+
+    '<div class="card">'+
+      '<input class="input" id="nickInput" placeholder="输入你的名字" maxlength="10" value="'+esc(S.ME.name)+'">'+
+      '<button class="btn primary" data-a="acceptInvite">✓ 加入</button>'+
+      '<button class="btn ghost" data-a="declineInvite">创建我自己的房间</button>'+
+    '</div>'+
+  '</div>';
+}
+
+function rLocalSetup(){
+  var count = S.LOCAL.count;
+  var names = S.LOCAL.names;
+  var h='<div class="screen">'+
+    '<h2>本地模式</h2>'+
+    '<div class="hint" style="margin-bottom:12px">同一台设备上，玩家轮流操作。不需要联网。</div>'+
+    '<div class="card"><h3 style="margin-top:0">玩家人数</h3>'+
+      '<div class="count-pick">';
+  [2,3,4].forEach(function(n){
+    h+='<button data-a="localSetCount" data-n="'+n+'" class="'+(count===n?'active':'')+'">'+n+' 人</button>';
+  });
+  h+='</div></div>';
+  h+='<div class="card"><h3 style="margin-top:0">玩家名字</h3>';
+  for(var i=0;i<count;i++){
+    h+='<input class="input" id="lp'+i+'" placeholder="玩家 '+(i+1)+'" maxlength="10" value="'+esc(names[i]||'')+'">';
+  }
+  h+='</div>';
+  h+='<button class="btn primary" data-a="startLocalGame">开始游戏</button>'+
+    '<button class="btn ghost" data-a="home">返回</button>'+
+  '</div>';
+  return h;
+}
+
+function rLobby(){
+  if(S.connecting||S.peerLoading){
+    return '<div class="screen">'+
+      '<div class="card" style="text-align:center;padding:40px 20px">'+
+        '<div style="font-size:28px;margin-bottom:12px">⚙️</div>'+
+        '<div style="font-size:17px;font-weight:700;margin-bottom:6px">正在准备房间…</div>'+
+        '<div class="hint">'+esc(S.PUB && S.PUB.statusMsg || '加载中')+'</div>'+
+      '</div>'+
+      '<button class="btn ghost" data-a="leave">取消</button>'+
+    '</div>';
+  }
+  var H=S.HOST;
+  var players = H ? H.players : (S.PUB ? S.PUB.players : []);
+  var url=shareURL();
+  var h='<div class="screen">'+
+    '<h2 style="text-align:center">房间已创建</h2>'+
+    '<div style="font-size:38px;font-weight:800;color:#D4A017;letter-spacing:8px;text-align:center;margin:10px 0;font-family:Georgia,serif">'+esc(S.roomCode)+'</div>'+
+    '<div style="background:#1F1C16;border:1px dashed #8B6B2E;border-radius:7px;padding:10px;font-size:11px;color:#B8A882;word-break:break-all;font-family:monospace;margin-bottom:10px">'+esc(url)+'</div>'+
+    '<div class="btn-row"><button class="btn gold" data-a="share">📤 分享</button>'+
+      '<button class="btn" data-a="copyLink">📋 复制</button></div>'+
+    '<h3 style="margin-top:20px">玩家（'+players.length+'/4）</h3>';
+  players.forEach(function(p,i){
+    h+='<div class="pcard" style="margin-bottom:6px;min-width:0;width:100%">'+
+      '<div class="pcolor" style="background:'+PLAYER_COLORS[i%4]+'"></div>'+
+      '<div class="pinfo"><div class="pname">'+esc(p.name)+(p.isHost?' 👑':'')+'</div>'+
+      '<div class="pstats">'+(p.online!==false?'已就绪':'离线')+'</div></div></div>';
+  });
+  var oc=players.filter(function(p){return p.online!==false;}).length;
+  if(S.isHost){
+    h+='<button class="btn primary" data-a="startGame" '+(oc<2?'disabled':'')+' style="margin-top:16px">'+
+      (oc<2?'等待玩家加入（至少 2 人）':'开始游戏')+'</button>';
+  }else{
+    h+='<div class="waiting" style="margin-top:16px">等待房主开始…</div>';
+  }
+  h+='<button class="btn ghost" data-a="leave" style="margin-top:10px">退出房间</button>';
+  return h+'</div>';
+}
+
+function rGame(){
+  var G = S.isLocal ? S.HOST.game : (S.isHost ? S.HOST.game : S.PUB);
+  if(!G) return '<div class="screen"><div class="hint">加载中…</div></div>';
+
+  var myIdx = S.isLocal ? G.turn : playerIndexOf(G, S.myId);
+  var myTurn = S.isLocal ? true : (myIdx>=0 && G.turn===myIdx);
+  var currentP = G.players[G.turn];
+
+  var h='<div class="screen">';
+
+  h+='<div class="topbar">'+
+    '<div class="topbar-left">回合 '+G.round+' / '+G.maxRounds+'</div>'+
+    '<div class="topbar-right">'+G.players.length+' 位玩家</div>'+
+  '</div>';
+
+  h+='<div class="players-bar">';
+  G.players.forEach(function(p,i){
+    var cls='pcard';
+    if(i===G.turn) cls+=' current';
+    if(!S.isLocal && i===myIdx) cls+=' you';
+    h+='<div class="'+cls+'">'+
+      '<div class="pcolor" style="background:'+p.color+'"></div>'+
+      '<div class="pinfo">'+
+        '<div class="pname">'+esc(p.name)+'</div>'+
+        '<div class="pstats">💰'+p.money+'　⭐'+p.vp+'　🛤'+p.links.length+'</div>'+
+      '</div>'+
+    '</div>';
+  });
+  h+='</div>';
+
+  h+='<div class="turn-banner">'+
+    '<div class="tag">Current Turn</div>'+
+    '<div class="who" style="color:'+currentP.color+'">'+esc(currentP.name)+'</div>'+
+  '</div>';
+
+  h+=renderLegend();
+  h+=renderBoard(G, myTurn);
+
+  if(myTurn){
+    h+='<div class="action-bar">';
+    if(S.mode==='build'){
+      h+='<div class="action-title">点击一个绿色高亮的城市建造</div>';
+      h+='<div class="action-row"><button class="btn ghost" data-a="cancelMode">取消</button></div>';
+    }else if(S.mode==='link'){
+      h+='<div class="action-title">点击一条虚线高亮的连接</div>';
+      h+='<div class="action-row"><button class="btn ghost" data-a="cancelMode">取消</button></div>';
+    }else{
+      h+='<div class="action-title">'+esc(currentP.name)+' 请选择行动</div>';
+      h+='<div class="action-row">'+
+        '<button class="btn primary" data-a="modeBuild">🏭 建造</button>'+
+        '<button class="btn green" data-a="modeLink">🛤 连接</button>'+
+        '<button class="btn gold" data-a="loan">💷 贷款</button>'+
+      '</div>';
+    }
+    h+='</div>';
+  }else{
+    h+='<div class="waiting">等待 '+esc(currentP.name)+' 行动…</div>';
+  }
+
+  if(G.log && G.log.length){
+    h+='<div class="log">';
+    G.log.slice(-6).forEach(function(l){
+      h+='<div class="log-line">'+esc(l.t)+'</div>';
+    });
+    h+='</div>';
+  }
+
+  h+='</div>';
+  return h;
+}
+
+function renderLegend(){
+  var h='<div class="legend">';
+  Object.keys(IND).forEach(function(k){
+    var ind=IND[k];
+    h+='<div class="legend-item">'+
+      '<div class="legend-dot" data-short="'+ind.short+'" style="background:'+ind.color+'"></div>'+
+      '<span>'+ind.name+'</span>'+
+    '</div>';
+  });
+  h+='</div>';
+  return h;
+}
+
+function renderBoard(G, myTurn){
+  var pIdx = S.isLocal ? G.turn : playerIndexOf(G, S.myId);
+  var h='<div class="board-frame"><div class="board">';
+
+  // 铁路网
+  h+='<svg class="board-svg" viewBox="0 0 100 100" preserveAspectRatio="none">';
+  // 先画一层底影
+  LINKS.forEach(function(l){
+    var a=LOCS[l[0]], b=LOCS[l[1]];
+    h+='<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="rgba(0,0,0,.5)" stroke-width="1.6" stroke-linecap="round"/>';
+  });
+  // 再画实际连线
+  LINKS.forEach(function(l){
+    var a=LOCS[l[0]], b=LOCS[l[1]];
+    var key=linkKey(l[0],l[1]);
+    var owner=G.linkState[key];
+    var isLinkTarget = (S.mode==='link' && myTurn && canLink(G,l[0],l[1], pIdx));
+    var color = owner!==undefined ? G.players[owner].color : '#6B5E44';
+    var w = owner!==undefined ? 1.3 : 0.7;
+    var cls = isLinkTarget ? 'link-target' : '';
+    var dash = owner===undefined ? 'stroke-dasharray="2 1.5"' : '';
+    var op = owner!==undefined ? '0.95' : '0.6';
+    h+='<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+color+'" stroke-width="'+w+'" stroke-linecap="round" class="'+cls+'" data-link="'+key+'" opacity="'+op+'" '+dash+'/>';
+  });
+  h+='</svg>';
+
+  // 城市
+  Object.keys(LOCS).forEach(function(locId){
+    var loc=LOCS[locId];
+    var isTarget=false;
+    if(S.mode==='build' && myTurn && canBuild(G, locId, pIdx)) isTarget=true;
+    h+='<div class="loc'+(loc.city?' city':'')+(isTarget?' target':'')+'" data-loc="'+locId+'" style="left:'+loc.x+'%;top:'+loc.y+'%">';
+    h+='<div class="loc-name">'+esc(loc.name)+'</div>';
+    h+='<div class="loc-slots">';
+    G.locState[locId].forEach(function(slot){
+      if(slot){
+        var color=G.players[slot.owner].color;
+        h+='<div class="slot filled" style="background:'+color+'" title="'+esc(IND[slot.ind].name)+'">'+
+          '<span class="slot-ind">'+IND[slot.ind].short+'</span>'+
+        '</div>';
+      }else{
+        h+='<div class="slot"></div>';
+      }
+    });
+    h+='</div></div>';
+  });
+
+  h+='</div></div>';
+  return h;
+}
+
+function rModal(){
+  var m=S.modal;
+  if(m.type==='build'){
+    var locId=m.locId;
+    var G = S.isLocal ? S.HOST.game : (S.isHost ? S.HOST.game : S.PUB);
+    var pIdx = S.isLocal ? G.turn : m.pIdx;
+    var h='<div class="modal" data-a="closeModal"><div class="modal-box" data-stop="1">';
+    h+='<div class="modal-title">🏭 '+esc(LOCS[locId].name)+'</div>';
+    h+='<div class="modal-sub">'+esc(G.players[pIdx].name)+' · 选择一个产业建造</div>';
+    h+='<div class="ind-grid">';
+    Object.keys(IND).forEach(function(k){
+      var ind=IND[k];
+      var used=usedSupply(G,k);
+      var remain=SUPPLY_LIMIT[k]-used;
+      var disabled = (remain<=0) || (G.players[pIdx].money<ind.cost);
+      h+='<div class="ind-btn'+(disabled?' disabled':'')+'" data-a="doBuild" data-loc="'+locId+'" data-ind="'+k+'">'+
+        '<div class="ind-icon" style="background:'+ind.color+'">'+ind.short+'</div>'+
+        '<div class="ind-meta">'+
+          '<div>'+ind.name+'</div>'+
+          '<div class="ind-cost">💰'+ind.cost+'　⭐+'+ind.vp+'　剩'+remain+'</div>'+
+        '</div>'+
+      '</div>';
+    });
+    h+='</div>';
+    h+='<button class="btn ghost" data-a="closeModal">取消</button>';
+    h+='</div></div>';
+    return h;
+  }
+  return '';
+}
+
+function rResult(){
+  var G = S.isLocal ? S.HOST.game : (S.isHost ? S.HOST.game : S.PUB);
+  if(!G) return '<div class="screen"><div class="hint">加载中…</div></div>';
+  var sorted=G.players.slice().sort(function(a,b){
+    if(b.vp!==a.vp) return b.vp-a.vp;
+    return b.money-a.money;
+  });
+  var winner=sorted[0];
+  var h='<div class="screen">';
+  h+='<div class="result-hero">'+
+    '<div class="result-icon">🏆</div>'+
+    '<div class="result-title">游戏结束</div>'+
+    '<div class="result-winner">'+esc(winner.name)+' 获胜</div>'+
+    '<div class="hint" style="margin-top:6px">'+winner.vp+' 分 · '+winner.money+' 金币</div>'+
+  '</div>';
+
+  h+='<h3>最终排名</h3>';
+  sorted.forEach(function(p,i){
+    var cls='rank-num';
+    if(i===0) cls+=' gold';
+    else if(i===1) cls+=' silver';
+    else if(i===2) cls+=' bronze';
+    h+='<div class="rank-row">'+
+      '<div class="'+cls+'">'+(i+1)+'</div>'+
+      '<div class="pcolor" style="background:'+p.color+'"></div>'+
+      '<div style="flex:1"><div style="font-weight:700;font-size:14px">'+esc(p.name)+'</div>'+
+      '<div class="pstats">💰'+p.money+'　🛤'+p.links.length+'</div></div>'+
+      '<div style="font-weight:800;color:#C9A961;font-size:18px">'+p.vp+'</div>'+
+    '</div>';
+  });
+
+  h+='<button class="btn primary" data-a="backHome" style="margin-top:16px">返回首页</button>';
+  if(S.isLocal) h+='<button class="btn gold" data-a="localSetup" style="margin-top:9px">再来一局（本地）</button>';
+  if(!S.isLocal && S.isHost) h+='<button class="btn gold" data-a="restart" style="margin-top:9px">再来一局（联机）</button>';
+  h+='</div>';
+  return h;
+}
+
+function bindAfterRender(){
+  var ni=document.getElementById('nickInput');
+  if(ni){
+    ni.addEventListener('input',function(e){
+      S.ME.name=e.target.value.trim();
+      safeSet('brass-name',S.ME.name);
+    });
+  }
+  for(var i=0;i<4;i++){
+    (function(idx){
+      var inp=document.getElementById('lp'+idx);
+      if(inp){
+        inp.addEventListener('input',function(e){
+          S.LOCAL.names[idx]=e.target.value;
+        });
+      }
+    })(i);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PeerJS 联机
+   ═══════════════════════════════════════════════════════════ */
+var PEER_CDNS=[
+  'https://npm.elemecdn.com/peerjs@1.5.2/dist/peerjs.min.js',
+  'https://cdn.staticfile.org/peerjs/1.5.2/peerjs.min.js',
+  'https://lib.baomitu.com/peerjs/1.5.2/peerjs.min.js',
+  'https://cdn.bytedance.com/peerjs/1.5.2/peerjs.min.js',
+  'https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js',
+  'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js'
+];
+var PEER_SERVERS=[
+  {name:'官方',host:'0.peerjs.com',port:443,secure:true,path:'/'},
+  {name:'德国备用',host:'peerjs.92k.de',port:443,secure:true,path:'/'}
+];
+
+function loadPeerJS(cb){
+  if(typeof Peer!=='undefined'){cb(true);return;}
+  S.peerLoading=true;var i=0;
+  function next(){
+    if(i>=PEER_CDNS.length){S.peerLoading=false;cb(false);return;}
+    var url=PEER_CDNS[i++];
+    S.PUB={statusMsg:'加载网络库('+i+'/'+PEER_CDNS.length+')…'};
+    render();
+    var s=document.createElement('script');var done=false;
+    var t=setTimeout(function(){if(!done){done=true;s.onload=s.onerror=null;s.remove();next();}},4000);
+    s.src=url;
+    s.onload=function(){if(done)return;done=true;clearTimeout(t);
+      if(typeof Peer!=='undefined'){S.peerLoading=false;cb(true);}else next();};
+    s.onerror=function(){if(done)return;done=true;clearTimeout(t);next();};
+    document.head.appendChild(s);
+  }
+  next();
+}
+
+function tryCreatePeer(code){
+  if(typeof Peer==='undefined'){S.connecting=false;toast('网络库未加载');S.screen='home';render();return;}
+  var idx=(S._attempt||0)%PEER_SERVERS.length;
+  var srv=PEER_SERVERS[idx];S._attempt=(S._attempt||0)+1;
+  S.PUB={statusMsg:'连接信令服务器('+(idx+1)+'/'+PEER_SERVERS.length+')：'+srv.name};
+  render();
+  var timeout=setTimeout(function(){
+    if(S.peer){try{S.peer.destroy();}catch(e){}S.peer=null;}
+    if(S._attempt<PEER_SERVERS.length)tryCreatePeer(code);
+    else{S.connecting=false;toast('无法连接服务器');S.screen='home';render();}
+  },8000);
+  try{
+    S.peer=new Peer('brass-'+code,srv);
+    S.peer.on('open',function(){
+      clearTimeout(timeout);
+      S.connected=true;S.connecting=false;setURL(code);
+      S.myId=S.peer.id;
+      S.HOST = {
+        players:[{id:S.myId, clientId:S.clientId, name:S.ME.name||'房主', isHost:true, online:true}],
+        game:null, phase:'lobby'
+      };
+      toast('✓ 房间已创建');
+      render();
+    });
+    S.peer.on('error',function(err){
+      clearTimeout(timeout);
+      if(err.type==='unavailable-id'){
+        if(S.peer){try{S.peer.destroy();}catch(e){}S.peer=null;}
+        var nc=genCode();S.roomCode=nc;
+        setTimeout(function(){tryCreatePeer(nc);},200);return;
+      }
+      if(S._attempt<PEER_SERVERS.length){if(S.peer){try{S.peer.destroy();}catch(e){}S.peer=null;}tryCreatePeer(code);}
+      else{S.connecting=false;toast('网络错误：'+err.type);S.screen='home';render();}
+    });
+    S.peer.on('connection',function(conn){
+      conn.on('open',function(){S.conns[conn.peer]=conn;});
+      conn.on('data',function(d){onHostData(conn.peer,d);});
+      conn.on('close',function(){
+        delete S.conns[conn.peer];
+        if(S.HOST){
+          var p=S.HOST.players.find(function(x){return x.id===conn.peer;});
+          if(p){p.online=false;}
+          broadcastLobby();
+        }
+      });
+    });
+  }catch(e){
+    clearTimeout(timeout);
+    if(S._attempt<PEER_SERVERS.length)tryCreatePeer(code);
+    else{S.connecting=false;toast('创建失败：'+e.message);S.screen='home';render();}
+  }
+}
+
+function tryJoinPeer(code){
+  if(typeof Peer==='undefined'){S.connecting=false;toast('网络库未加载');S.screen='home';render();return;}
+  var idx=(S._attempt||0)%PEER_SERVERS.length;
+  var srv=PEER_SERVERS[idx];S._attempt=(S._attempt||0)+1;
+  S.PUB={statusMsg:'连接信令服务器('+(idx+1)+'/'+PEER_SERVERS.length+')：'+srv.name};
+  render();
+  var joined=false;
+  var timeout=setTimeout(function(){
+    if(joined)return;
+    if(S.peer){try{S.peer.destroy();}catch(e){}S.peer=null;}
+    if(S._attempt<PEER_SERVERS.length)tryJoinPeer(code);
+    else{S.connecting=false;toast('无法连接房主');S.screen='home';render();}
+  },15000);
+  try{
+    S.peer=new Peer(srv);
+    S.peer.on('open',function(id){
+      S.myId=id;
+      var c=S.peer.connect('brass-'+code,{reliable:true});
+      c.on('open',function(){
+        clearTimeout(timeout);joined=true;S.connected=true;S.connecting=false;
+        S.conns['host']=c;
+        c.send({type:'join',name:S.ME.name,clientId:S.clientId});
+        toast('✓ 已加入');
+        render();
+      });
+      c.on('data',function(d){onClientData(d);});
+      c.on('close',function(){S.connected=false;toast('与房主断开');render();});
+      c.on('error',function(){clearTimeout(timeout);});
+    });
+    S.peer.on('error',function(err){
+      clearTimeout(timeout);
+      if(err.type==='peer-unavailable'){S.connecting=false;toast('找不到房间');S.screen='home';render();return;}
+      if(S._attempt<PEER_SERVERS.length)tryJoinPeer(code);
+      else{S.connecting=false;toast('网络错误：'+err.type);S.screen='home';render();}
+    });
+  }catch(e){
+    clearTimeout(timeout);
+    if(S._attempt<PEER_SERVERS.length)tryJoinPeer(code);
+    else{S.connecting=false;toast('创建失败：'+e.message);S.screen='home';render();}
+  }
+}
+
+function leaveRoom(){
+  Object.keys(S.conns).forEach(function(k){try{S.conns[k].close();}catch(e){}});
+  if(S.peer){try{S.peer.destroy();}catch(e){}}
+  S.conns={};S.peer=null;S.connected=false;S.connecting=false;S.isHost=false;
+  S.HOST=null;S.PUB=null;
+  S.mode=null;S.isLocal=false;
+}
+
+function broadcastLobby(){
+  if(!S.isHost || !S.HOST) return;
+  var pub = {
+    players: S.HOST.players.map(function(p,i){
+      return {id:p.id, name:p.name, isHost:p.isHost, online:p.online!==false, colorIdx:i};
+    }),
+    phase:'lobby', statusMsg:''
+  };
+  S.PUB = pub;
+  render();
+  Object.keys(S.conns).forEach(function(pid){
+    try{S.conns[pid].send({type:'state', state:pub});}catch(e){}
+  });
+}
+
+function broadcastGame(){
+  if(!S.isHost || !S.HOST || !S.HOST.game) return;
+  var G = S.HOST.game;
+  var pub = {
+    players: G.players.map(function(p){
+      return {id:p.id, name:p.name, color:p.color, money:p.money, vp:p.vp, links:p.links};
+    }),
+    locState: G.locState, linkState: G.linkState,
+    turn: G.turn, round: G.round, maxRounds: G.maxRounds,
+    phase: G.phase, log: G.log, statusMsg:''
+  };
+  S.PUB = pub;
+  if(G.phase==='over') S.screen='result';
+  render();
+  Object.keys(S.conns).forEach(function(pid){
+    try{S.conns[pid].send({type:'gameState', state:pub});}catch(e){}
+  });
+}
+
+function onHostData(fromId, d){
+  if(!S.HOST) return;
+  if(d.type==='join'){
+    var exists = S.HOST.players.find(function(p){return p.clientId===d.clientId;});
+    if(exists){exists.id=fromId;exists.online=true;broadcastLobby();return;}
+    if(S.HOST.phase!=='lobby'){try{S.conns[fromId].send({type:'error',msg:'游戏已开始'});}catch(e){}return;}
+    if(S.HOST.players.length>=4){try{S.conns[fromId].send({type:'error',msg:'房间已满'});}catch(e){}return;}
+    S.HOST.players.push({id:fromId, clientId:d.clientId, name:d.name||'玩家', isHost:false, online:true});
+    broadcastLobby();
+  }else if(d.type==='action'){
+    var G=S.HOST.game;
+    if(!G || G.phase!=='playing') return;
+    var pIdx = playerIndexOf(G, fromId);
+    if(pIdx<0 || G.turn!==pIdx) return;
+    var ok = performAction(d.action, d.payload);
+    if(ok) broadcastGame();
+  }
+}
+
+function onClientData(d){
+  if(d.type==='state'){ S.PUB = d.state; S.screen='lobby'; render(); }
+  else if(d.type==='gameState'){
+    S.PUB = d.state;
+    if(d.state.phase==='over') S.screen='result';
+    else S.screen='game';
+    render();
+  }else if(d.type==='error'){ toast(d.msg); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   事件
+   ═══════════════════════════════════════════════════════════ */
+document.addEventListener('click', function(e){
+  try{
+    // 连线
+    var ln = e.target.closest('[data-link]');
+    if(ln && S.mode==='link'){
+      var key=ln.dataset.link;
+      var parts=key.split('-');
+      var a=parts[0], b=parts[1];
+      if(S.isLocal){
+        var G=S.HOST.game;
+        if(performAction('link',{a:a,b:b})){
+          S.mode=null;
+          if(G.phase==='over') S.screen='result';
+          render();
+        }
+      }else if(S.isHost){
+        if(performAction('link',{a:a,b:b})){ S.mode=null; broadcastGame(); }
+      }else{
+        Net_send({type:'action',action:'link',payload:{a:a,b:b}});
+        S.mode=null; toast('已发送');
+      }
+      return;
+    }
+
+    // 城市
+    var loc = e.target.closest('.loc');
+    if(loc && S.mode==='build'){
+      var locId=loc.dataset.loc;
+      if(!locId) return;
+      var G = S.isLocal ? S.HOST.game : (S.isHost ? S.HOST.game : S.PUB);
+      var pIdx = S.isLocal ? G.turn : playerIndexOf(G, S.myId);
+      S.modal={type:'build', locId:locId, pIdx:pIdx};
+      render();
+      return;
+    }
+
+    // 按钮
+    var el=e.target.closest('[data-a]');
+    if(!el) return;
+    if(e.target.closest('[data-stop]') && el.dataset.a==='closeModal') return;
+    var a=el.dataset.a;
+
+    if(a==='home'){ leaveRoom(); setURL(null); S.screen='home'; S.modal=null; render(); }
+    else if(a==='rules'){ S.screen='rules'; render(); }
+    else if(a==='localSetup'){
+      S.isLocal=true; S.isHost=true;
+      S.screen='local-setup'; S.modal=null; render();
+    }
+    else if(a==='localSetCount'){
+      var n=parseInt(el.dataset.n);
+      if(!isNaN(n) && n>=2 && n<=4){ S.LOCAL.count=n; render(); }
+    }
+    else if(a==='startLocalGame'){
+      var count=S.LOCAL.count;
+      var names=[];
+      for(var i=0;i<count;i++){
+        var v=(S.LOCAL.names[i]||'').trim();
+        names.push(v||('玩家'+(i+1)));
+      }
+      var infos = names.map(function(nm,idx){
+        return {id:'local-'+idx, name:nm, isHost:idx===0};
+      });
+      S.myId='local-0';
+      S.isLocal=true; S.isHost=true;
+      S.HOST={game:newGame(infos), phase:'playing'};
+      S.screen='game'; S.mode=null; S.modal=null;
+      render();
+    }
+    else if(a==='createOnline'){
+      if(!S.ME.name.trim()) return toast('请先输入名字');
+      S.isLocal=false;
+      S.roomCode=genCode(); S.screen='lobby'; S._attempt=0; S.connecting=true;
+      S.PUB={statusMsg:'加载网络库…'}; render();
+      loadPeerJS(function(ok){
+        if(!ok){toast('无法加载网络库');S.screen='home';S.connecting=false;render();return;}
+        tryCreatePeer(S.roomCode);
+      });
+    }
+    else if(a==='joinByCode'){
+      if(!S.ME.name.trim()) return toast('请先输入名字');
+      var code=prompt('输入 6 位房间号：');
+      if(!code) return;
+      code=code.toUpperCase().trim();
+      S.isLocal=false;
+      S.roomCode=code; S.screen='lobby'; S._attempt=0; S.connecting=true;
+      S.PUB={statusMsg:'加载网络库…'}; render();
+      loadPeerJS(function(ok){
+        if(!ok){toast('无法加载网络库');S.screen='home';S.connecting=false;render();return;}
+        tryJoinPeer(code);
+      });
+    }
+    else if(a==='acceptInvite'){
+      if(!S.ME.name.trim()) return toast('请输入名字');
+      var p=parseURL(); if(!p.room) return;
+      S.isLocal=false;
+      S.roomCode=p.room; S.screen='lobby'; S._attempt=0; S.connecting=true;
+      S.PUB={statusMsg:'加载网络库…'}; render();
+      loadPeerJS(function(ok){
+        if(!ok){toast('无法加载网络库');S.screen='home';S.connecting=false;render();return;}
+        tryJoinPeer(S.roomCode);
+      });
+    }
+    else if(a==='declineInvite'){ setURL(null); S.screen='home'; render(); }
+
+    else if(a==='leave'){ leaveRoom(); setURL(null); S.screen='home'; render(); }
+    else if(a==='share'){
+      var url=shareURL();
+      if(navigator.share) navigator.share({title:'工业革命·伯明翰',url:url}).catch(function(){});
+      else copyText(url);
+    }
+    else if(a==='copyLink'){ copyText(shareURL()); }
+    else if(a==='startGame'){
+      if(!S.isHost || S.isLocal) return;
+      var onlinePlayers = S.HOST.players.filter(function(p){return p.online!==false;});
+      if(onlinePlayers.length<2) return toast('至少需要 2 名玩家');
+      var infos = onlinePlayers.map(function(p){return {id:p.id, name:p.name, isHost:p.isHost};});
+      S.HOST.game = newGame(infos);
+      S.HOST.phase='playing';
+      S.screen='game';
+      broadcastGame();
+    }
+    else if(a==='restart'){
+      if(!S.isHost || S.isLocal) return;
+      S.HOST.phase='lobby'; S.HOST.game=null;
+      S.screen='lobby'; broadcastLobby();
+    }
+    else if(a==='backHome'){ leaveRoom(); setURL(null); S.screen='home'; render(); }
+
+    else if(a==='modeBuild'){ S.mode='build'; render(); }
+    else if(a==='modeLink'){ S.mode='link'; render(); }
+    else if(a==='cancelMode'){ S.mode=null; render(); }
+    else if(a==='loan'){
+      if(S.isLocal){
+        var G=S.HOST.game;
+        if(performAction('loan',null)){
+          S.mode=null;
+          if(G.phase==='over') S.screen='result';
+          render();
+        }
+      }else if(S.isHost){
+        if(performAction('loan',null)){ S.mode=null; broadcastGame(); }
+      }else{
+        Net_send({type:'action',action:'loan'});
+        S.mode=null; toast('已发送');
+      }
+    }
+    else if(a==='doBuild'){
+      var locId=el.dataset.loc, ind=el.dataset.ind;
+      S.modal=null;
+      if(S.isLocal){
+        var G=S.HOST.game;
+        if(performAction('build',{locId:locId,ind:ind})){
+          S.mode=null;
+          if(G.phase==='over') S.screen='result';
+          render();
+        }
+      }else if(S.isHost){
+        if(performAction('build',{locId:locId,ind:ind})){ S.mode=null; broadcastGame(); }
+      }else{
+        Net_send({type:'action',action:'build',payload:{locId:locId,ind:ind}});
+        S.mode=null; render();
+      }
+    }
+    else if(a==='closeModal'){ S.modal=null; render(); }
+
+  }catch(err){
+    console.error(err);
+    toast('出错了');
+  }
+});
+
+function copyText(t){
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(t).then(function(){toast('✓ 已复制');});
+    }else{
+      var ta=document.createElement('textarea'); ta.value=t;
+      ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); toast('✓ 已复制'); ta.remove();
+    }
+  }catch(e){ prompt('复制失败，请手动复制',t); }
+}
+
+function Net_send(d){
+  var c=S.conns['host'];
+  if(c && c.open) c.send(d);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   初始化
+   ═══════════════════════════════════════════════════════════ */
+try{
+  var n=safeGet('brass-name');
+  if(n) S.ME.name=n;
+  try{
+    var cid=safeGet('brass-cid');
+    if(!cid){cid='c_'+Math.random().toString(36).slice(2,10); safeSet('brass-cid',cid);}
+    S.clientId=cid;
+  }catch(e){ S.clientId='c_'+Math.random().toString(36).slice(2,10); }
+  S.screen='home';
+  render();
+}catch(e){
+  console.error(e);
+  document.getElementById('app').innerHTML='<div style="padding:40px;text-align:center;color:#C87A6A"><h2>初始化失败</h2><p>'+esc(e.message)+'</p></div>';
+}
+</script>
+</body>
+</html>
